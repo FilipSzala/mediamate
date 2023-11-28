@@ -1,16 +1,19 @@
 package com.mediamate.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 public class RealEstate {
-    private Long realEstateId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long ownerId;
     private String address;
     @OneToMany
     @JoinColumn(name="flatId")

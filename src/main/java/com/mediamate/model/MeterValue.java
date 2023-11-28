@@ -1,13 +1,15 @@
 package com.mediamate.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 public class MeterValue {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long meterValueId;
     private double electricity;
     private double gas;
