@@ -2,18 +2,22 @@ package com.mediamate.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class MeterValue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long meterValueId;
+    private Long id;
     private double electricity;
     private double gas;
     @OneToOne
-    @JoinColumn(name ="waterId")
+    @JoinColumn(name ="waterId", referencedColumnName = "id")
     Water water;
 }

@@ -21,7 +21,7 @@ public class Owner {
     private Long OwnerId;
     private String name;
     @OneToMany
-    @JoinColumn(name="realEstateId")
+    @JoinColumn(name="ownerId")
     private Set<RealEstate> realEstates;
     private String password;
     private LocalDate createDay = LocalDate.now();

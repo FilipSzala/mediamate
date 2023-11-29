@@ -16,4 +16,8 @@ public class OwnerService {
     public void addOwner (Owner owner){
         ownerRepository.save(owner);
     }
+
+    public List<Owner> displayOwner() {
+        return ownerRepository.findAll();
+    }
 }

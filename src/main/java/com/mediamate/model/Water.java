@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Water {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long waterId;
+    private Long id;
     private double coldWater;
     private double hotWater;
 }
