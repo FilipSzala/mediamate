@@ -22,8 +22,8 @@ public class Flat {
     private Long realEstateId;
     private String renters;
     @ElementCollection
-    @CollectionTable (name = "flat_meter_value_mapping", joinColumns = @JoinColumn(name="flat_id"))
-    @MapKeyColumn (name = "data_pomiaru")
+    @CollectionTable (name = "flat_meter_value_map", joinColumns = @JoinColumn(name="flatId"))
+    @MapKeyColumn (name = "day")
     @Column (name = "meter_value_id")
     private Map <LocalDate,MeterValue> meterValues = new HashMap<>();
 

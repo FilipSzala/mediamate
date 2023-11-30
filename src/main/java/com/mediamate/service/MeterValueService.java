@@ -10,10 +10,11 @@ public class MeterValueService {
     @Autowired
     MeterValueRepository meterValueRepository;
 
-    public void addMeterValue(Long flatId, MeterValue meterValue){
- /*       meterValue.se
-        meterValue.setFlatId(flatId);*/
+    public void addMeterValue(MeterValue meterValue){
         meterValueRepository.save(meterValue);
+    }
+    private void addMeterValueToMap(Long flatId,MeterValue meterValue){
+
     }
 
     public MeterValue findMeterById (Long id){
