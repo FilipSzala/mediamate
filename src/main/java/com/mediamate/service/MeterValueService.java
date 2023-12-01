@@ -13,9 +13,6 @@ public class MeterValueService {
     public void addMeterValue(MeterValue meterValue){
         meterValueRepository.save(meterValue);
     }
-    private void addMeterValueToMap(Long flatId,MeterValue meterValue){
-
-    }
 
     public MeterValue findMeterById (Long id){
         return meterValueRepository.findById(id).orElseThrow();

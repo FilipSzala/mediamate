@@ -1,6 +1,7 @@
 package com.mediamate.controller;
 
 import com.mediamate.model.Water;
+import com.mediamate.service.MeterValueService;
 import com.mediamate.service.WaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,14 +10,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping ("water")
 public class WaterController {
     private WaterService waterService;
+    private MeterValueService meterValueService;
     @Autowired
-    public WaterController(WaterService waterService) {
+    public WaterController(WaterService waterService, MeterValueService meterValueService) {
         this.waterService = waterService;
+        this.meterValueService = meterValueService;
     }
 
-    @PostMapping("/{id}")
-    public void createWater (@PathVariable ("id") Long materValueId, @RequestBody Water water) {
-
-        waterService.createWater(water);
+    @PutMapping("/{id}")
+    public void updateWater (@PathVariable ("id") Long meterValueId, @RequestBody Water updatedWater) {
+        waterService.updateWater(meterValueId,updatedWater);
     }
 }

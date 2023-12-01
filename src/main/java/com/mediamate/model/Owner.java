@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -18,11 +17,14 @@ import java.util.Set;
 public class Owner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long OwnerId;
+    private Long ownerId;
+    private String firstName;
+    private String secondName;
     private String name;
     @OneToMany
     @JoinColumn(name="ownerId")
     private Set<RealEstate> realEstates;
-    private String password;
+
     private LocalDate createDay = LocalDate.now();
+
 }

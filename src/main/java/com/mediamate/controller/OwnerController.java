@@ -2,6 +2,7 @@ package com.mediamate.controller;
 
 import com.mediamate.model.Owner;
 import com.mediamate.service.OwnerService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class OwnerController {
     }
 
     @PostMapping("")
-    public void addOwner (@RequestBody Owner owner){
+    public void createOwner (@RequestBody Owner owner){
         ownerService.addOwner(owner);
     }
 
