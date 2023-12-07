@@ -1,7 +1,7 @@
 package com.mediamate.register;
 
-import com.mediamate.User.User;
-import com.mediamate.User.UserService;
+import com.mediamate.user.User;
+import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class RegistrationController {
 
-    UserService userService;
+    RegistrationService registrationService;
     @Autowired
-    public RegistrationController(UserService userService) {
-        this.userService = userService;
+    public RegistrationController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
     }
 
     @PostMapping("/register")
-    public void registerUser (@RequestBody User user){
-        userService.createUser(user);
+    public void register (@RequestBody RegistrationRequest registrationRequest){
+        registrationService.register(registrationRequest);
     }
 }

@@ -1,6 +1,5 @@
-package com.mediamate.User;
+package com.mediamate.user;
 
-import com.mediamate.security.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,9 +14,6 @@ public class UserService {
     public void createUser (User user){
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        if(user.isAuthentication()==true){
-            user.setRole("Owner");
-        }
         userRepository.save(user);
     }
 }
