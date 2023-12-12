@@ -1,4 +1,5 @@
 HELP.md
+/test
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -33,5 +34,5 @@ build/
 .vscode/
 
 ### Application Properties ###
-src/main/resources/
+application-dev.properties
 
