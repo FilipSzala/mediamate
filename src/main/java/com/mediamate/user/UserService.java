@@ -33,4 +33,22 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public void enableUser (String tokenKey){
+        Optional <Token> token = tokenService.findByKey(tokenKey);
+        User databaseUser=token.get().getUser();
+        User modifyUser=token.get().getUser();
+        modifyUser.setEnabled(true);
+        updateUserPartially(databaseUser,modifyUser);
+    }
+    public void updateUserPartially(User databaseUser,User modifiedUser) {
+        databaseUser.setFirstName(modifiedUser.getFirstName());
+        databaseUser.setLastName(modifiedUser.getLastName());
+        databaseUser.setEmail(modifiedUser.getEmail());
+        databaseUser.setPassword(modifiedUser.getPassword());
+        databaseUser.setEnabled(modifiedUser.getEnabled());
+        databaseUser.setLocked(modifiedUser.getLocked());
+        databaseUser.setUserRole(modifiedUser.getUserRole());
+        userRepository.save(databaseUser);
+    }
 }

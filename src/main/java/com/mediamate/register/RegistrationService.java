@@ -1,5 +1,6 @@
 package com.mediamate.register;
 
+import com.mediamate.register.token.TokenService;
 import com.mediamate.user.User;
 import com.mediamate.user.UserRole;
 import com.mediamate.user.UserService;
@@ -12,10 +13,15 @@ import java.util.Optional;
 @Service
 public class RegistrationService {
     UserService userService;
+    TokenService tokenService;
+
+
 
     @Autowired
-    public RegistrationService(UserService userService) {
+    public RegistrationService(UserService userService,TokenService tokenService) {
+
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     public String register(RegistrationRequest registrationRequest){
@@ -50,5 +56,9 @@ public class RegistrationService {
             String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$";
             return email.matches(emailRegex)? true : false;
         }
+
+    public void confirm(String tokenKey) {
+        userService.enableUser(tokenKey);
     }
+}
 

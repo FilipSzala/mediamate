@@ -1,9 +1,7 @@
 package com.mediamate.register;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 
@@ -19,4 +17,10 @@ public class RegistrationController {
     public String register (@RequestBody RegistrationRequest registrationRequest){
         return registrationService.register(registrationRequest);
     }
+
+    @GetMapping (path = "confirm")
+    public void confirm (@RequestParam String tokenKey){
+        registrationService.confirm(tokenKey);
+    }
+
 }
