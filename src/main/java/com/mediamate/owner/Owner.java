@@ -20,8 +20,7 @@ public class Owner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ownerId;
     private String firstName;
-    private String secondName;
-    private String name;
+    private String lastName;
     @OneToMany
     @JoinColumn(name="ownerId")
     private Set<RealEstate> realEstates;

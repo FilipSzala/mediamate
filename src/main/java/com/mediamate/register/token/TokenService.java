@@ -47,7 +47,6 @@ public class TokenService {
         Token modifyToken = tokenRepository.findByTokenKey(tokenKey).get();
         modifyToken.setConfirmedAt(LocalDateTime.now());
         updateTokenPartially(databaseToken, modifyToken);
-
     }
 
 

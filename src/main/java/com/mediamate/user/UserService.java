@@ -3,13 +3,16 @@ package com.mediamate.user;
 import com.mediamate.register.token.Token;
 import com.mediamate.register.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -21,13 +24,16 @@ public class UserService {
         this.tokenService = tokenService;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        return userRepository.findByEmail(email).orElseThrow();
+    }
     public void createUser(User user) {
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         userRepository.save(user);
-
         tokenService.createToken(user);
-
     }
 
     public Optional<User> findByEmail(String email) {
@@ -42,8 +48,6 @@ public class UserService {
         updateUserPartially(databaseUser,modifyUser);
     }
     public void updateUserPartially(User databaseUser,User modifiedUser) {
-        databaseUser.setFirstName(modifiedUser.getFirstName());
-        databaseUser.setLastName(modifiedUser.getLastName());
         databaseUser.setEmail(modifiedUser.getEmail());
         databaseUser.setPassword(modifiedUser.getPassword());
         databaseUser.setEnabled(modifiedUser.getEnabled());

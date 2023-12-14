@@ -1,14 +1,15 @@
 package com.mediamate.owner;
 
-import com.mediamate.owner.Owner;
-import com.mediamate.owner.OwnerService;
+import com.mediamate.user.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/owner")
+@RequestMapping("/owners")
 public class OwnerController {
 
     OwnerService ownerService;
@@ -16,15 +17,12 @@ public class OwnerController {
     public OwnerController(OwnerService ownerService) {
         this.ownerService = ownerService;
     }
-
-    @PostMapping("")
-    public void createOwner (@RequestBody Owner owner){
-        ownerService.addOwner(owner);
-    }
-
-    @GetMapping("")
+    @GetMapping()
     public List<Owner> displayOwners (){
         return ownerService.displayOwner();
     }
 
+    @PatchMapping("settings")
+    public void settings (@RequestBody User user) {
+    }
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class MeterValueController {
     MeterValueService meterValueService;
     FlatService flatService;
-
     WaterService waterService;
 
     @Autowired

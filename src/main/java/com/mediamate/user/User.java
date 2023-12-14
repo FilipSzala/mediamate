@@ -1,5 +1,6 @@
 package com.mediamate.user;
 
+import com.mediamate.owner.Owner;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,14 +22,15 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    private String firstName;
-    private String lastName;
     private String email;
     private String password;
     private Boolean enabled = false;
     private Boolean locked = false;
     @Enumerated
     private UserRole userRole;
+    @OneToOne
+    @JoinColumn (name = "ownerId")
+    Owner owner;
 
 
     public User(String email, String password, UserRole userRole) {

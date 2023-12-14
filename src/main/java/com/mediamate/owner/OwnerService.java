@@ -22,7 +22,4 @@ public class OwnerService {
     public Optional<Owner> findById (Long ownerId){
         return ownerRepository.findById(ownerId);
     }
-    public Optional<Owner> findByName (String name){
-        return ownerRepository.findByName(name);
-    }
 }
