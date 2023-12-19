@@ -27,4 +27,9 @@ public class Owner {
 
     private LocalDate createDay = LocalDate.now();
 
+    public Owner(String firstName, String lastName, Set<RealEstate> realEstates) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.realEstates = realEstates;
+    }
 }

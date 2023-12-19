@@ -1,7 +1,10 @@
 package com.mediamate.user;
 
+import com.mediamate.owner.Owner;
 import com.mediamate.register.token.Token;
 import com.mediamate.register.token.TokenService;
+import com.mediamate.security.SecurityService;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,16 +15,20 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@NoArgsConstructor
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+
     private TokenService tokenService;
+    private SecurityService securityService;
     @Autowired
-    public UserService(TokenService tokenService) {
+    public UserService(TokenService tokenService, SecurityService securityService) {
         this.tokenService = tokenService;
+        this.securityService = securityService;
     }
 
     @Override
@@ -54,5 +61,19 @@ public class UserService implements UserDetailsService {
         databaseUser.setLocked(modifiedUser.getLocked());
         databaseUser.setUserRole(modifiedUser.getUserRole());
         userRepository.save(databaseUser);
+    }
+
+    public Boolean isFlatOwner(User user){
+        return user.getUserRole()==UserRole.FLAT_OWNER? true:false;
+    }
+    public Boolean hasOwner(User user){
+        return user.getOwner()!=null?true:false;
+    }
+
+    public void addOwner(Owner owner){
+        User databaseUser = securityService.findUserBySession();
+        User modifyUser = securityService.findUserBySession();
+        modifyUser.setOwner(owner);
+        updateUserPartially(databaseUser,modifyUser);
     }
 }

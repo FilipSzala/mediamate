@@ -14,8 +14,8 @@ public class RealEstateController {
         this.realEstateService = realEstateService;
     }
 
-    @PostMapping("/{id}")
+ /*   @PostMapping("/{id}")
     public void addRealEstate(@PathVariable ("id") Long ownerId, @RequestBody RealEstate realEstate){
-        realEstateService.addRealEstate(ownerId,realEstate);
-    }
+        realEstateService.(ownerId,realEstate);
+    }*/
 }

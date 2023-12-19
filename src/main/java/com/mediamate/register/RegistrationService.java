@@ -18,7 +18,7 @@ public class RegistrationService {
     String emailSubject = "Verification link";
 
     //Todo: Remember to change link after develop app on external server!!!
-    String linkVerification = "Link for verification account : http://localhost:8080/confirm?tokenKey=";
+    String linkVerification = "Link for verification account : http://localhost:8080/register/confirm?tokenKey=";
 
 
     @Autowired

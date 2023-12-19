@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/register")
 
 public class RegistrationController {
 
@@ -13,7 +14,7 @@ public class RegistrationController {
         this.registrationService = registrationService;
     }
 
-    @PostMapping("/register")
+    @PostMapping()
     public String register (@RequestBody RegistrationRequest registrationRequest){
         return registrationService.register(registrationRequest);
     }
