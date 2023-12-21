@@ -1,6 +1,6 @@
 package com.mediamate.flat;
 
-import com.mediamate.metervalue.MeterValue;
+import com.mediamate.meterValue.MeterValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +22,7 @@ public class Flat {
     private Long id;
     private Long realEstateId;
     private String renters;
+    private String phoneNumber;
     @ElementCollection
     @CollectionTable (name = "flat_meter_value_map", joinColumns = @JoinColumn(name="flatId"))
     @MapKeyColumn (name = "day")

@@ -1,6 +1,6 @@
-package com.mediamate.metervalue;
+package com.mediamate.meterValue;
 
-import com.mediamate.metervalue.water.Water;
+import com.mediamate.meterValue.water.Water;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

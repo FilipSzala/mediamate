@@ -36,7 +36,7 @@ public class LoginService {
             return "Main interface";
         }
         //Todo: Redirect to First Setup Controller - method create Owner
-        return "Settings controller";
+        return "First Setup Controller";
     }
 
 }

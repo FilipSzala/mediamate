@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,11 +24,11 @@ public class Owner {
     private String lastName;
     @OneToMany
     @JoinColumn(name="ownerId")
-    private Set<RealEstate> realEstates;
+    private List<RealEstate> realEstates;
 
     private LocalDate createDay = LocalDate.now();
 
-    public Owner(String firstName, String lastName, Set<RealEstate> realEstates) {
+    public Owner(String firstName, String lastName, List<RealEstate> realEstates) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.realEstates = realEstates;

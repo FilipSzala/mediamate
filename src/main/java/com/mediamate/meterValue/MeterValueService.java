@@ -1,4 +1,4 @@
-package com.mediamate.metervalue;
+package com.mediamate.meterValue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

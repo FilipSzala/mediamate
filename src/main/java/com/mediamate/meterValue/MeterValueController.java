@@ -1,10 +1,8 @@
-package com.mediamate.metervalue;
+package com.mediamate.meterValue;
 
-import com.mediamate.metervalue.MeterValue;
-import com.mediamate.metervalue.water.Water;
+import com.mediamate.meterValue.water.Water;
 import com.mediamate.flat.FlatService;
-import com.mediamate.metervalue.MeterValueService;
-import com.mediamate.metervalue.water.WaterService;
+import com.mediamate.meterValue.water.WaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

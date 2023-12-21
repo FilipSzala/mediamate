@@ -3,16 +3,13 @@ package com.mediamate.owner;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
-import com.mediamate.setting.OwnerRequest;
-import com.mediamate.setting.RealEstateRequest;
-import com.mediamate.user.User;
+import com.mediamate.initialSetup.request.OwnerRequest;
 import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class OwnerService {
@@ -29,7 +26,7 @@ public class OwnerService {
     }
 
     public void createOwner(OwnerRequest ownerRequest){
-        Set<RealEstate> realEstates = realEstateService.createEmptyRealEstate(ownerRequest.getRealEstateCount());
+       List<RealEstate> realEstates = realEstateService.createEmptyRealEstate(ownerRequest.getRealEstateCount());
         Owner owner = new Owner(
                 ownerRequest.getFirstName(),
                 ownerRequest.getLastName(),

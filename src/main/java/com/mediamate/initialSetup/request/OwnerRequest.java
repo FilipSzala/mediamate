@@ -1,4 +1,4 @@
-package com.mediamate.setting;
+package com.mediamate.initialSetup.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

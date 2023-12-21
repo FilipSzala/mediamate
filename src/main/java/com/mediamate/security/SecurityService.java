@@ -13,4 +13,8 @@ public class SecurityService {
         User user =(User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return user;
     }
+    public Long findOwnerIdBySession(){
+        return findUserBySession().getOwner().getOwnerId();
+    }
+
 }

@@ -1,7 +1,6 @@
+
 package com.mediamate.flat;
 
-import com.mediamate.flat.Flat;
-import com.mediamate.flat.FlatService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +16,7 @@ public class FlatController {
 
     @PostMapping("/{id}")
     public void addFlat (@PathVariable ("id") Long realEstateId, @RequestBody Flat flat){
-        flatService.addFlat(realEstateId,flat);
+        flatService.createFlat(realEstateId,flat);
     }
 
     @GetMapping ("")
@@ -27,3 +26,4 @@ public class FlatController {
 
 
 }
+

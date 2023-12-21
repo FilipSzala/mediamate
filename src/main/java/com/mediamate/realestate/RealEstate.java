@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,5 +23,5 @@ public class RealEstate {
     private String address;
     @OneToMany
     @JoinColumn(name="realEstateId")
-    Set<Flat> flats;
+    List<Flat> flats;
 }
