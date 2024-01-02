@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,7 +23,7 @@ public class ImageController {
 
 
 
-    @GetMapping(value = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
         Image image = imageService.getImageById(id).get();
         byte[] imageBytes = image.getImage().getBytes(1, (int) image.getImage().length());
@@ -33,7 +33,7 @@ public class ImageController {
                 .body(imageBytes);
     }
 
-    @GetMapping("/images")
+    @GetMapping()
     public ResponseEntity<String> getAllImages() {
         List<Image> images = imageService.getImages();
         String html = images.stream()
@@ -48,11 +48,8 @@ public class ImageController {
     //TODO: Remember to change default value for maximum picture size. (current 2 MB)
     @PostMapping()
     public ResponseEntity<?> createImage(@RequestParam("image") MultipartFile file) throws IOException, SQLException {
-        byte[] bytes = file.getBytes();
-        Blob blob = new javax.sql.rowset.serial.SerialBlob(bytes);
-        Image image = new Image();
-        image.setImage(blob);
-        imageService.createImage(image);
-        return ResponseEntity.ok().body("Image added");
-    }
-}
+        imageService.createImage(file);
+        return ResponseEntity
+                .ok()
+                .body("Image added");
+}}

@@ -1,4 +1,4 @@
-package com.mediamate.meterValue.water;
+package com.mediamate.meter.water;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

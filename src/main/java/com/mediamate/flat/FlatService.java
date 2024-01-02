@@ -1,14 +1,15 @@
 package com.mediamate.flat;
 
-import com.mediamate.meterValue.MeterValue;
+import com.mediamate.meter.Meter;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.FlatRequest;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -37,18 +38,18 @@ public class FlatService {
     public List <Flat> findFlatsByRealEstateId (Long realEstateId){
        return flatRepository.findByRealEstateId(realEstateId);
     }
-    public void updateFlat (Long flatId, Flat updatedFlat){
-        Flat flat = findFlatById(flatId);
-        flat.setRealEstateId(updatedFlat.getRealEstateId());
-        flat.setRenters(updatedFlat.getRenters());
-        flat.setMeterValues(updatedFlat.getMeterValues());
-        flatRepository.save(flat);
+    public void partiallyUpdateFlat(Long flatId, Flat updatedFlat){
+        Flat databaseFlat = findFlatById(flatId);
+        databaseFlat.setRealEstateId(updatedFlat.getRealEstateId());
+        databaseFlat.setRenters(updatedFlat.getRenters());
+        databaseFlat.setMeters(updatedFlat.getMeters());
+        flatRepository.save(databaseFlat);
     }
 
-    public void addMeterValueToMap (Long flatId, MeterValue meterValue){
+    public void addMeterToMap (Long flatId, Meter meter){
         Flat flat = findFlatById(flatId);
-        flat.getMeterValues().put(LocalDate.now(),meterValue);
-        updateFlat(flatId,flat);
+        flat.getMeters().put(YearMonth.now(), meter);
+        partiallyUpdateFlat(flatId,flat);
     }
 
     public List<Flat> findFlats (){
@@ -66,8 +67,7 @@ public class FlatService {
     }
 
     public void setupFlats(Long realEstateId, List<FlatRequest> flatRequests) {
-        RealEstate databaseRealEstate = realEstateService.findById(realEstateId).get();
-        RealEstate modifyRealEstate = databaseRealEstate;
+        RealEstate modifyRealEstate = realEstateService.findById(realEstateId).get();
         List <Flat> databaseFlats = findFlatsByRealEstateId(realEstateId);
         List <Flat> setupFlats = new ArrayList<>();
         IntStream.range(0,databaseFlats.size())
@@ -78,6 +78,6 @@ public class FlatService {
                     setupFlats.add(flat);
                 });
         modifyRealEstate.setFlats(setupFlats);
-        realEstateService.updateRealEstatePartially(databaseRealEstate,modifyRealEstate);
+        realEstateService.updateRealEstatePartially(realEstateId,modifyRealEstate);
     }
 }

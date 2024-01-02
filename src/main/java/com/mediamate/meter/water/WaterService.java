@@ -1,6 +1,6 @@
-package com.mediamate.meterValue.water;
+package com.mediamate.meter.water;
 
-import com.mediamate.meterValue.MeterValueService;
+import com.mediamate.meter.MeterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,17 +8,18 @@ import org.springframework.stereotype.Service;
 public class WaterService {
     @Autowired
     WaterRepository waterRepository;
-    MeterValueService meterValueService;
+    MeterService meterService;
     @Autowired
-    public WaterService(MeterValueService meterValueService) {
-        this.meterValueService = meterValueService;
+    public WaterService(MeterService meterService) {
+        this.meterService = meterService;
     }
 
-    public void  createWater (Water water){
+    public void  createWater (Water water, Long meterId){
         waterRepository.save(water);
+        meterService.addWaterToMeter(water,meterId);
     }
     public void updateWater (Long meterValueId, Water updatedWater){
-        Water water = meterValueService.findMeterById(meterValueId).getWater();
+        Water water = meterService.findMeterById(meterValueId).getWater();
         water.setColdWater(updatedWater.getColdWater());
         water.setHotWater(updatedWater.getHotWater());
         waterRepository.save(water);

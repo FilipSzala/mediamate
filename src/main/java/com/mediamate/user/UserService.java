@@ -42,6 +42,9 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         tokenService.createToken(user);
     }
+    public Optional<User> findById (Long userId){
+        return userRepository.findById(userId);
+    }
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -49,12 +52,13 @@ public class UserService implements UserDetailsService {
 
     public void enableUser (String tokenKey){
         Optional <Token> token = tokenService.findByKey(tokenKey);
-        User databaseUser=token.get().getUser();
+        Long  userId=token.get().getUser().getId();
         User modifyUser=token.get().getUser();
         modifyUser.setEnabled(true);
-        updateUserPartially(databaseUser,modifyUser);
+        updateUserPartially(userId,modifyUser);
     }
-    public void updateUserPartially(User databaseUser,User modifiedUser) {
+    public void updateUserPartially(Long userId,User modifiedUser) {
+        User databaseUser = findById(userId).orElseThrow();
         databaseUser.setEmail(modifiedUser.getEmail());
         databaseUser.setPassword(modifiedUser.getPassword());
         databaseUser.setEnabled(modifiedUser.getEnabled());
@@ -71,9 +75,9 @@ public class UserService implements UserDetailsService {
     }
 
     public void addOwner(Owner owner){
-        User databaseUser = securityService.findUserBySession();
+        Long userId = securityService.findUserBySession().getId();
         User modifyUser = securityService.findUserBySession();
         modifyUser.setOwner(owner);
-        updateUserPartially(databaseUser,modifyUser);
+        updateUserPartially(userId,modifyUser);
     }
 }

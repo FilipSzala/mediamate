@@ -56,7 +56,8 @@ public class RealEstateService {
                     realEstateRepository.save(realEstate);
                 });
     }
-    public void updateRealEstatePartially(RealEstate databaseRealEstate, RealEstate modifiedRealEstate) {
+    public void updateRealEstatePartially(Long realEstateId, RealEstate modifiedRealEstate) {
+        RealEstate databaseRealEstate = findById(realEstateId).orElseThrow();
         databaseRealEstate.setOwnerId(modifiedRealEstate.getOwnerId());
         databaseRealEstate.setAddress(modifiedRealEstate.getAddress());
         databaseRealEstate.setFlats(modifiedRealEstate.getFlats());

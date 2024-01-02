@@ -1,24 +1,34 @@
-package com.mediamate.meterValue;
+package com.mediamate.meter;
 
-import com.mediamate.meterValue.water.Water;
+import com.mediamate.image.Image;
+import com.mediamate.meter.water.Water;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class MeterValue {
+public class Meter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private double electricity;
     private double gas;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name ="waterId", referencedColumnName = "id")
     Water water;
+    @OneToMany
+    @JoinColumn(name = "materId")
+    List<Image> images;
+
+    public void setImages(Image image) {
+        images.add(image);
+    }
 }

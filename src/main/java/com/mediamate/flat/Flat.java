@@ -1,13 +1,13 @@
 package com.mediamate.flat;
 
-import com.mediamate.meterValue.MeterValue;
+import com.mediamate.meter.Meter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +27,6 @@ public class Flat {
     @CollectionTable (name = "flat_meter_value_map", joinColumns = @JoinColumn(name="flatId"))
     @MapKeyColumn (name = "day")
     @Column (name = "meter_value_id")
-    private Map <LocalDate, MeterValue> meterValues = new HashMap<>();
+    private Map <YearMonth, Meter> meters = new HashMap<>();
 
 }

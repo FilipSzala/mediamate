@@ -1,14 +1,11 @@
 package com.mediamate.login;
 
-import com.mediamate.owner.Owner;
 import com.mediamate.owner.OwnerService;
 import com.mediamate.security.SecurityService;
 import com.mediamate.user.User;
-import com.mediamate.user.UserRole;
 import com.mediamate.user.UserService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
