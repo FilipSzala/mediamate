@@ -4,6 +4,8 @@ import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.Image;
 import com.mediamate.image.ImageService;
+import com.mediamate.price.media.Media;
+import com.mediamate.price.media.MediaService;
 import com.mediamate.settlement.request.MeterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,13 @@ public class SettlementController {
     ImageService imageService;
     SettlementService settlementService;
     FlatService flatService;
+    MediaService mediaService;
     @Autowired
-    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService) {
+    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService,MediaService mediaService) {
         this.imageService = imageService;
         this.settlementService = settlementService;
         this.flatService = flatService;
+        this.mediaService = mediaService;
     }
 
     @GetMapping("/images")
@@ -49,9 +53,14 @@ public class SettlementController {
         return flatService.findFlatsByRealEstateId(realEstateId);
     }
 
-    @PatchMapping ("/meter")
+    @PostMapping ("/meter")
     public void setupMeter (@RequestBody MeterRequest meterRequest){
         settlementService.setupMeter(meterRequest);
+    }
+
+    @PostMapping("/price/media")
+    public void createMediaPrice (@RequestBody Media media){
+        mediaService.createMedia(media);
     }
 
 }

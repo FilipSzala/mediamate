@@ -9,6 +9,7 @@ import com.mediamate.meter.MeterService;
 import com.mediamate.meter.MeterType;
 import com.mediamate.meter.water.Water;
 import com.mediamate.meter.water.WaterService;
+import com.mediamate.price.media.Media;
 import com.mediamate.settlement.request.MeterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,20 @@ public class SettlementService {
         }
 
         Meter meter = flatService.findFlatById(flatId).getMeters().get(YearMonth.now());
+        
+        setImage(image,meter);
+        setMeterValueByType(meterRequest,meterType,meter);
+        
+        Long meterId = meter.getId();
+        
+        meterService.partiallyUpdateMeter(meterId,meter);
+    }
+    private void setImage (Image image,Meter meter){
         image.setMeterId(meter.getId());
         imageService.updateImagePartially(image.getId(),image);
+    }
+
+    private void setMeterValueByType(MeterRequest meterRequest, MeterType meterType, Meter meter) {
         if (isElectricityType(meterType)){
             meter.setElectricity(meterRequest.getMeterValue());
         }
@@ -62,30 +75,29 @@ public class SettlementService {
         if(isHotWaterType(meterType)){
             water.setHotWater(meterRequest.getMeterValue());
         }
-
-        meterService.partiallyUpdateMeter(meterId,meter);
     }
 
-    public boolean isMeterExistsInCurrentMonth(Long flatId){
+    private boolean isMeterExistsInCurrentMonth(Long flatId){
         Flat flat = flatService.findFlatById(flatId);
         return flat.getMeters().containsKey(YearMonth.now())?true:false;
     }
 
-    public boolean isWaterExists (Long meterId){
+    private boolean isWaterExists (Long meterId){
         Meter meter = meterService.findMeterById(meterId);
 
         return  meter.getWater()!=null?true:false;
     }
-    public boolean isElectricityType (MeterType type){
+    private boolean isElectricityType (MeterType type){
         return type.toString().equals("ELECTRICITY")? true:false;
     }
-    public boolean isGasType (MeterType type){
+    private boolean isGasType (MeterType type){
         return type.toString().equals("GAS")? true:false;
     }
-    public boolean isColdWaterType (MeterType type){
+    private boolean isColdWaterType (MeterType type){
         return  type.toString().equals("COLD_WATER")? true:false;
     }
-    public boolean isHotWaterType(MeterType type){
+    private boolean isHotWaterType(MeterType type){
         return type.toString().equals("HOT_WATER")? true:false;
     }
+
 }

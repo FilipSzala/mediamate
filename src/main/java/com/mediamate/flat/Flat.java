@@ -25,7 +25,7 @@ public class Flat {
     private String phoneNumber;
     @ElementCollection
     @CollectionTable (name = "flat_meter_value_map", joinColumns = @JoinColumn(name="flatId"))
-    @MapKeyColumn (name = "day")
+    @MapKeyColumn (name = "month")
     @Column (name = "meter_value_id")
     private Map <YearMonth, Meter> meters = new HashMap<>();
 
