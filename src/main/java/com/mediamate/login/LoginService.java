@@ -24,13 +24,13 @@ public class LoginService {
 
     public String redirect() {
         User user = securityService.findUserBySession();
-        if (!userService.isFlatOwner(user)){
-            //Todo: Redirect to main interface
+        if (!userService.isOwnerRealEstate(user)){
+            //Todo: Redirect to main interface (it is user or admin)
             return "Main interface";
         }
         if (userService.hasOwner(user)){
-            //Todo: Redirect to main interface
-            return "Main interface";
+            //Todo: Redirect to choose RealEstate after to main interface
+            return "/choose/realestate/";
         }
         //Todo: Redirect to First Setup Controller - method create Owner
         return "First Setup Controller";

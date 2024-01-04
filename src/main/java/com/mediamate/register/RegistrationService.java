@@ -42,7 +42,7 @@ public class RegistrationService {
             User user = new User(
                     registrationRequest.getEmail(),
                     registrationRequest.getPassword(),
-                    UserRole.FLAT_OWNER);
+                    UserRole.OWNER_REAL_ESTATE);
 
             userService.createUser(user);
 

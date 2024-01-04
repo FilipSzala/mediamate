@@ -4,6 +4,8 @@ import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.Image;
 import com.mediamate.image.ImageService;
+import com.mediamate.price.additionalCost.AdditionalCost;
+import com.mediamate.price.additionalCost.AdditionalCostService;
 import com.mediamate.price.media.Media;
 import com.mediamate.price.media.MediaService;
 import com.mediamate.settlement.request.MeterRequest;
@@ -21,12 +23,14 @@ public class SettlementController {
     SettlementService settlementService;
     FlatService flatService;
     MediaService mediaService;
+    AdditionalCostService additionalCostService;
     @Autowired
-    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService,MediaService mediaService) {
+    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService,MediaService mediaService,AdditionalCostService additionalCostService) {
         this.imageService = imageService;
         this.settlementService = settlementService;
         this.flatService = flatService;
         this.mediaService = mediaService;
+        this.additionalCostService = additionalCostService;
     }
 
     @GetMapping("/images")
@@ -58,9 +62,14 @@ public class SettlementController {
         settlementService.setupMeter(meterRequest);
     }
 
-    @PostMapping("/price/media")
+    @PostMapping("/media/price")
     public void createMediaPrice (@RequestBody Media media){
         mediaService.createMedia(media);
     }
+
+    /*@PostMapping("/additional-cost/price")
+        public void createAdditionalCost(@RequestBody AdditionalCost additionalCost){
+        additionalCostService.createAdditionalCost(additionalCost);
+    }}*/
 
 }

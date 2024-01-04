@@ -17,9 +17,7 @@ public class MediaService {
     }
 
     public void createMedia(Media media){
-        mediaRepository.save(media);
-        priceService.createPrice(new Price(
-                media
-        ));
+        Price price = new Price(media);
+        priceService.createPrice(price);
     }
 }

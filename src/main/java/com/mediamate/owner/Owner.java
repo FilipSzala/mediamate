@@ -22,7 +22,7 @@ public class Owner {
     private Long ownerId;
     private String firstName;
     private String lastName;
-    @OneToMany
+    @OneToMany (fetch = FetchType.EAGER)
     @JoinColumn(name="ownerId")
     private List<RealEstate> realEstates;
 

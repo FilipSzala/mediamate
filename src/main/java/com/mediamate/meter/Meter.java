@@ -23,10 +23,10 @@ public class Meter {
     private double gas;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name ="waterId", referencedColumnName = "id")
-    Water water;
+    private Water water;
     @OneToMany
     @JoinColumn(name = "materId")
-    List<Image> images;
+    private List<Image> images;
 
     public void setImages(Image image) {
         images.add(image);

@@ -67,8 +67,8 @@ public class UserService implements UserDetailsService {
         userRepository.save(databaseUser);
     }
 
-    public Boolean isFlatOwner(User user){
-        return user.getUserRole()==UserRole.FLAT_OWNER? true:false;
+    public Boolean isOwnerRealEstate(User user){
+        return user.getUserRole()==UserRole.OWNER_REAL_ESTATE ? true:false;
     }
     public Boolean hasOwner(User user){
         return user.getOwner()!=null?true:false;

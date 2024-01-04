@@ -1,5 +1,5 @@
 package com.mediamate.user;
 
 public enum UserRole {
-    FLAT_OWNER,USER,ADMIN
+    OWNER_REAL_ESTATE,USER,ADMIN
 }
