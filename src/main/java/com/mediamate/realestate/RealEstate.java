@@ -1,6 +1,7 @@
 package com.mediamate.realestate;
 
 import com.mediamate.flat.Flat;
+import com.mediamate.cost.Cost;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -24,4 +24,7 @@ public class RealEstate {
     @OneToMany
     @JoinColumn(name="realEstateId")
     List<Flat> flats;
+    @JoinColumn (name = "realEstateId")
+    @OneToMany
+    List<Cost> costs;
 }

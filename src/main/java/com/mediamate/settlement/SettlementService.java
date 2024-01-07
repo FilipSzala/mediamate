@@ -9,7 +9,6 @@ import com.mediamate.meter.MeterService;
 import com.mediamate.meter.MeterType;
 import com.mediamate.meter.water.Water;
 import com.mediamate.meter.water.WaterService;
-import com.mediamate.price.media.Media;
 import com.mediamate.settlement.request.MeterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

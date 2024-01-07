@@ -1,4 +1,4 @@
-package com.mediamate.price.additionalCost;
+package com.mediamate.cost.additionalCost;
 
 public enum ChargeType {
     FLAT,PERSON

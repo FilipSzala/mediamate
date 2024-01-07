@@ -1,4 +1,4 @@
-package com.mediamate.price.media;
+package com.mediamate.cost.additionalCost;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,12 +14,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Media {
-
+public class AdditionalCost {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double gas;
-    private double electricity;
-    private double water;
+    private Long priceId;
+    private String name;
+    private Double cost;
+    private String timePeriod;
+    private ChargeType chargeType;
+
 }

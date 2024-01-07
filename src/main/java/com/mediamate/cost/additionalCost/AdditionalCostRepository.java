@@ -1,4 +1,4 @@
-package com.mediamate.price.additionalCost;
+package com.mediamate.cost.additionalCost;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

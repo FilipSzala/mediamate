@@ -25,7 +25,7 @@ public class Meter {
     @JoinColumn(name ="waterId", referencedColumnName = "id")
     private Water water;
     @OneToMany
-    @JoinColumn(name = "materId")
+    @JoinColumn(name = "meterId")
     private List<Image> images;
 
     public void setImages(Image image) {

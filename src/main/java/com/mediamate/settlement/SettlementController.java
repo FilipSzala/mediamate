@@ -1,13 +1,13 @@
 package com.mediamate.settlement;
 
+import com.mediamate.cost.additionalCost.AdditionalCost;
+import com.mediamate.cost.additionalCost.AdditionalCostService;
+import com.mediamate.cost.mediaCost.MediaCostService;
+import com.mediamate.cost.mediaCost.mediaCost;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.Image;
 import com.mediamate.image.ImageService;
-import com.mediamate.price.additionalCost.AdditionalCost;
-import com.mediamate.price.additionalCost.AdditionalCostService;
-import com.mediamate.price.media.Media;
-import com.mediamate.price.media.MediaService;
 import com.mediamate.settlement.request.MeterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +22,14 @@ public class SettlementController {
     ImageService imageService;
     SettlementService settlementService;
     FlatService flatService;
-    MediaService mediaService;
+    MediaCostService mediaCostService;
     AdditionalCostService additionalCostService;
     @Autowired
-    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService,MediaService mediaService,AdditionalCostService additionalCostService) {
+    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService) {
         this.imageService = imageService;
         this.settlementService = settlementService;
         this.flatService = flatService;
-        this.mediaService = mediaService;
+        this.mediaCostService = mediaCostService;
         this.additionalCostService = additionalCostService;
     }
 
@@ -62,14 +62,12 @@ public class SettlementController {
         settlementService.setupMeter(meterRequest);
     }
 
-    @PostMapping("/media/price")
-    public void createMediaPrice (@RequestBody Media media){
-        mediaService.createMedia(media);
+    @PostMapping("/media-cost")
+    public void createMediaCost (@RequestBody mediaCost mediaCost){
+        mediaCostService.createMedia(mediaCost);
     }
-
-    /*@PostMapping("/additional-cost/price")
+    @PostMapping("/additional-cost")
         public void createAdditionalCost(@RequestBody AdditionalCost additionalCost){
         additionalCostService.createAdditionalCost(additionalCost);
-    }}*/
-
+    }
 }

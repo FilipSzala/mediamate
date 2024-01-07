@@ -1,14 +1,14 @@
-package com.mediamate.price;
+package com.mediamate.cost;
 
-import com.mediamate.price.additionalCost.AdditionalCost;
-import com.mediamate.price.media.Media;
+import com.mediamate.cost.additionalCost.AdditionalCost;
+import com.mediamate.cost.mediaCost.mediaCost;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -16,19 +16,19 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
-public class Price {
+public class Cost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long realEstateId;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name ="mediaPriceId", referencedColumnName = "id")
-    private Media mediaPrice;
+    private mediaCost mediaCostPrice;
     @OneToMany
     @JoinColumn(name = "priceId")
     private List<AdditionalCost> additionalsCost;
-    private YearMonth createdMonth=YearMonth.now();
-
-    public Price(Media mediaPrice) {
-        this.mediaPrice = mediaPrice;
+    private LocalDate createdDay=LocalDate.now();
+    public Cost(mediaCost mediaCostPrice) {
+        this.mediaCostPrice = mediaCostPrice;
     }
 }

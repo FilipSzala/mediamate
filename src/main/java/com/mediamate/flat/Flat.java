@@ -28,5 +28,4 @@ public class Flat {
     @MapKeyColumn (name = "month")
     @Column (name = "meter_value_id")
     private Map <YearMonth, Meter> meters = new HashMap<>();
-
 }

@@ -2,6 +2,8 @@ package com.mediamate.security;
 
 import com.mediamate.owner.Owner;
 import com.mediamate.realestate.RealEstate;
+import com.mediamate.realestate.RealEstateDto;
+import com.mediamate.realestate.RealEstateMapper;
 import com.mediamate.user.User;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,10 +23,11 @@ public class SecurityService {
         return findUserBySession().getOwner().getOwnerId();
     }
 
-    public List<RealEstate> getRealEstatesBySession() {
+    public List<RealEstateDto> getRealEstatesDtoBySession() {
         Owner owner = findOwnerBySession();
         List <RealEstate> realEstates = owner.getRealEstates();
-        return realEstates;
+        List <RealEstateDto> realEstateDtos = RealEstateMapper.mapToRealEstateDtos(realEstates);
+        return realEstateDtos;
     }
 
     private Owner findOwnerBySession() {

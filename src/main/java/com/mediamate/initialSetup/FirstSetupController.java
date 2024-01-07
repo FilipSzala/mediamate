@@ -9,6 +9,7 @@ import com.mediamate.initialSetup.request.FlatRequest;
 import com.mediamate.initialSetup.request.OwnerRequest;
 import com.mediamate.initialSetup.request.RealEstateRequest;
 import com.mediamate.security.SecurityService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class FirstSetupController {
     FlatService flatService;
 
     SecurityService securityService;
+    HttpSession httpSession;
     @Autowired
     public FirstSetupController(OwnerService ownerService,RealEstateService realEstateService,FlatService flatService, SecurityService securityService) {
         this.ownerService = ownerService;
@@ -38,6 +40,7 @@ public class FirstSetupController {
     }
     @GetMapping ("/real-estates")
     public List<RealEstate> getRealEstates(){
+        httpSession.getAttributeNames();
         Long ownerId = securityService.findOwnerIdBySession();
         return  realEstateService.findAllByOwnerId(ownerId);
     }

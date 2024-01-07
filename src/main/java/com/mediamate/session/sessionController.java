@@ -1,6 +1,7 @@
 package com.mediamate.session;
 
 import com.mediamate.realestate.RealEstate;
+import com.mediamate.realestate.RealEstateDto;
 import com.mediamate.security.SecurityService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ public class sessionController {
         this.securityService = securityService;
     }
 
-    @GetMapping("/realestate")
-        public List<RealEstate> allRealEstatesLogInUser(){
-        return securityService.getRealEstatesBySession();
+    @GetMapping("/real-estate")
+        public List<RealEstateDto> allRealEstatesDtoLogInUser(){
+        return securityService.getRealEstatesDtoBySession();
     }
-    @PostMapping("/session/realestate")
+    @PostMapping("/choose-real-estate")
     public void chooseRealEstate(@RequestParam Long realEstateId, HttpSession session) {
         session.setAttribute("chosenRealEstateId", realEstateId);
     }
