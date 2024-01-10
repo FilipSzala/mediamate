@@ -7,9 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -23,9 +22,10 @@ public class Flat {
     private Long realEstateId;
     private String renters;
     private String phoneNumber;
-    @ElementCollection
-    @CollectionTable (name = "flat_meter_value_map", joinColumns = @JoinColumn(name="flatId"))
-    @MapKeyColumn (name = "month")
-    @Column (name = "meter_value_id")
-    private Map <YearMonth, Meter> meters = new HashMap<>();
+    @OneToMany(mappedBy = "flat")
+    private List<Meter> meters = new ArrayList<>();
+
+    public void addMeterToMetersList (Meter meter){
+        meters.add(meter);
+    }
 }

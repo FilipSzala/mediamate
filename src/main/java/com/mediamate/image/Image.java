@@ -1,5 +1,6 @@
 package com.mediamate.image;
 
+import com.mediamate.meter.Meter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,9 +18,12 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private long meterId;
+    @ManyToOne
+    @JoinColumn(name = "meterId", referencedColumnName = "id")
+    private Meter meter;
     @Lob
     private Blob image;
+    private ImageType imageType;
     private LocalDate createDay = LocalDate.now();
 
     public void setBlob(MultipartFile file) throws IOException, SQLException {

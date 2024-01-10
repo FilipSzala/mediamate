@@ -13,7 +13,9 @@ import com.mediamate.settlement.request.MeterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SettlementService {
@@ -31,15 +33,15 @@ public class SettlementService {
     }
     public void setupMeter(MeterRequest meterRequest) {
         Long flatId = meterRequest.getFlatId();
+        Flat flat = flatService.findFlatById(flatId);
         MeterType meterType = meterRequest.getMeterType();
         Image image = imageService.getImageById(meterRequest.getImageId()).orElseThrow();
 
         if(!isMeterExistsInCurrentMonth(flatId)){
-            meterService.createMeter(new Meter(),flatId);
+            meterService.createMeter(new Meter(),flat);
         }
-
-        Meter meter = flatService.findFlatById(flatId).getMeters().get(YearMonth.now());
-        
+        List <Meter> meters = flatService.findFlatById(flatId).getMeters();
+        Meter meter = getMeterInCurrentMonth(meters).get();
         setImage(image,meter);
         setMeterValueByType(meterRequest,meterType,meter);
         
@@ -48,7 +50,7 @@ public class SettlementService {
         meterService.partiallyUpdateMeter(meterId,meter);
     }
     private void setImage (Image image,Meter meter){
-        image.setMeterId(meter.getId());
+        image.setMeter(meter);
         imageService.updateImagePartially(image.getId(),image);
     }
 
@@ -78,7 +80,19 @@ public class SettlementService {
 
     private boolean isMeterExistsInCurrentMonth(Long flatId){
         Flat flat = flatService.findFlatById(flatId);
-        return flat.getMeters().containsKey(YearMonth.now())?true:false;
+        List<Meter> meters = flat.getMeters();
+        Optional <Meter> foundMeter=getMeterInCurrentMonth(meters);
+        return foundMeter.isPresent()? true:false;
+    }
+    private Optional<Meter> getMeterInCurrentMonth (List<Meter> meters){
+        Optional <Meter> foundMeter= meters.stream()
+                .filter(meter -> isSameYearAndMonth(meter.getCreatedAt(),LocalDate.now()))
+                .findFirst();
+        return foundMeter;
+    }
+
+    private boolean isSameYearAndMonth(LocalDate dateInDB, LocalDate currentDate) {
+        return dateInDB.getYear() == currentDate.getYear() && dateInDB.getMonth() == currentDate.getMonth();
     }
 
     private boolean isWaterExists (Long meterId){

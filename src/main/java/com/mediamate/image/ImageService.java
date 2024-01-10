@@ -1,6 +1,11 @@
 package com.mediamate.image;
 
+import com.mediamate.meter.MeterType;
 import com.mediamate.realestate.RealEstate;
+import com.mediamate.realestate.RealEstateDto;
+import com.mediamate.realestate.RealEstateRepository;
+import com.mediamate.security.SecurityService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,16 +21,22 @@ import java.util.Optional;
 public class ImageService {
     @Autowired
     ImageRepository imageRepository;
-    public void createImage (MultipartFile file) throws SQLException, IOException {
+    @Autowired
+    RealEstateRepository realEstateRepository;
+
+    @Autowired
+    SecurityService securityService;
+    public void createImage (MultipartFile file,ImageType imageType) throws SQLException, IOException {
         Image image = new Image();
         image.setBlob(file);
+        image.setImageType(imageType);
         imageRepository.save(image);
     }
-    public void createImages (List<MultipartFile> files){
+    public void createImages (List<MultipartFile> files, ImageType imageType){
         files.stream()
                 .forEach(file -> {
                     try {
-                        createImage(file);
+                        createImage(file, imageType);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     } catch (IOException e) {
@@ -34,16 +45,29 @@ public class ImageService {
                 });
     }
 
+
+
+
+
+
+
+
+
     public void updateImagePartially(Long imageId, Image modifiedImage) {
         Image databaseImage = getImageById(imageId).orElseThrow();
-        databaseImage.setMeterId(modifiedImage.getMeterId());
+        databaseImage.setMeter(modifiedImage.getMeter());
         databaseImage.setImage(modifiedImage.getImage());
         databaseImage.setCreateDay(modifiedImage.getCreateDay());
         imageRepository.save(databaseImage);
 
     }
 
-    public List<Image> getImages (){
+/*    public List<Image> getImages (){
+        return realEstateRepository.findAllImagesByRealEstateId(2L);
+    }*/
+    public List<Image> getImagesLogInUserByType (){
+        List<RealEstateDto> realEstateDtos = securityService.getRealEstatesDtoBySession();
+
         return imageRepository.findAll();
     }
 

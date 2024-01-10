@@ -8,6 +8,7 @@ import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.Image;
 import com.mediamate.image.ImageService;
+import com.mediamate.image.ImageType;
 import com.mediamate.settlement.request.MeterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class SettlementController {
     FlatService flatService;
     MediaCostService mediaCostService;
     AdditionalCostService additionalCostService;
+
     @Autowired
     public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService) {
         this.imageService = imageService;
@@ -33,15 +35,15 @@ public class SettlementController {
         this.additionalCostService = additionalCostService;
     }
 
-    @GetMapping("/images")
-    public List<Image> getAllImages (){
+/*    @GetMapping("/images")
+    public List<Image> getImagesWithMeterType (){
         return imageService.getImages();
-    }
+    }*/
 
     @PostMapping("/images")
 
-    public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files){
-        imageService.createImages(files);
+    public ResponseEntity<?> createImagesWithMeterType(@RequestParam("images") List<MultipartFile> files){
+        imageService.createImages(files, ImageType.METER);
         return ResponseEntity
                 .ok()
                 .body("Images added");
@@ -69,5 +71,12 @@ public class SettlementController {
     @PostMapping("/additional-cost")
         public void createAdditionalCost(@RequestBody AdditionalCost additionalCost){
         additionalCostService.createAdditionalCost(additionalCost);
+    }
+    @PostMapping(value = "/images", params = "imageType")
+    public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files,@RequestParam ImageType imageType){
+        imageService.createImages(files,imageType);
+        return ResponseEntity
+                .ok()
+                .body("Images added");
     }
 }

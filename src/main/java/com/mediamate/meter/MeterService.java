@@ -1,5 +1,6 @@
 package com.mediamate.meter;
 
+import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.meter.water.Water;
 import lombok.NoArgsConstructor;
@@ -17,9 +18,10 @@ public class MeterService {
         this.flatService = flatService;
     }
 
-    public void createMeter(Meter meter, Long flatId){
+    public void createMeter(Meter meter, Flat flat){
+        meter.setFlat(flat);
         meterRepository.save(meter);
-        flatService.addMeterToMap(flatId,meter);
+        flatService.addMeterToFlat(flat,meter);
     }
     public Meter findMeterById (Long id){
         return meterRepository.findById(id).orElseThrow();
@@ -36,6 +38,7 @@ public class MeterService {
         databaseMeter.setElectricity(updatedMeter.getElectricity());
         databaseMeter.setGas(updatedMeter.getGas());
         databaseMeter.setWater(updatedMeter.getWater());
+        databaseMeter.setFlat(updatedMeter.getFlat());
         meterRepository.save(databaseMeter);
     }
 }

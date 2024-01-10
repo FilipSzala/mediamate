@@ -33,7 +33,7 @@ public class ImageController {
                 .body(imageBytes);
     }
 
-    @GetMapping()
+  /*  @GetMapping()
     public ResponseEntity<String> getAllImages() {
         List<Image> images = imageService.getImages();
         String html = images.stream()
@@ -43,12 +43,12 @@ public class ImageController {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
                 .body(html);
-    }
+    }*/
 
     //TODO: Remember to change default value for maximum picture size. (current 2 MB)
     @PostMapping()
     public ResponseEntity<?> createImage(@RequestParam("image") MultipartFile file) throws IOException, SQLException {
-        imageService.createImage(file);
+        imageService.createImage(file,null);
         return ResponseEntity
                 .ok()
                 .body("Image added");

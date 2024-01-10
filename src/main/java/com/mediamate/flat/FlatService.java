@@ -46,10 +46,9 @@ public class FlatService {
         flatRepository.save(databaseFlat);
     }
 
-    public void addMeterToMap (Long flatId, Meter meter){
-        Flat flat = findFlatById(flatId);
-        flat.getMeters().put(YearMonth.now(), meter);
-        partiallyUpdateFlat(flatId,flat);
+    public void addMeterToFlat (Flat flat, Meter meter){
+        flat.addMeterToMetersList(meter);
+        partiallyUpdateFlat(flat.getId(),flat);
     }
 
     public List<Flat> findFlats (){

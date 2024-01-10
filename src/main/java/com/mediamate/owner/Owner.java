@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -22,7 +21,7 @@ public class Owner {
     private Long ownerId;
     private String firstName;
     private String lastName;
-    @OneToMany (fetch = FetchType.EAGER)
+    @OneToMany
     @JoinColumn(name="ownerId")
     private List<RealEstate> realEstates;
 
