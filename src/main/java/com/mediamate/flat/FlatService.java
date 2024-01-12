@@ -5,6 +5,7 @@ import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.FlatRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,18 +30,20 @@ public class FlatService {
     }
 
     public void createFlat (Long realEstateId, Flat flat){
-        flat.setRealEstateId(realEstateId);
+        RealEstate realEstate = realEstateService.findById(realEstateId).get();
+        flat.setRealEstate(realEstate);
         flatRepository.save(flat);
     }
     public Flat findFlatById(Long flatId){
-        return flatRepository.findById(flatId).orElseThrow();
+        return
+                flatRepository.findById(flatId).orElseThrow();
     }
     public List <Flat> findFlatsByRealEstateId (Long realEstateId){
        return flatRepository.findByRealEstateId(realEstateId);
     }
     public void partiallyUpdateFlat(Long flatId, Flat updatedFlat){
         Flat databaseFlat = findFlatById(flatId);
-        databaseFlat.setRealEstateId(updatedFlat.getRealEstateId());
+        databaseFlat.setRealEstate(updatedFlat.getRealEstate());
         databaseFlat.setRenters(updatedFlat.getRenters());
         databaseFlat.setMeters(updatedFlat.getMeters());
         flatRepository.save(databaseFlat);

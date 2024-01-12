@@ -18,6 +18,7 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private Long realEstateId;
     @ManyToOne
     @JoinColumn(name = "meterId", referencedColumnName = "id")
     private Meter meter;

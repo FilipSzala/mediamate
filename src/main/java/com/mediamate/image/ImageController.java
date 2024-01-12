@@ -1,6 +1,9 @@
 package com.mediamate.image;
 
 
+import com.mediamate.YearMonthResult;
+import com.mediamate.image.request.ImageRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,22 @@ import java.util.stream.Collectors;
 public class ImageController {
     @Autowired
     private ImageService imageService;
+    @GetMapping ("/types-and-dates")
+        public Map<String,Object> getImageTypeAndDistinctDates (HttpSession httpSession){
+            Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
+            List<YearMonthResult> dates = imageService.getAllDistinctYearMonthDate(realEstateId);
+            Map imageTypeAndDistincDates =new HashMap<String,Object>();
+            imageTypeAndDistincDates.put("imageType",ImageType.values());
+            imageTypeAndDistincDates.put("distinctDates",dates);
+            return imageTypeAndDistincDates;
+        }
 
+        @GetMapping("/filter-by-date-and-type")
+        public List<Image> getImagesByTypeAndDate(HttpSession httpSession, @RequestBody ImageRequest imageRequest){
+            Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
+            List<Image> images = imageService.getImagesByRealEstateIdAndTypeAndDate(realEstateId,imageRequest);
+            return images;
+        }
 
 
     @GetMapping("/{id}")
@@ -33,22 +51,11 @@ public class ImageController {
                 .body(imageBytes);
     }
 
-  /*  @GetMapping()
-    public ResponseEntity<String> getAllImages() {
-        List<Image> images = imageService.getImages();
-        String html = images.stream()
-                .map(image -> "<img src='/image/" + image.getId() + "'/>")
-                .collect(Collectors.joining("<br>"));
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
-    }*/
 
     //TODO: Remember to change default value for maximum picture size. (current 2 MB)
     @PostMapping()
-    public ResponseEntity<?> createImage(@RequestParam("image") MultipartFile file) throws IOException, SQLException {
-        imageService.createImage(file,null);
+    public ResponseEntity<?> createImage(@RequestParam("image") MultipartFile file, HttpSession httpSession) throws IOException, SQLException {
+        imageService.createImage(file,null, httpSession);
         return ResponseEntity
                 .ok()
                 .body("Image added");

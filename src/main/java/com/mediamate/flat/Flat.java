@@ -1,6 +1,7 @@
 package com.mediamate.flat;
 
 import com.mediamate.meter.Meter;
+import com.mediamate.realestate.RealEstate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,9 @@ public class Flat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long realEstateId;
+    @ManyToOne
+    @JoinColumn(name = "realEstateId", referencedColumnName = "id")
+    private RealEstate realEstate;
     private String renters;
     private String phoneNumber;
     @OneToMany(mappedBy = "flat")

@@ -6,10 +6,9 @@ import com.mediamate.cost.mediaCost.MediaCostService;
 import com.mediamate.cost.mediaCost.mediaCost;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
-import com.mediamate.image.Image;
-import com.mediamate.image.ImageService;
-import com.mediamate.image.ImageType;
+import com.mediamate.image.*;
 import com.mediamate.settlement.request.MeterRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,8 @@ public class SettlementController {
     MediaCostService mediaCostService;
     AdditionalCostService additionalCostService;
 
+
+
     @Autowired
     public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService) {
         this.imageService = imageService;
@@ -35,18 +36,22 @@ public class SettlementController {
         this.additionalCostService = additionalCostService;
     }
 
-/*    @GetMapping("/images")
-    public List<Image> getImagesWithMeterType (){
-        return imageService.getImages();
-    }*/
-
+    //Methods in this class depend on Real Estate's session.Therefore, if I coded method named "getFlats" in means that this method returns
+    //all Flats by realEstateId from session.
     @PostMapping("/images")
 
-    public ResponseEntity<?> createImagesWithMeterType(@RequestParam("images") List<MultipartFile> files){
-        imageService.createImages(files, ImageType.METER);
+    public ResponseEntity<?> createImagesWithMeterType(@RequestParam("images") List<MultipartFile> files,HttpSession httpSession){
+        imageService.createImages(files, ImageType.METER,httpSession);
         return ResponseEntity
                 .ok()
                 .body("Images added");
+    }
+
+   @GetMapping("/images")
+    public List<ImageDto> getImagesWithMeterType (HttpSession httpSession){
+        List<Image> images = imageService.getImagesByRealEstateIdAndImageTypeInCurrentDay(httpSession,ImageType.METER);
+        List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
+        return imageDtos;
     }
 
     @DeleteMapping("/image/{imageId}")
@@ -55,12 +60,14 @@ public class SettlementController {
     }
 
     @GetMapping("/flats")
-    public List<Flat> getFlatsByRealEstateId (@RequestParam Long realEstateId){
+    public List<Flat> getFlats(HttpSession httpSession){
+        Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         return flatService.findFlatsByRealEstateId(realEstateId);
     }
 
     @PostMapping ("/meter")
-    public void setupMeter (@RequestBody MeterRequest meterRequest){
+    public void setupMeter (
+            @RequestBody MeterRequest meterRequest){
         settlementService.setupMeter(meterRequest);
     }
 
@@ -73,8 +80,8 @@ public class SettlementController {
         additionalCostService.createAdditionalCost(additionalCost);
     }
     @PostMapping(value = "/images", params = "imageType")
-    public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files,@RequestParam ImageType imageType){
-        imageService.createImages(files,imageType);
+    public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files,@RequestParam ImageType imageType,HttpSession httpSession){
+        imageService.createImages(files,imageType,httpSession);
         return ResponseEntity
                 .ok()
                 .body("Images added");

@@ -13,7 +13,4 @@ import java.util.Set;
 @Repository
 public interface RealEstateRepository extends JpaRepository<RealEstate,Long> {
     List<RealEstate> findByOwnerId(Long id);
-
-   /* @Query("SELECT i FROM Image i WHERE i.meter.flat.realEstate.id = :realEstateId")
-    List<Image> findAllImagesByRealEstateId(@Param("realEstateId") Long realEstateId);*/
 }
