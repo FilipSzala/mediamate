@@ -3,26 +3,31 @@ package com.mediamate.image;
 
 import com.mediamate.YearMonthResult;
 import com.mediamate.image.request.ImageRequest;
+import com.mediamate.settlement.SettlementService;
+import com.mediamate.settlement.request.MeterRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/images")
 
 public class ImageController {
-    @Autowired
     private ImageService imageService;
+    SettlementService settlementService;
+    @Autowired
+    public ImageController(ImageService imageService, SettlementService settlementService) {
+        this.imageService = imageService;
+        this.settlementService = settlementService;
+    }
+
     @GetMapping ("/types-and-dates")
         public Map<String,Object> getImageTypeAndDistinctDates (HttpSession httpSession){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
@@ -33,13 +38,37 @@ public class ImageController {
             return imageTypeAndDistincDates;
         }
 
-        @GetMapping("/filter-by-date-and-type")
+        @GetMapping("/by-date-and-type")
         public List<Image> getImagesByTypeAndDate(HttpSession httpSession, @RequestBody ImageRequest imageRequest){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-            List<Image> images = imageService.getImagesByRealEstateIdAndTypeAndDate(realEstateId,imageRequest);
+            List<Image> images = imageService.getImagesByTypeAndDate(realEstateId,imageRequest);
             return images;
         }
+        @PostMapping()
+        public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files,HttpSession httpSession){
+            imageService.createImages(files,null,httpSession);
+            return ResponseEntity
+                    .ok()
+                    .body("Images added");
+        }
+         @GetMapping()
+        public List<ImageDto> getImagesWithoutType (HttpSession httpSession){
+        Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
+        List<Image> images = imageService.getImagesWithoutTypeInCurrentDay(realEstateId);
+        List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
+        return imageDtos;
+    }
 
+        @PostMapping("/meter")
+        public ResponseEntity<String> setupMeterWithoutConfirm(@RequestBody MeterRequest meterRequest) {
+        String response = settlementService.redirectForSetupMeter(meterRequest,false);
+        return ResponseEntity.ok(response);
+        }
+         @PostMapping("/meter-with-confirm")
+        public ResponseEntity<String> setupMeterWithConfirm() {
+        String response = settlementService.redirectForSetupMeter(new MeterRequest(),true);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
@@ -50,13 +79,4 @@ public class ImageController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(imageBytes);
     }
-
-
-    //TODO: Remember to change default value for maximum picture size. (current 2 MB)
-    @PostMapping()
-    public ResponseEntity<?> createImage(@RequestParam("image") MultipartFile file, HttpSession httpSession) throws IOException, SQLException {
-        imageService.createImage(file,null, httpSession);
-        return ResponseEntity
-                .ok()
-                .body("Image added");
-}}
+}

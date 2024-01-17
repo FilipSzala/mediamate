@@ -1,5 +1,8 @@
 package com.mediamate;
 
+import lombok.Getter;
+
+@Getter
 public class YearMonthResult {
     public int year;
     public int month;

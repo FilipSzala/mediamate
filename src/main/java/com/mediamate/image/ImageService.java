@@ -2,7 +2,6 @@ package com.mediamate.image;
 
 import com.mediamate.YearMonthResult;
 import com.mediamate.image.request.ImageRequest;
-import com.mediamate.realestate.RealEstateDto;
 import com.mediamate.realestate.RealEstateRepository;
 import com.mediamate.security.SecurityService;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,17 +55,21 @@ public class ImageService {
 
     }
 
-  public List<Image> getImagesByRealEstateIdAndImageTypeInCurrentDay (HttpSession httpSession, ImageType imageType){
+  public List<Image> getImagesByImageTypeInCurrentDay(HttpSession httpSession, ImageType imageType){
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         List<Image> images = imageRepository.findImagesByRealEstateIdAndImageTypeForCurrentDay(realEstateId,imageType,LocalDate.now());
         return images;
     }
-    public  List<Image> getImagesByRealEstateIdAndTypeAndDate(Long realEstateId, ImageRequest imageRequest){
+    public  List<Image> getImagesByTypeAndDate(Long realEstateId, ImageRequest imageRequest){
         List<Image> images = imageRepository.findImagesByRealEstateIdAndImageTypeAndYearMonth(
                 realEstateId,
                 imageRequest.getImageType(),
                 imageRequest.getYear(),
                 imageRequest.getMonth());
+        return images;
+    }
+    public List<Image> getImagesWithoutTypeInCurrentDay (Long realEstateId){
+        List<Image> images = imageRepository.findImagesWithoutTypeByRealEstateId(realEstateId);
         return images;
     }
 

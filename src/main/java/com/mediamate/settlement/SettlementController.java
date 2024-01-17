@@ -49,7 +49,7 @@ public class SettlementController {
 
    @GetMapping("/images")
     public List<ImageDto> getImagesWithMeterType (HttpSession httpSession){
-        List<Image> images = imageService.getImagesByRealEstateIdAndImageTypeInCurrentDay(httpSession,ImageType.METER);
+        List<Image> images = imageService.getImagesByImageTypeInCurrentDay(httpSession,ImageType.METER);
         List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
         return imageDtos;
     }

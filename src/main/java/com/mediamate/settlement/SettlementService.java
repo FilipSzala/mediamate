@@ -1,5 +1,6 @@
 package com.mediamate.settlement;
 
+import com.mediamate.YearMonthResult;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.Image;
@@ -23,6 +24,7 @@ public class SettlementService {
     private final MeterService meterService;
     private final WaterService waterService;
     private final ImageService imageService;
+    private MeterRequest meterRequestFromMemory;
 
     @Autowired
     public SettlementService(MeterService meterService, WaterService waterService, FlatService flatService, ImageService imageService) {
@@ -37,7 +39,8 @@ public class SettlementService {
         MeterType meterType = meterRequest.getMeterType();
         Image image = imageService.getImageById(meterRequest.getImageId()).orElseThrow();
 
-        if(!isMeterExistsInCurrentMonth(flatId)){
+
+        if(!doesMeterExistInCurrentMonth(flatId)){
             meterService.createMeter(new Meter(),flat);
         }
         List <Meter> meters = flatService.findFlatById(flatId).getMeters();
@@ -48,6 +51,20 @@ public class SettlementService {
         Long meterId = meter.getId();
         
         meterService.partiallyUpdateMeter(meterId,meter);
+    }
+
+    public String redirectForSetupMeter(MeterRequest meterRequestFromUser, Boolean userConfirmationReceived) {
+        MeterRequest meterRequest = meterRequestFromUser.isEmpty()? meterRequestFromMemory:meterRequestFromUser;
+        Long flatId = meterRequest.getFlatId();
+        YearMonthResult yearMonthResult = meterRequest.getYearMonthResult();
+        List<Meter> meters = meterService.getMetersByFlatIdAndYearMonth(flatId, yearMonthResult);
+        MeterType meterType = meterRequest.getMeterType();
+        if(doMetersExistByYearAndMonth(flatId, yearMonthResult) && !isMeterTypeValueEmpty(meters, meterType) && !userConfirmationReceived) {
+            meterRequestFromMemory = meterRequestFromUser;
+            return "Existing meter value found in database. Are you sure you want to make change?";
+        }
+        setupMeter(meterRequest);
+        return "Meter set up successfully.";
     }
     private void setImage (Image image,Meter meter){
         image.setMeter(meter);
@@ -64,7 +81,7 @@ public class SettlementService {
 
         Long meterId = meter.getId();
 
-        if (!isWaterExists(meterId)){
+        if (!doesWaterExist(meterId)){
             waterService.createWater(new Water(),meterId);
         }
 
@@ -78,12 +95,33 @@ public class SettlementService {
         }
     }
 
-    private boolean isMeterExistsInCurrentMonth(Long flatId){
+    private boolean doesMeterExistInCurrentMonth(Long flatId){
         Flat flat = flatService.findFlatById(flatId);
         List<Meter> meters = flat.getMeters();
         Optional <Meter> foundMeter=getMeterInCurrentMonth(meters);
         return foundMeter.isPresent()? true:false;
     }
+    private boolean doMetersExistByYearAndMonth(Long flatId, YearMonthResult yearMonthResult){
+        List <Meter> meters = meterService.getMetersByFlatIdAndYearMonth(flatId,yearMonthResult);
+        return !meters.isEmpty()? true:false;
+    }
+    private Boolean isMeterTypeValueEmpty(List<Meter> meters, MeterType meterType){
+        if(meterType.equals(MeterType.ELECTRICITY)) {
+            return meters.stream()
+                    .anyMatch(meter -> meter.getElectricity() == 0.0);
+        }
+        if(meterType.equals(MeterType.GAS)) {
+            return  meters.stream()
+                    .anyMatch(meter -> meter.getGas() == 0.0);
+        }
+        if(meterType.equals(MeterType.COLD_WATER)||meterType.equals(MeterType.HOT_WATER)){
+            return meters.stream()
+                    .anyMatch(meter -> meter.getWater() == null);
+        }
+        return true;
+    }
+
+
     private Optional<Meter> getMeterInCurrentMonth (List<Meter> meters){
         Optional <Meter> foundMeter= meters.stream()
                 .filter(meter -> isSameYearAndMonth(meter.getCreatedAt(),LocalDate.now()))
@@ -95,7 +133,7 @@ public class SettlementService {
         return dateInDB.getYear() == currentDate.getYear() && dateInDB.getMonth() == currentDate.getMonth();
     }
 
-    private boolean isWaterExists (Long meterId){
+    private boolean doesWaterExist(Long meterId){
         Meter meter = meterService.findMeterById(meterId);
 
         return  meter.getWater()!=null?true:false;

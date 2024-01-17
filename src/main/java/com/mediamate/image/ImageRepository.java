@@ -28,4 +28,7 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             @Param("imageType") ImageType imageType,
             @Param("year") int year,
             @Param("month") int month);
+
+    @Query("SELECT i FROM Image i WHERE i.realEstateId = :realEstateId AND i.imageType IS NULL")
+    List<Image> findImagesWithoutTypeByRealEstateId(@Param("realEstateId") Long realEstateId);
 }
