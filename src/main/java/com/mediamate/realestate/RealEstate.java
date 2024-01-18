@@ -3,6 +3,7 @@ package com.mediamate.realestate;
 import com.mediamate.flat.Flat;
 import com.mediamate.cost.Cost;
 import com.mediamate.image.Image;
+import com.mediamate.meter.Meter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,11 +24,14 @@ public class RealEstate {
     private Long ownerId;
     private String address;
     @OneToMany(mappedBy = "realEstate")
-    List<Flat> flats;
+    private List<Flat> flats;
     @OneToMany
     @JoinColumn (name = "realEstateId")
-    List<Cost> costs;
+    private List<Cost> costs;
     @OneToMany
     @JoinColumn (name = "realEstateId")
-    List<Image> images;
+    private List<Image> images;
+    @OneToMany
+    @JoinColumn (name = "realEstateId")
+    private List<Meter> administrationMeter;
 }

@@ -19,7 +19,7 @@ public class MediaCostService {
         this.costService = costService;
     }
 
-    public void createMedia(mediaCost mediaCost){
+    public void createMedia(MediaCost mediaCost){
         Long realEstateId =(Long) httpSession.getAttribute("chosenRealEstateId");
         Cost cost = new Cost(mediaCost);
         cost.setRealEstateId(realEstateId);

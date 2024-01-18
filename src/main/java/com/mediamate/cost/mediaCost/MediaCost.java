@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class mediaCost {
+public class MediaCost {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CostService {
@@ -24,5 +25,10 @@ public class CostService {
         private boolean isSameYearAndMonth(LocalDate dateInDB, LocalDate currentDate) {
         return dateInDB.getYear() == currentDate.getYear() && dateInDB.getMonth() == currentDate.getMonth();
     }
+        public Optional <Cost> getCostByRealEstateIdAndDate(Long realEstateId, LocalDate date){
+        int year = date.getYear();
+        int month = date.getMonthValue();
+            return costRepository.findCostByRealEstateIdAndCreationDate(realEstateId,year,month);
+        }
     }
 

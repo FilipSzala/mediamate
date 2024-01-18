@@ -57,16 +57,16 @@ public class ImageController {
         List<Image> images = imageService.getImagesWithoutTypeInCurrentDay(realEstateId);
         List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
         return imageDtos;
-    }
+        }
 
         @PostMapping("/meter")
-        public ResponseEntity<String> setupMeterWithoutConfirm(@RequestBody MeterRequest meterRequest) {
-        String response = settlementService.redirectForSetupMeter(meterRequest,false);
+        public ResponseEntity<String> setupMeterWithoutConfirm(@RequestBody MeterRequest meterRequest,HttpSession httpSession) {
+        String response = settlementService.redirectForSetupMeter(meterRequest,false,httpSession);
         return ResponseEntity.ok(response);
         }
          @PostMapping("/meter-with-confirm")
-        public ResponseEntity<String> setupMeterWithConfirm() {
-        String response = settlementService.redirectForSetupMeter(new MeterRequest(),true);
+        public ResponseEntity<String> setupMeterWithConfirm(HttpSession httpSession) {
+        String response = settlementService.redirectForSetupMeter(new MeterRequest(),true,httpSession);
         return ResponseEntity.ok(response);
     }
 

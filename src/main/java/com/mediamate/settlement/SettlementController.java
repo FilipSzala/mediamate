@@ -3,7 +3,7 @@ package com.mediamate.settlement;
 import com.mediamate.cost.additionalCost.AdditionalCost;
 import com.mediamate.cost.additionalCost.AdditionalCostService;
 import com.mediamate.cost.mediaCost.MediaCostService;
-import com.mediamate.cost.mediaCost.mediaCost;
+import com.mediamate.cost.mediaCost.MediaCost;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.*;
@@ -36,7 +36,7 @@ public class SettlementController {
         this.additionalCostService = additionalCostService;
     }
 
-    //Methods in this class depend on Real Estate's session.Therefore, if I coded method named "getFlats" in means that this method returns
+    //Methods in this class depend on Real Estate's session.Therefore, if I coded method named "getFlats" it means that this method returns
     //all Flats by realEstateId from session.
     @PostMapping("/images")
 
@@ -66,13 +66,12 @@ public class SettlementController {
     }
 
     @PostMapping ("/meter")
-    public void setupMeter (
-            @RequestBody MeterRequest meterRequest){
-        settlementService.setupMeter(meterRequest);
+    public void setupMeter (HttpSession httpSession,@RequestBody MeterRequest meterRequest){
+        settlementService.setupMeter(meterRequest,httpSession);
     }
 
     @PostMapping("/media-cost")
-    public void createMediaCost (@RequestBody mediaCost mediaCost){
+    public void createMediaCost (@RequestBody MediaCost mediaCost){
         mediaCostService.createMedia(mediaCost);
     }
     @PostMapping("/additional-cost")

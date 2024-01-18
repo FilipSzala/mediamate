@@ -4,11 +4,13 @@ import com.mediamate.YearMonthResult;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.meter.water.Water;
+import com.mediamate.realestate.RealEstate;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,10 +25,15 @@ public class MeterService {
         this.flatService = flatService;
     }
 
-    public void createMeter(Meter meter, Flat flat){
+    public void createMeterWithFlat(Meter meter,Flat flat, LocalDate date){
+        meter.setCreatedAt(date);
         meter.setFlat(flat);
         meterRepository.save(meter);
-        flatService.addMeterToFlat(flat,meter);
+    }
+    public void createMeterWithRealEstate(Meter meter, RealEstate realEstate, LocalDate date) {
+        meter.setCreatedAt(date);
+        meter.setRealEstate(realEstate);
+        meterRepository.save(meter);
     }
     public Meter findMeterById (Long id){
         return meterRepository.findById(id).orElseThrow();
@@ -51,4 +58,6 @@ public class MeterService {
         databaseMeter.setFlat(updatedMeter.getFlat());
         meterRepository.save(databaseMeter);
     }
+
+
 }

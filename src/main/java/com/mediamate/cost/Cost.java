@@ -1,7 +1,7 @@
 package com.mediamate.cost;
 
 import com.mediamate.cost.additionalCost.AdditionalCost;
-import com.mediamate.cost.mediaCost.mediaCost;
+import com.mediamate.cost.mediaCost.MediaCost;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,12 +23,12 @@ public class Cost {
     private Long realEstateId;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name ="mediaPriceId", referencedColumnName = "id")
-    private mediaCost mediaCostPrice;
+    private MediaCost mediaCostPrice;
     @OneToMany
     @JoinColumn(name = "priceId")
     private List<AdditionalCost> additionalsCost;
     private LocalDate createdDay=LocalDate.now();
-    public Cost(mediaCost mediaCostPrice) {
+    public Cost(MediaCost mediaCostPrice) {
         this.mediaCostPrice = mediaCostPrice;
     }
 }

@@ -3,6 +3,7 @@ package com.mediamate.meter;
 import com.mediamate.flat.Flat;
 import com.mediamate.image.Image;
 import com.mediamate.meter.water.Water;
+import com.mediamate.realestate.RealEstate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,8 +32,10 @@ public class Meter {
     @ManyToOne
     @JoinColumn(name = "flatId", referencedColumnName = "id")
     private Flat flat;
-    private LocalDate createdAt = LocalDate.now();
-
+    @ManyToOne
+    @JoinColumn(name = "realEstateId", referencedColumnName = "id")
+    private RealEstate realEstate;
+    private LocalDate createdAt;
     public void setImages(Image image) {
         images.add(image);
     }
