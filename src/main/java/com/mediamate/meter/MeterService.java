@@ -5,6 +5,7 @@ import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.meter.water.Water;
 import com.mediamate.realestate.RealEstate;
+import com.mediamate.realestate.RealEstateService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,20 +21,25 @@ public class MeterService {
     @Autowired
     MeterRepository meterRepository;
     FlatService flatService;
+    RealEstateService realEstateService;
     @Autowired
-    public MeterService(FlatService flatService) {
+    public MeterService(FlatService flatService, RealEstateService realEstateService) {
+
         this.flatService = flatService;
+        this.realEstateService = realEstateService;
     }
 
     public void createMeterWithFlat(Meter meter,Flat flat, LocalDate date){
         meter.setCreatedAt(date);
         meter.setFlat(flat);
         meterRepository.save(meter);
+        flatService.addMeterToFlat(flat,meter);
     }
     public void createMeterWithRealEstate(Meter meter, RealEstate realEstate, LocalDate date) {
         meter.setCreatedAt(date);
         meter.setRealEstate(realEstate);
         meterRepository.save(meter);
+        realEstateService.addMeterToRealEstate(realEstate,meter);
     }
     public Meter findMeterById (Long id){
         return meterRepository.findById(id).orElseThrow();
@@ -45,8 +51,16 @@ public class MeterService {
         partiallyUpdateMeter(meterId,meter);
     }
     public List<Meter> getMetersByFlatIdAndYearMonth(Long flatId, YearMonthResult yearMonthResult){
-        int year = yearMonthResult.getYear();
-        int month = yearMonthResult.getMonth();
+        int year;
+        int month;
+        if(yearMonthResult!=null) {
+            year = yearMonthResult.getYear();
+            month = yearMonthResult.getMonth();
+        }
+        else {
+            year = LocalDate.now().getYear();
+            month = LocalDate.now().getMonthValue();
+        }
         return meterRepository.findMetersByFlatIdAndYearMonth(flatId,year,month);
     }
 

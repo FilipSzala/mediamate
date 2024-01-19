@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class FlatRequest {
-    String renters;
+    String rentersFullName;
+    int renterCount;
     String phoneNumber;
 }

@@ -34,4 +34,8 @@ public class RealEstate {
     @OneToMany
     @JoinColumn (name = "realEstateId")
     private List<Meter> administrationMeter;
+
+    public void addMeterToAdministrationMeters (Meter meter){
+        administrationMeter.add(meter);
+    }
 }

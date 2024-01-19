@@ -1,10 +1,12 @@
 package com.mediamate.realestate;
 
 import com.mediamate.flat.FlatService;
+import com.mediamate.meter.Meter;
 import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.RealEstateRequest;
 import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,19 +15,16 @@ import java.util.stream.IntStream;
 @Service
 public class RealEstateService {
     @Autowired
-    RealEstateRepository realEstateRepository;
-    SecurityService securityService;
-    FlatService flatService;
+    private RealEstateRepository realEstateRepository;
+    private SecurityService securityService;
+    @Autowired
+    @Lazy
+    private  FlatService flatService;
 
     UserService userService;
-    @Autowired
     public RealEstateService(SecurityService securityService,UserService userService) {
         this.securityService = securityService;
         this.userService = userService;
-    }
-
-    public void setFlatService (FlatService flatService){
-        this.flatService = flatService;
     }
 
     public Optional<RealEstate> findById(Long id){
@@ -62,5 +61,10 @@ public class RealEstateService {
         databaseRealEstate.setAddress(modifiedRealEstate.getAddress());
         databaseRealEstate.setFlats(modifiedRealEstate.getFlats());
         realEstateRepository.save(databaseRealEstate);
+    }
+
+    public void addMeterToRealEstate(RealEstate realEstate, Meter meter) {
+        realEstate.addMeterToAdministrationMeters(meter);
+        updateRealEstatePartially(realEstate.getId(),realEstate);
     }
 }

@@ -2,6 +2,8 @@ package com.mediamate.summary;
 
 import com.mediamate.cost.Cost;
 import com.mediamate.cost.CostService;
+import com.mediamate.cost.additionalCost.AdditionalCost;
+import com.mediamate.cost.additionalCost.ChargeType;
 import com.mediamate.cost.mediaCost.MediaCost;
 import com.mediamate.flat.Flat;
 import com.mediamate.meter.Meter;
@@ -18,9 +20,13 @@ import java.util.List;
 @NoArgsConstructor
 @Service
 public class SummaryService {
-    private Meter lastMeter;
-    private Meter oneBeforeLastMeter;
+    private Meter lastMeterInFlat;
+    private Meter oneBeforeLastMeterInFlat;
+    private Meter lastMeterInRealEstate;
+    private Meter oneBeforeLastMeterInRealEstate;
     private MediaCost mediaCost;
+    private int renterCount;
+    private int flatCount;
 
     private RealEstateService realEstateService;
     private CostService costService;
@@ -37,54 +43,99 @@ public class SummaryService {
         Cost cost = costService.getCostByRealEstateIdAndDate(realEstateId,date).get();
 
         mediaCost = cost.getMediaCostPrice();
+        lastMeterInRealEstate = setLastMeterInRealEstate(realEstate);
+        oneBeforeLastMeterInRealEstate = setOneBeforeLastMeterInRealEstate(realEstate);
+        flatCount = realEstate.getFlats().size();
 
-        List<Summary> summaries;
+        List<Summary> summaries = new ArrayList<>();
         List <Flat> flats = realEstate.getFlats();
+
         for (int i = 0; i < flats.size(); i++) {
 
             Flat flat = flats.get(i);
+            renterCount = flat.getRenetersCount();
             setLastMeter(flat);
-            setOneBeforeLastMeter(flat);
+            setOneBeforeLastMeterInFlat(flat);
 
 
             Summary summary = Summary.builder()
-                    .rentersName(flat.getRenters())
+                    .rentersName(flat.getRentersFullName())
                     .waterPrice(setWaterPrice(mediaCost))
                     .gasPrice(setGasPrice(mediaCost))
-                    .electricityPrice(null)
-                    .additionalPrice(null)
+                    .electricityPrice(setElectricityPrice(mediaCost,realEstate))
+                    .additionalPrice(setAdditionalPrice(cost))
                     .build();
+
+            summaries.add(summary);
         }
-        return new ArrayList<>();
+        return summaries;
     }
+
+    private Meter setLastMeterInRealEstate(RealEstate realEstate) {
+        return  realEstate.getAdministrationMeter().get(realEstate.getAdministrationMeter().size()-1);
+    }
+    private Meter setOneBeforeLastMeterInRealEstate(RealEstate realEstate) {
+        return  realEstate.getAdministrationMeter().get(realEstate.getAdministrationMeter().size()-2);
+    }
+
     private Double setWaterPrice (MediaCost mediaCost){
         Double waterCost = mediaCost.getWater();
-        Double valueOfLastMeterColdWater = lastMeter.getWater().getColdWater();
-        Double valueOfLastMeterHotWater = lastMeter.getWater().getHotWater();
-        Double valueOfOneBeforeLastMeterColdWater = oneBeforeLastMeter.getWater().getHotWater();
-        Double valueOfOneBeforeLastMeterHotWater = oneBeforeLastMeter.getWater().getColdWater();
+        Double valueOfLastMeterColdWater = lastMeterInFlat.getWater().getColdWater();
+        Double valueOfLastMeterHotWater = lastMeterInFlat.getWater().getHotWater();
+        Double valueOfOneBeforeLastMeterColdWater = oneBeforeLastMeterInFlat.getWater().getHotWater();
+        Double valueOfOneBeforeLastMeterHotWater = oneBeforeLastMeterInFlat.getWater().getColdWater();
         Double result =((valueOfOneBeforeLastMeterColdWater-valueOfLastMeterColdWater)+(valueOfOneBeforeLastMeterHotWater-valueOfLastMeterHotWater))*waterCost;
         return result;
     }
     private Double setGasPrice(MediaCost mediaCost){
         Double gasCost = mediaCost.getGas();
-        Double valueOfLastGasMeter = lastMeter.getGas();
-        Double valueOfOneBeforeLastGasMeter = oneBeforeLastMeter.getGas();
+        Double valueOfLastGasMeter = lastMeterInFlat.getGas();
+        Double valueOfOneBeforeLastGasMeter = oneBeforeLastMeterInFlat.getGas();
         Double result = (valueOfOneBeforeLastGasMeter - valueOfLastGasMeter) * gasCost;
         return result;
     }
     private Double setElectricityPrice(MediaCost mediaCost,RealEstate realEstate){
-        return lastMeter.getElectricity();
+        Double electricityCost = mediaCost.getElectricity();
+        Double valueOfLastElectricityMeter = lastMeterInFlat.getElectricity();
+        Double valueOfOneBeforeLastElectricityMeter = oneBeforeLastMeterInFlat.getElectricity();
+        Double administrationValueForFlat = divideAdministrationValueOfElectricityForFlat(realEstate);
+        Double result = ((valueOfOneBeforeLastElectricityMeter-valueOfLastElectricityMeter)+administrationValueForFlat)*electricityCost;
+        return result;
     }
+    private Double setAdditionalPrice (Cost cost){
+        List<AdditionalCost> additionalCosts = cost.getAdditionalsCost();
+        Double result = additionalCosts.stream()
+                .mapToDouble(additionalCost -> countAdditionalCost(additionalCost))
+                .sum();
+        return result;
+    }
+    private double countAdditionalCost(AdditionalCost additionalCost){
+        ChargeType chargeType =additionalCost.getChargeType();
+        int timePeriod =additionalCost.getTimePeriod().getValue();
+        Double cost = additionalCost.getCost();
+
+        if(chargeType.equals(ChargeType.PERSON)){
+            return (cost*renterCount)/timePeriod;
+        }
+        else
+            return (cost / flatCount / timePeriod);
+    }
+
+
+    private double divideAdministrationValueOfElectricityForFlat(RealEstate realEstate) {
+        int flatCount = realEstate.getFlats().size();
+        return (oneBeforeLastMeterInRealEstate.getElectricity()-lastMeterInRealEstate.getElectricity())/flatCount;
+    }
+
     private void setLastMeter (Flat flat){
         List <Meter> meters =findMetersByFlat(flat);
         Meter meter = getMeterLastObject(meters);
-        lastMeter = meter;
+        lastMeterInFlat = meter;
     }
-    private void setOneBeforeLastMeter (Flat flat){
+    private void setOneBeforeLastMeterInFlat(Flat flat){
         List <Meter> meters =findMetersByFlat(flat);
         Meter meter = getMeterOneBeforeLastObject(meters);
-        oneBeforeLastMeter = meter;
+        oneBeforeLastMeterInFlat = meter;
     }
     private List<Meter> findMetersByFlat(Flat flat){
         return flat.getMeters();

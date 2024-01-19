@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Month;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +23,7 @@ public class AdditionalCost {
     private Long priceId;
     private String name;
     private Double cost;
-    private String timePeriod;
+    private Month timePeriod;
     private ChargeType chargeType;
 
 }

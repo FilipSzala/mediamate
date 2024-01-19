@@ -39,7 +39,7 @@ public class FirstSetupController {
         ownerService.createOwner(ownerRequest);
     }
     @GetMapping ("/real-estates")
-    public List<RealEstate> getRealEstates(){
+    public List<RealEstate> getRealEstatesLoginUser(){
         httpSession.getAttributeNames();
         Long ownerId = securityService.findOwnerIdBySession();
         return  realEstateService.findAllByOwnerId(ownerId);

@@ -16,14 +16,15 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Flat {
+public class Flat  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "realEstateId", referencedColumnName = "id")
     private RealEstate realEstate;
-    private String renters;
+    private String rentersFullName;
+    private int renetersCount;
     private String phoneNumber;
     @OneToMany(mappedBy = "flat")
     private List<Meter> meters = new ArrayList<>();

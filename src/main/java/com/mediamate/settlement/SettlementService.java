@@ -41,13 +41,14 @@ public class SettlementService {
     public void setupMeter(MeterRequest meterRequest,HttpSession httpSession) {
         MeterType meterType = meterRequest.getMeterType();
         LocalDate dateOfMeterRequest = meterRequest.getYearMonthResult() == null ? LocalDate.now() : meterRequest.getYearMonthResult().toLocalDate();
+        Image image = imageService.getImageById(meterRequest.getImageId()).orElseThrow();
+
         if (isAdministrationType(meterType)){
-            setupMeterForAdministration(meterRequest,httpSession,dateOfMeterRequest);
+            setupMeterForAdministration(meterRequest,httpSession,dateOfMeterRequest,image);
             return;
         }
         Long flatId = meterRequest.getFlatId();
         Flat flat = flatService.findFlatById(flatId);
-        Image image = imageService.getImageById(meterRequest.getImageId()).orElseThrow();
 
 
         if (!doesMeterExistByDateInFlat(flatId, dateOfMeterRequest)) {
@@ -64,12 +65,20 @@ public class SettlementService {
         meterService.partiallyUpdateMeter(meterId,meter);
     }
 
-    private void setupMeterForAdministration(MeterRequest meterRequest, HttpSession httpSession,LocalDate date) {
+    private void setupMeterForAdministration(MeterRequest meterRequest, HttpSession httpSession,LocalDate date,Image image) {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate = realEstateService.findById(realEstateId).get();
-        if(doesMeterExistByDateInRealEstate(realEstateId,date)){
+        if(!doesMeterExistByDateInRealEstate(realEstateId,date)){
             meterService.createMeterWithRealEstate(new Meter(),realEstate,date);
         }
+        List<Meter> meters = realEstateService.findById(realEstateId).get().getAdministrationMeter();
+        Meter meter = getMeterByDate(meters,date).get();
+        setImage(image,meter);
+        setMeterValueByType(meterRequest,meterRequest.getMeterType(),meter);
+
+        Long meterId = meter.getId();
+
+        meterService.partiallyUpdateMeter(meterId,meter);
 
     }
 
@@ -140,11 +149,11 @@ public class SettlementService {
             return  meters.stream()
                     .anyMatch(meter -> meter.getGas() == 0.0);
         }
-        if(meterType.equals(MeterType.COLD_WATER)||meterType.equals(MeterType.COLD_WATER)){
+        if(meterType.equals(MeterType.COLD_WATER)){
             return meters.stream()
                     .anyMatch(meter -> meter.getWater().getColdWater() == 0.0);
         }
-        if(meterType.equals(MeterType.HOT_WATER)||meterType.equals(MeterType.HOT_WATER)){
+        if(meterType.equals(MeterType.HOT_WATER)){
             return meters.stream()
                     .anyMatch(meter -> meter.getWater().getHotWater() == 0.0);
         }
@@ -170,13 +179,13 @@ public class SettlementService {
     }
     private boolean isElectricityType (MeterType type){
 
-        return type.equals(MeterType.ELECTRICITY_FLAT)? true:false;
+        return type.equals(MeterType.ELECTRICITY_FLAT)||type.equals(MeterType.ELECTRICITY_ADMINISTRATION)? true:false;
     }
     private boolean isGasType (MeterType type){
-        return type.equals(MeterType.GAS_FLAT)? true:false;
+        return type.equals(MeterType.GAS_FLAT)||type.equals(MeterType.GAS_ADMINISTRATION)? true:false;
     }
     private boolean isColdWaterType (MeterType type){
-        return  type.equals(MeterType.COLD_WATER)? true:false;
+        return  type.equals(MeterType.COLD_WATER)||type.equals(MeterType.WATER_ADMINISTRATION)? true:false;
     }
     private boolean isHotWaterType(MeterType type){
         return type.equals(MeterType.HOT_WATER)? true:false;

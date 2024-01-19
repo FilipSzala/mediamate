@@ -64,6 +64,7 @@ public class UserService implements UserDetailsService {
         databaseUser.setEnabled(modifiedUser.getEnabled());
         databaseUser.setLocked(modifiedUser.getLocked());
         databaseUser.setUserRole(modifiedUser.getUserRole());
+        databaseUser.setOwner(modifiedUser.getOwner());
         userRepository.save(databaseUser);
     }
 
@@ -75,9 +76,8 @@ public class UserService implements UserDetailsService {
     }
 
     public void addOwner(Owner owner){
-        Long userId = securityService.findUserBySession().getId();
-        User modifyUser = securityService.findUserBySession();
-        modifyUser.setOwner(owner);
-        updateUserPartially(userId,modifyUser);
+        User user = securityService.findUserBySession();
+        user.setOwner(owner);
+        updateUserPartially(user.getId(),user);
     }
 }
