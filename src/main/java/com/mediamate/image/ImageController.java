@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -73,6 +74,11 @@ public class ImageController {
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
         Image image = imageService.getImageById(id).get();
+        Blob blob = image.getImage();
+        blob.length();
+        long test = image.getImage().length();
+        int test2 = (int) test;
+
         byte[] imageBytes = image.getImage().getBytes(1, (int) image.getImage().length());
         return ResponseEntity
                 .ok()

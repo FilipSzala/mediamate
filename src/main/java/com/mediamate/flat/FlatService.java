@@ -55,11 +55,11 @@ public class FlatService {
         return flatRepository.findAll();
     }
 
-    public List<Flat> createEmptyFlats (int numberOfFlats) {
+    public List<Flat> createEmptyFlats (int numberOfFlats, RealEstate realEstate) {
         List <Flat> flats = new ArrayList<>();
         for (int i=0;i<numberOfFlats;i++){
             Flat flat = new Flat();
-            flat.setRealEstate();
+            flat.setRealEstate(realEstate);
             flats.add(flat);
             flatRepository.save(flat);
         }
@@ -71,8 +71,8 @@ public class FlatService {
         List <Flat> flats = findFlatsByRealEstateId(realEstateId);
         flats.stream().forEach(flat -> {
             flat.setRenetersCount(flatRequests.get(flats.indexOf(flat)).getRenterCount());
-            flat.setRentersFullName(flatRequests.get(flats.indexOf(flatRequests)).getRentersFullName());
-            flat.setPhoneNumber(flatRequests.get(flats.indexOf(flatRequests)).getPhoneNumber());
+            flat.setRentersFullName(flatRequests.get(flats.indexOf(flat)).getRentersFullName());
+            flat.setPhoneNumber(flatRequests.get(flats.indexOf(flat)).getPhoneNumber());
         });
         realEstateService.updateRealEstatePartially(realEstateId,realEstate);
     }

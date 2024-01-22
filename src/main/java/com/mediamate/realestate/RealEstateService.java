@@ -51,7 +51,7 @@ public class RealEstateService {
                 .forEach(index -> {
                     RealEstate realEstate = databaseRealEstates.get(index);
                     realEstate.setAddress(realEstatesRequest.get(index).getAddress());
-                    realEstate.setFlats(flatService.createEmptyFlats(realEstatesRequest.get(index).getFlatCount()));
+                    realEstate.setFlats(flatService.createEmptyFlats(realEstatesRequest.get(index).getFlatCount(),databaseRealEstates.get(index)));
                     realEstateRepository.save(realEstate);
                 });
     }
