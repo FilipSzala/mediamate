@@ -2,10 +2,7 @@ package com.mediamate.summary;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,8 +16,8 @@ public class SummaryController {
         this.summaryService = summaryService;
     }
 
-    @GetMapping()
-    public List<Summary> summaries (HttpSession httpSession, @RequestBody LocalDate date){
-        return summaryService.getSummaries(httpSession,date);
+    @GetMapping("/{date}")
+    public List<Summary> getSummaries (HttpSession httpSession,@PathVariable LocalDate date){
+        return summaryService.generateFlatSummaries(httpSession,date);
     }
 }
