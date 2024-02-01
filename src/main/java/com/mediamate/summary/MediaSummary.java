@@ -1,10 +1,16 @@
 package com.mediamate.summary;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import com.mediamate.summary.detaile_summary.AdditionalCostSummary;
+import com.mediamate.summary.detaile_summary.ElectricitySummary;
+import com.mediamate.summary.detaile_summary.GasSummary;
+import com.mediamate.summary.detaile_summary.WaterSummary;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Getter
@@ -13,28 +19,11 @@ import java.time.LocalDate;
 class MediaSummary{
     private LocalDate createdAt;
     private String rentersName;
-    private Double electricityPrice;
-    private Double electricityMeterValueInFlat;
-    private Double electricityMeterValueForAdministration;
-    private BigDecimal adminElectricityConsumptionPerFlat;
-    private BigDecimal electricityConsumptionByFlat;
-    private BigDecimal electricityTotalPriceForFlat;
-    private Double gasPrice;
-    private BigDecimal gasTotalPriceForFlat;
-    private BigDecimal gasTotalPriceForRealEstate;
-    private Double gasMeterValueInFlat;
-    private Double gasMeterValueInRealEstate;
-    private BigDecimal gasConsumptionByFlatInGJ;
-    private BigDecimal gasConsumptionByFlatInM3;
-    private BigDecimal gasConsumptionByFlatInPercent;
-    private BigDecimal gasConsumptionByRealEstateInM3;
-    private Double waterPrice;
-    private BigDecimal waterTotalPriceForFlat;
-    private Double meterValueForHotWater;
-    private Double meterValueForColdWater;
-    private BigDecimal waterConsumptionByFlat;
-    private BigDecimal wasteWaterConsumptionByFlat;
-    private BigDecimal totalMediaSumByFlat;
 
-    private BigDecimal additionalPrice;
+    private ElectricitySummary electricitySummary;
+    private GasSummary gasSummary;
+    private WaterSummary waterSummary;
+    private List<AdditionalCostSummary> additionalCostSummaries;
+
+    private BigDecimal totalMediaSumByFlat;
 }
