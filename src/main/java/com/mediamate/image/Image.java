@@ -25,7 +25,7 @@ public class Image {
     @Lob
     private Blob image;
     private ImageType imageType;
-    private LocalDate createDay = LocalDate.now();
+    private LocalDate createAt = LocalDate.now();
 
     public void setBlob(MultipartFile file) throws IOException, SQLException {
         byte[] bytes = file.getBytes();

@@ -19,11 +19,10 @@ import java.util.List;
 class MediaSummary{
     private LocalDate createdAt;
     private String rentersName;
-
     private ElectricitySummary electricitySummary;
     private GasSummary gasSummary;
     private WaterSummary waterSummary;
-    private List<AdditionalCostSummary> additionalCostSummaries;
-
+    private List<AdditionalCostSummary>additionalCostSummaries;
+    private BigDecimal totalAdditionalCost;
     private BigDecimal totalMediaSumByFlat;
 }

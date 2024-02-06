@@ -50,7 +50,7 @@ public class ImageService {
         Image databaseImage = getImageById(imageId).orElseThrow();
         databaseImage.setMeter(modifiedImage.getMeter());
         databaseImage.setImage(modifiedImage.getImage());
-        databaseImage.setCreateDay(modifiedImage.getCreateDay());
+        databaseImage.setCreateAt(modifiedImage.getCreateAt());
         imageRepository.save(databaseImage);
 
     }
@@ -64,8 +64,8 @@ public class ImageService {
         List<Image> images = imageRepository.findImagesByRealEstateIdAndImageTypeAndYearMonth(
                 realEstateId,
                 imageRequest.getImageType(),
-                imageRequest.getYear(),
-                imageRequest.getMonth());
+                imageRequest.getCreatedYear(),
+                imageRequest.getCreatedMonth());
         return images;
     }
     public List<Image> getImagesWithoutTypeInCurrentDay (Long realEstateId){
@@ -80,7 +80,7 @@ public class ImageService {
     }
     public List<Image>filterImagesToCurrentDay(List<Image> images){
         return images.stream()
-                .filter(image -> image.getCreateDay()==LocalDate.now())
+                .filter(image -> image.getCreateAt()==LocalDate.now())
                 .collect(Collectors.toList());
     }
 

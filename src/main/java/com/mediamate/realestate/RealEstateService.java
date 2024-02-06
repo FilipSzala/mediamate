@@ -8,6 +8,7 @@ import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -55,6 +56,7 @@ public class RealEstateService {
                     realEstateRepository.save(realEstate);
                 });
     }
+
     public void updateRealEstatePartially(Long realEstateId, RealEstate modifiedRealEstate) {
         RealEstate databaseRealEstate = findById(realEstateId).orElseThrow();
         databaseRealEstate.setOwnerId(modifiedRealEstate.getOwnerId());

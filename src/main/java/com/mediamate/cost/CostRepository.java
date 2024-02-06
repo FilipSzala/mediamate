@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CostRepository extends JpaRepository<Cost,Long> {
-    @Query("SELECT c FROM Cost c WHERE c.realEstateId = :realEstateId AND FUNCTION('YEAR', c.createdDay) = :year AND FUNCTION('MONTH', c.createdDay) = :month")
+    @Query("SELECT c FROM Cost c WHERE c.realEstateId = :realEstateId AND FUNCTION('YEAR', c.createdAt) = :year AND FUNCTION('MONTH', c.createdAt) = :month")
     Optional<Cost> findCostByRealEstateIdAndCreationDate(
             @Param("realEstateId") Long realEstateId,
             @Param("year") int year,

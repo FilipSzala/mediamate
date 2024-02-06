@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter
 public class ImageRequest {
     ImageType imageType;
-    int year;
-    int month;
+    int createdYear;
+    int createdMonth;
 }

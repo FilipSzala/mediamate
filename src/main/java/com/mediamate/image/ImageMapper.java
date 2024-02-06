@@ -21,7 +21,7 @@ public class ImageMapper {
                         .id(image.getId())
                         .image(image.getImage())
                         .imageType(image.getImageType())
-                        .createDay(image.getCreateDay())
+                        .createDay(image.getCreateAt())
                         .build()
                 ;
     }

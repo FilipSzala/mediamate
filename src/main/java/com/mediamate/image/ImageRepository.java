@@ -10,19 +10,19 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image,Long> {
-    @Query("SELECT i FROM Image i WHERE i.realEstateId = :realEstateId AND i.imageType = :imageType AND i.createDay = :createDay")
+    @Query("SELECT i FROM Image i WHERE i.realEstateId = :realEstateId AND i.imageType = :imageType AND i.createAt = :createAt")
     List<Image> findImagesByRealEstateIdAndImageTypeForCurrentDay(
             @Param("realEstateId") Long realEstateId,
             @Param("imageType") ImageType imageType,
-            @Param("createDay") LocalDate createDay);
+            @Param("createAt") LocalDate createAt);
 
-    @Query("SELECT new com.mediamate.YearMonthResult(YEAR(i.createDay), MONTH(i.createDay)) " +
+    @Query("SELECT new com.mediamate.YearMonthResult(YEAR(i.createAt), MONTH(i.createAt)) " +
             "FROM Image i " +
             "WHERE i.realEstateId = :realEstateId " +
-            "GROUP BY YEAR(i.createDay), MONTH(i.createDay)")
+            "GROUP BY YEAR(i.createAt), MONTH(i.createAt)")
     List<YearMonthResult> findAllDistinctYearMonthByRealEstateId(@Param("realEstateId") Long realEstateId);
 
-    @Query("SELECT i FROM Image i WHERE i.realEstateId = :realEstateId AND i.imageType = :imageType AND YEAR(i.createDay) = :year AND MONTH(i.createDay) = :month")
+    @Query("SELECT i FROM Image i WHERE i.realEstateId = :realEstateId AND i.imageType = :imageType AND YEAR(i.createAt) = :year AND MONTH(i.createAt) = :month")
     List<Image> findImagesByRealEstateIdAndImageTypeAndYearMonth(
             @Param("realEstateId") Long realEstateId,
             @Param("imageType") ImageType imageType,

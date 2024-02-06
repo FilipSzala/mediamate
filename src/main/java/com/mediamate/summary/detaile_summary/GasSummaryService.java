@@ -22,15 +22,15 @@ public class GasSummaryService {
         gasConsumptionByRealEstateInGJ = countGasConsumptionByRealEstateInGJ(flats);
 
         return GasSummary.builder()
-                .gasPrice(mediaCost.getGas())
-                .gasMeterValueInFlat(lastMeterInFlat.getGas())
-                .gasMeterValueInRealEstate(lastMeterInRealEstate.getGas())
-                .gasConsumptionByFlatInGJ(countGasConsumptionByFlatInGJ(lastMeterInFlat,oneBeforeLastMeterInFlat))
-                .gasConsumptionByFlatInPercent(countGasConsumptionInPercent(gasConsumptionByFlatInGJ))
-                .gasConsumptionByRealEstateInM3(countGasConsumptionByRealEstateInM3(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate))
-                .gasConsumptionByFlatInM3(countGasConsumptionByFlatInM3())
-                .gasTotalPriceForFlat(countTotalGasPrice(gasConsumptionByFlatInM3,mediaCost))
-                .gasTotalPriceForRealEstate(countTotalGasPrice(gasConsumptionByRealEstateInM3,mediaCost))
+                .price(mediaCost.getGas())
+                .meterValueInFlat(lastMeterInFlat.getGas())
+                .meterValueInRealEstate(lastMeterInRealEstate.getGas())
+                .consumptionByFlatInGJ(countGasConsumptionByFlatInGJ(lastMeterInFlat,oneBeforeLastMeterInFlat))
+                .consumptionByFlatInPercent(countGasConsumptionInPercent(gasConsumptionByFlatInGJ))
+                .consumptionByRealEstateInM3(countGasConsumptionByRealEstateInM3(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate))
+                .consumptionByFlatInM3(countGasConsumptionByFlatInM3())
+                .totalPriceForFlat(countTotalGasPrice(gasConsumptionByFlatInM3,mediaCost))
+                .totalPriceForRealEstate(countTotalGasPrice(gasConsumptionByRealEstateInM3,mediaCost))
                 .build();
     }
     private BigDecimal countGasConsumptionInPercent(BigDecimal gasConsumptionByFlat) {

@@ -13,13 +13,13 @@ public class WaterSummaryService {
     BigDecimal waterConsumptionByFlat = BigDecimal.ZERO;
     public WaterSummary createWaterSummary (MediaCost mediaCost, Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat, Meter lastMeterInRealEstate, Meter oneBeforeLastMeterInRealEstate, int flatCount){
         return WaterSummary.builder()
-                .waterPrice(mediaCost.getWater())
+                .price(mediaCost.getWater())
                 .meterValueForHotWater(lastMeterInFlat.getWater().getHotWater())
                 .meterValueForColdWater(lastMeterInFlat.getWater().getColdWater())
-                .waterConsumptionByFlat(countWaterConsumptionByFlat(lastMeterInFlat,oneBeforeLastMeterInFlat))
+                .consumptionByFlat(countWaterConsumptionByFlat(lastMeterInFlat,oneBeforeLastMeterInFlat))
                 //Wastewater is always the same as the water used
                 .wasteWaterConsumptionByFlat((wasteWaterConsumptionByFlat))
-                .waterTotalPriceForFlat(countTotalWaterPrice(mediaCost))
+                .totalPriceForFlat(countTotalWaterPrice(mediaCost))
                 .build();
     }
     private BigDecimal countWaterConsumptionByFlat(Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat) {

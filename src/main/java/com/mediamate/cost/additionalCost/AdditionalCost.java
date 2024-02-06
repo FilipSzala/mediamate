@@ -22,6 +22,7 @@ public class AdditionalCost {
     private Long id;
     private Long priceId;
     private String name;
+    private String information;
     private Double cost;
     private Month timePeriod;
     private ChargeType chargeType;

@@ -10,10 +10,10 @@ import java.math.BigDecimal;
 @Setter
 
 public class WaterSummary {
-    private Double waterPrice;
-    private BigDecimal waterTotalPriceForFlat;
+    private Double price;
     private Double meterValueForHotWater;
     private Double meterValueForColdWater;
-    private BigDecimal waterConsumptionByFlat;
+    private BigDecimal consumptionByFlat;
     private BigDecimal wasteWaterConsumptionByFlat;
+    private BigDecimal totalPriceForFlat;
 }

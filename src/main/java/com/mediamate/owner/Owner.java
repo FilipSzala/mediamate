@@ -25,7 +25,7 @@ public class Owner {
     @JoinColumn(name="ownerId")
     private List<RealEstate> realEstates;
 
-    private LocalDate createDay = LocalDate.now();
+    private LocalDate createAt = LocalDate.now();
 
     public Owner(String firstName, String lastName, List<RealEstate> realEstates) {
         this.firstName = firstName;

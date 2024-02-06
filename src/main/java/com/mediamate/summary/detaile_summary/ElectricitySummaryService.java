@@ -2,7 +2,6 @@ package com.mediamate.summary.detaile_summary;
 
 import com.mediamate.cost.mediaCost.MediaCost;
 import com.mediamate.meter.Meter;
-import com.mediamate.summary.MediaSummaryService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,30 +10,30 @@ import java.math.RoundingMode;
 @Service
 public class ElectricitySummaryService {
 
-    BigDecimal adminElectricityConsumptionPerFlat = BigDecimal.ZERO;
+    BigDecimal adminConsumptionPerFlat = BigDecimal.ZERO;
 
 
     public ElectricitySummary createElectricity(MediaCost mediaCost, Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat, Meter lastMeterInRealEstate, Meter oneBeforeLastMeterInRealEstate, int flatCount){
         return ElectricitySummary.builder()
-                .electricityPrice(mediaCost.getElectricity())
-                .electricityMeterValueInFlat(lastMeterInFlat.getElectricity())
-                .electricityConsumptionByFlat(countMeterConsumptionByflat(lastMeterInFlat.getElectricity(),oneBeforeLastMeterInFlat.getElectricity()))
-                .electricityMeterValueForAdministration(lastMeterInRealEstate.getElectricity())
-                .adminElectricityConsumptionPerFlat(countAdminElectricityConsumptionPerFlat(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount))
-                .electricityTotalPriceForFlat(countTotalElectricityPrice(mediaCost,lastMeterInFlat,oneBeforeLastMeterInFlat))
+                .price(mediaCost.getElectricity())
+                .meterValueInFlat(lastMeterInFlat.getElectricity())
+                .consumptionByFlat(countMeterConsumptionByflat(lastMeterInFlat.getElectricity(),oneBeforeLastMeterInFlat.getElectricity()))
+                .meterValueForAdministration(lastMeterInRealEstate.getElectricity())
+                .adminConsumptionPerFlat(countAdminElectricityConsumptionPerFlat(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount))
+                .totalPriceForFlat(countTotalElectricityPrice(mediaCost,lastMeterInFlat,oneBeforeLastMeterInFlat))
                 .build();
     }
     private BigDecimal countTotalElectricityPrice(MediaCost mediaCost,Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat){
         BigDecimal electricityPrice = new BigDecimal(mediaCost.getElectricity());
-        BigDecimal totalConsumption = countMeterConsumptionByflat(lastMeterInFlat.getElectricity(),oneBeforeLastMeterInFlat.getElectricity()).add(adminElectricityConsumptionPerFlat);
+        BigDecimal totalConsumption = countMeterConsumptionByflat(lastMeterInFlat.getElectricity(),oneBeforeLastMeterInFlat.getElectricity()).add(adminConsumptionPerFlat);
         BigDecimal totalElectricityCost = totalConsumption.multiply(electricityPrice).setScale(2, RoundingMode.UP);
         return totalElectricityCost;
     }
 
     private BigDecimal countAdminElectricityConsumptionPerFlat(Meter lastMeterInRealEstate, Meter oneBeforeLastMeterInRealEstate, int flatCount) {
         BigDecimal adminElectricityConsumption = new BigDecimal((lastMeterInRealEstate.getElectricity()-oneBeforeLastMeterInRealEstate.getElectricity())/flatCount).setScale(2,RoundingMode.HALF_UP);
-        adminElectricityConsumptionPerFlat = adminElectricityConsumption;
-        return adminElectricityConsumptionPerFlat;
+        adminConsumptionPerFlat = adminElectricityConsumption;
+        return adminConsumptionPerFlat;
     }
     protected BigDecimal countMeterConsumptionByflat(Double lastValue,Double oneBeforeLastValue) {
         Double lastMeterValue = lastValue;

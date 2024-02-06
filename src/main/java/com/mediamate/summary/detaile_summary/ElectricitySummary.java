@@ -2,7 +2,6 @@ package com.mediamate.summary.detaile_summary;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
@@ -11,10 +10,10 @@ import java.math.BigDecimal;
 @Setter
 
 public class ElectricitySummary  {
-    private Double electricityPrice;
-    private Double electricityMeterValueInFlat;
-    private Double electricityMeterValueForAdministration;
-    private BigDecimal adminElectricityConsumptionPerFlat;
-    private BigDecimal electricityConsumptionByFlat;
-    private BigDecimal electricityTotalPriceForFlat;
+    private Double price;
+    private Double meterValueInFlat;
+    private Double meterValueForAdministration;
+    private BigDecimal adminConsumptionPerFlat;
+    private BigDecimal consumptionByFlat;
+    private BigDecimal totalPriceForFlat;
 }

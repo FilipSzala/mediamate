@@ -23,12 +23,12 @@ public class Cost {
     private Long realEstateId;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name ="mediaPriceId", referencedColumnName = "id")
-    private MediaCost mediaCostPrice;
+    private MediaCost mediaCost;
     @OneToMany
     @JoinColumn(name = "priceId")
-    private List<AdditionalCost> additionalsCost;
-    private LocalDate createdDay=LocalDate.now();
-    public Cost(MediaCost mediaCostPrice) {
-        this.mediaCostPrice = mediaCostPrice;
+    private List<AdditionalCost> additionalCosts;
+    private LocalDate createdAt =LocalDate.now();
+    public Cost(MediaCost mediaCost) {
+        this.mediaCost = mediaCost;
     }
 }

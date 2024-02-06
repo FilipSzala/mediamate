@@ -10,13 +10,13 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class GasSummary {
-    private Double gasPrice;
-    private BigDecimal gasTotalPriceForFlat;
-    private BigDecimal gasTotalPriceForRealEstate;
-    private Double gasMeterValueInFlat;
-    private Double gasMeterValueInRealEstate;
-    private BigDecimal gasConsumptionByFlatInGJ;
-    private BigDecimal gasConsumptionByFlatInM3;
-    private BigDecimal gasConsumptionByFlatInPercent;
-    private BigDecimal gasConsumptionByRealEstateInM3;
+    private Double price;
+    private BigDecimal totalPriceForFlat;
+    private BigDecimal totalPriceForRealEstate;
+    private Double meterValueInFlat;
+    private Double meterValueInRealEstate;
+    private BigDecimal consumptionByFlatInGJ;
+    private BigDecimal consumptionByFlatInM3;
+    private BigDecimal consumptionByFlatInPercent;
+    private BigDecimal consumptionByRealEstateInM3;
 }

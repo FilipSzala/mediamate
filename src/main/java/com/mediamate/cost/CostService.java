@@ -17,7 +17,7 @@ public class CostService {
     }
         public Cost getPriceInCurrentMonth(List<Cost> costs){
            Cost costInCurrentMonth = costs.stream()
-                    .filter(price -> isSameYearAndMonth(price.getCreatedDay(),LocalDate.now()))
+                    .filter(price -> isSameYearAndMonth(price.getCreatedAt(),LocalDate.now()))
                     .findFirst().orElseThrow();
            return costInCurrentMonth;
         }

@@ -7,7 +7,6 @@ import com.mediamate.cost.additionalCost.ChargeType;
 import com.mediamate.cost.mediaCost.MediaCost;
 import com.mediamate.flat.Flat;
 import com.mediamate.meter.Meter;
-import com.mediamate.meter.MeterService;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.summary.detaile_summary.AdditionalCostSummaryService;
@@ -61,20 +60,21 @@ public class MediaSummaryService{
         RealEstate realEstate =realEstateService.findById(realEstateId).get();
         Cost cost = costService.getCostByRealEstateIdAndDate(realEstateId,date).get();
         List <Flat> flats = realEstate.getFlats();
-        mediaCost = cost.getMediaCostPrice();
+        mediaCost = cost.getMediaCost();
         lastMeterInRealEstate = setLastMeterInRealEstate(realEstate);
         oneBeforeLastMeterInRealEstate = setOneBeforeLastMeterInRealEstate(realEstate);
         flatCount = realEstate.getFlats().size();
+        List <AdditionalCost> additionalCosts = cost.getAdditionalCosts();
 
         List<MediaSummary> summaries = new ArrayList<>();
 
 
-        summaries = createSummaries(realEstate, cost, flats);
+        summaries = createSummaries(realEstate,cost, flats, additionalCosts);
         /*setSum(summaries);*/
 
         return summaries;
     }
-    private List<MediaSummary> createSummaries(RealEstate realEstate, Cost cost, List<Flat> flats) {
+    private List<MediaSummary> createSummaries(RealEstate realEstate,Cost cost,  List<Flat> flats,List<AdditionalCost> additionalCosts) {
         List<MediaSummary> summaries;
         summaries = flats.stream()
                 .map(flat -> {
@@ -85,13 +85,11 @@ public class MediaSummaryService{
                     return MediaSummary.builder()
                             .createdAt(LocalDate.now())
                             .rentersName(flat.getRentersFullName())
-
-
-
                             .electricitySummary(electricitySummaryService.createElectricity(mediaCost,lastMeterInFlat,oneBeforeLastMeterInFlat,lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount))
                             .gasSummary(gasSummaryService.createGasSummary(flats,mediaCost,lastMeterInFlat,oneBeforeLastMeterInFlat,lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount))
                             .waterSummary(waterSummaryService.createWaterSummary(mediaCost,lastMeterInFlat,oneBeforeLastMeterInFlat,lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount))
-                            .additionalCostSummaries(additionalCostSummaryService.createAdditionalCostSummary())
+                            .additionalCostSummaries(additionalCostSummaryService.createAdditionalCostsSummary(additionalCosts,flatCount))
+                            .totalAdditionalCost(setAdditionalPrice(cost,flat.getRenterCount()))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -112,17 +110,8 @@ public class MediaSummaryService{
         return  realEstate.getAdministrationMeter().get(realEstate.getAdministrationMeter().size()-2);
     }
 
-
-    private BigDecimal setGasConsumption(){
-        Double valueOfLastGasMeter = lastMeterInFlat.getGas();
-        Double valueOfOneBeforeLastGasMeter = oneBeforeLastMeterInFlat.getGas();
-        BigDecimal totalGasConsumpcion = new BigDecimal(valueOfLastGasMeter-valueOfOneBeforeLastGasMeter).setScale(2,RoundingMode.HALF_UP);
-        return totalGasConsumpcion;
-    }
-
-
     private BigDecimal setAdditionalPrice (Cost cost,int renterCount){
-        List<AdditionalCost> additionalCosts = cost.getAdditionalsCost();
+        List<AdditionalCost> additionalCosts = cost.getAdditionalCosts();
         Double sum = additionalCosts.stream()
                 .mapToDouble(additionalCost -> countAdditionalCost(additionalCost,renterCount))
                 .sum();
