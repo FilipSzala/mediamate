@@ -2,7 +2,7 @@ package com.mediamate.initialSetup;
 
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
-import com.mediamate.owner.OwnerService;
+import com.mediamate.user.role.owner.OwnerService;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.initialSetup.request.FlatRequest;
@@ -33,7 +33,7 @@ public class FirstSetupController {
     }
     // IMPORTANT!!!
     // All of these methods are useful only for logged-in users and return objects belonging to the user. For example,
-    // method getRealEstates in this class doesn't return all real estates in database, but only the real estates of the logged-in user.
+    // method getRealEstates in this class doesn't return all real estates in database, but only the real estates logged-in user.
     @PostMapping("/owner")
     public void createOwner (@RequestBody OwnerRequest ownerRequest){
         ownerService.createOwner(ownerRequest);

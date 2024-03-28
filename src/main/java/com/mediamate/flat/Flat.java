@@ -19,7 +19,6 @@ public class Flat extends Renter  {
     @ManyToOne
     @JoinColumn(name = "realEstateId", referencedColumnName = "id")
     private RealEstate realEstate;
-    //TODO: Create class for renters.
     @OneToMany(mappedBy = "flat")
     private List<Meter> meters = new ArrayList<>();
 

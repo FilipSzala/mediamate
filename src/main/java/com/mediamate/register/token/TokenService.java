@@ -14,15 +14,13 @@ public class TokenService {
     @Autowired
     TokenRepository tokenRepository;
 
-    public void createToken(User user) {
+    public Token createToken() {
         String generatedToken = generateToken();
-        Token tokenObject = new Token(
+        Token token = new Token(
                 generatedToken,
                 LocalDate.now(),
-                LocalDateTime.now().plusMinutes(5),
-                user
-        );
-        tokenRepository.save(tokenObject);
+                LocalDateTime.now().plusMinutes(5));
+        return token;
     }
 
     public Optional<Token> findByKey(String key) {

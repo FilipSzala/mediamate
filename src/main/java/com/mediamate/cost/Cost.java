@@ -21,11 +21,16 @@ public class Cost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long realEstateId;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name ="mediaPriceId", referencedColumnName = "id")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn (
+            name ="media_cost_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "cost_media_cost_fk"
+            ))
     private MediaCost mediaCost;
-    @OneToMany
-    @JoinColumn(name = "priceId")
+    @OneToMany(mappedBy = "cost",
+                cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private List<AdditionalCost> additionalCosts;
     private LocalDate createdAt =LocalDate.now();
     public Cost(MediaCost mediaCost) {

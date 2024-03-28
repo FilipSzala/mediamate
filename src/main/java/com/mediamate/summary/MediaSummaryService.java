@@ -121,7 +121,7 @@ public class MediaSummaryService{
     private double countAdditionalCost(AdditionalCost additionalCost, int renterCount){
         ChargeType chargeType =additionalCost.getChargeType();
         int billingTimePeriod =additionalCost.getTimePeriod().getValue();
-        Double additionalCostAmount = additionalCost.getCost();
+        Double additionalCostAmount = additionalCost.getPrice();
 
         if(chargeType.equals(ChargeType.PERSON)){
             return (additionalCostAmount*renterCount)/billingTimePeriod;

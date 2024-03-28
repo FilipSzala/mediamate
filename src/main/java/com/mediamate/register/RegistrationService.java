@@ -1,10 +1,12 @@
 package com.mediamate.register;
 
 import com.mediamate.register.email.EmailSenderService;
+import com.mediamate.register.token.Token;
 import com.mediamate.register.token.TokenService;
 import com.mediamate.user.User;
-import com.mediamate.user.UserRole;
+import com.mediamate.user.role.UserRole;
 import com.mediamate.user.UserService;
+import com.mediamate.user.role.owner.Owner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,21 +44,25 @@ public class RegistrationService {
             User user = new User(
                     registrationRequest.getEmail(),
                     registrationRequest.getPassword(),
-                    UserRole.OWNER_REAL_ESTATE);
-
+                         new Owner(
+                                 registrationRequest.firstName,
+                                 registrationRequest.lastName
+                    ));
+            Token token = tokenService.createToken();
+            user.addToken(token);
             userService.createUser(user);
-
-            String tokenKey = tokenService.findKeyTokenByEmail(user.getEmail());
-            emailSenderService.sendEmail(
-                    user.getEmail(),
-                    emailSubject,
-                    linkVerification+tokenKey
-            );
-
+            sendEmailWithToken(user);
             return HttpStatus.OK.name();
         } catch (IllegalStateException e) {
             return e.getMessage();
         }
+    }
+    public void sendEmailWithToken(User user){
+        String tokenKey = tokenService.findKeyTokenByEmail(user.getEmail());
+        emailSenderService.sendEmail(
+                user.getEmail(),
+                emailSubject,
+                linkVerification+tokenKey);
     }
 
     private Boolean emailVerify(String email) {

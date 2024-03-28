@@ -28,7 +28,7 @@ public class AdditionalCostService {
 
     public void createAdditionalCost(AdditionalCost additionalCost){
        Long priceId = getPriceIdInCurrentMoth();
-       additionalCost.setPriceId(priceId);
+       additionalCost.setId(priceId);
         additionalCostRepository.save(additionalCost);
     }
     private Long getPriceIdInCurrentMoth(){

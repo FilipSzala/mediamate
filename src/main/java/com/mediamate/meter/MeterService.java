@@ -22,7 +22,6 @@ public class MeterService {
     RealEstateService realEstateService;
     @Autowired
     public MeterService(FlatService flatService, RealEstateService realEstateService) {
-
         this.flatService = flatService;
         this.realEstateService = realEstateService;
     }

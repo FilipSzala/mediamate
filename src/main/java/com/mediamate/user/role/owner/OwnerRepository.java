@@ -1,4 +1,4 @@
-package com.mediamate.owner;
+package com.mediamate.user.role.owner;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

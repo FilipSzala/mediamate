@@ -1,23 +1,19 @@
 package com.mediamate.user;
 
-import com.mediamate.owner.Owner;
+import com.mediamate.register.token.Token;
+import com.mediamate.user.role.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+
+
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +22,23 @@ public class User implements UserDetails {
     private String password;
     private Boolean enabled = false;
     private Boolean locked = false;
-    @Enumerated
+    @OneToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(
+            name = "user_role",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "user_role_fk"
+            )
+    )
     private UserRole userRole;
-    @OneToOne
-    @JoinColumn (name = "ownerId")
-    Owner owner;
+    @OneToMany(
+            cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+            mappedBy = "user"
+    )
+    private List<Token> tokens;
 
+    public User() {
+    }
 
     public User(String email, String password, UserRole userRole) {
         this.email = email;
@@ -39,11 +46,63 @@ public class User implements UserDetails {
         this.userRole = userRole;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    public void addToken(Token token) {
+        if(!this.tokens.contains(token)){
+          this.tokens.add(token);
+          token.setUser(this);
+        }
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.toString());
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
         return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
     @Override

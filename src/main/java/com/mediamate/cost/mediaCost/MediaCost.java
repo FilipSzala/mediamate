@@ -1,9 +1,7 @@
 package com.mediamate.cost.mediaCost;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.mediamate.cost.Cost;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +20,6 @@ public class MediaCost {
     private double gas;
     private double electricity;
     private double water;
+    @OneToOne(mappedBy = "mediaCost")
+    private Cost cost;
 }

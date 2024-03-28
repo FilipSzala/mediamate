@@ -1,9 +1,7 @@
 package com.mediamate.cost.additionalCost;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.mediamate.cost.Cost;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,11 +18,19 @@ public class AdditionalCost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long priceId;
     private String name;
     private String information;
-    private Double cost;
+    private Double price;
     private Month timePeriod;
     private ChargeType chargeType;
+    @ManyToOne
+    @JoinColumn (
+            name = "cost_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "additional_cost_fk"
+            )
+    )
+    private Cost cost;
 
 }

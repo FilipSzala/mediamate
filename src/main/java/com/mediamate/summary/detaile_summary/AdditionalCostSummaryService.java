@@ -33,7 +33,7 @@ public class AdditionalCostSummaryService {
     private BigDecimal countPriceForMonth(AdditionalCost additionalCost){
 
         BigDecimal billingTimePeriod = new BigDecimal(additionalCost.getTimePeriod().getValue());
-        BigDecimal additionalCostAmount = new BigDecimal(additionalCost.getCost());
+        BigDecimal additionalCostAmount = new BigDecimal(additionalCost.getPrice());
         if(additionalCost.getChargeType().equals(ChargeType.FLAT)){
             BigDecimal priceForMonth = additionalCostAmount
                     .divide(billingTimePeriod, 2, RoundingMode.UP)

@@ -1,9 +1,10 @@
-package com.mediamate.owner;
+package com.mediamate.user.role.owner;
 
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.OwnerRequest;
+import com.mediamate.user.User;
 import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class OwnerService {
         this.realEstateService = realEstateService;
     }
 
-    public void createOwner(OwnerRequest ownerRequest){
+  /*  public void createOwner(OwnerRequest ownerRequest){
        List<RealEstate> realEstates = realEstateService.createEmptyRealEstate(ownerRequest.getRealEstateCount());
         Owner owner = new Owner(
                 ownerRequest.getFirstName(),
@@ -34,7 +35,7 @@ public class OwnerService {
         );
         ownerRepository.save(owner);
         userService.addOwner(owner);
-    }
+    }*/
 
     public List<Owner> displayOwner() {
         return ownerRepository.findAll();
@@ -44,4 +45,7 @@ public class OwnerService {
         return ownerRepository.findById(ownerId);
     }
 
+    public boolean hasRealEstate(Owner owner) {
+        return owner.getRealEstates()!=null? true:false;
+    }
 }

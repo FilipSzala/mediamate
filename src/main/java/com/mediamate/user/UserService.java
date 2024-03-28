@@ -1,6 +1,6 @@
 package com.mediamate.user;
 
-import com.mediamate.owner.Owner;
+import com.mediamate.user.role.owner.Owner;
 import com.mediamate.register.token.Token;
 import com.mediamate.register.token.TokenService;
 import com.mediamate.security.SecurityService;
@@ -40,7 +40,6 @@ public class UserService implements UserDetailsService {
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         userRepository.save(user);
-        tokenService.createToken(user);
     }
     public Optional<User> findById (Long userId){
         return userRepository.findById(userId);
@@ -64,20 +63,13 @@ public class UserService implements UserDetailsService {
         databaseUser.setEnabled(modifiedUser.getEnabled());
         databaseUser.setLocked(modifiedUser.getLocked());
         databaseUser.setUserRole(modifiedUser.getUserRole());
-        databaseUser.setOwner(modifiedUser.getOwner());
+        databaseUser.setUserRole(modifiedUser.getUserRole());
         userRepository.save(databaseUser);
     }
 
-    public Boolean isOwnerRealEstate(User user){
-        return user.getUserRole()==UserRole.OWNER_REAL_ESTATE ? true:false;
-    }
-    public Boolean hasOwner(User user){
-        return user.getOwner()!=null?true:false;
+    public Boolean isOwnerRole(User user){
+        return Owner.class.equals(user.getUserRole()) ? true:false;
     }
 
-    public void addOwner(Owner owner){
-        User user = securityService.findUserBySession();
-        user.setOwner(owner);
-        updateUserPartially(user.getId(),user);
-    }
+
 }

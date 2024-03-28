@@ -1,6 +1,7 @@
 package com.mediamate.security;
 
-import com.mediamate.owner.Owner;
+import com.mediamate.user.role.UserRole;
+import com.mediamate.user.role.owner.Owner;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateDto;
 import com.mediamate.realestate.RealEstateMapper;
@@ -20,20 +21,30 @@ public class SecurityService {
         return user;
     }
     public Long findOwnerIdBySession(){
-        return findUserBySession().getOwner().getOwnerId();
+        UserRole userRole = findUserBySession().getUserRole();
+        if(Owner.class.equals(userRole.getClass())) {
+            Long ownerId = userRole.getId();
+            return ownerId;
+        }
+        return null;
     }
 
     public List<RealEstateDto> getRealEstatesDtoBySession() {
-        Owner owner = findOwnerBySession();
-        List <RealEstate> realEstates = owner.getRealEstates();
-        List <RealEstateDto> realEstateDtos = RealEstateMapper.mapToRealEstateDtos(realEstates);
-        return realEstateDtos;
+        UserRole userRole = findUserRoleBySession();
+        if(Owner.class.equals(userRole.getClass())) {
+            List<RealEstate> realEstates = ((Owner) userRole).getRealEstates();
+            List<RealEstateDto> realEstateDtos = RealEstateMapper.mapToRealEstateDtos(realEstates);
+            return realEstateDtos;
+        }
+        else {
+            return null;
+        }
     }
 
-    private Owner findOwnerBySession() {
+    private UserRole findUserRoleBySession() {
         User user = findUserBySession();
-        Owner owner = user.getOwner();
-        return owner;
+        UserRole userrole = user.getUserRole();
+        return userrole;
     }
 
 }

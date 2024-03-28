@@ -22,14 +22,18 @@ public class Token {
     private LocalDateTime expiredAt;
     private LocalDateTime confirmedAt;
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(
+            name = "userId",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "token_user_fk"
+            ))
     private User user;
 
 
-    public Token(String tokenKey, LocalDate createdAt, LocalDateTime expiredAt, User user) {
+    public Token(String tokenKey, LocalDate createdAt, LocalDateTime expiredAt) {
         this.tokenKey = tokenKey;
         this.createdAt = createdAt;
         this.expiredAt = expiredAt;
-        this.user = user;
     }
 }
