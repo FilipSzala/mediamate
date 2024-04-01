@@ -1,13 +1,16 @@
 package com.mediamate.realestate;
 
+import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.meter.Meter;
 import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.RealEstateRequest;
+import com.mediamate.user.User;
 import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -39,10 +42,10 @@ public class RealEstateService {
         for (int i=0;i<numberOfRealEstate;i++) {
             RealEstate realEstate = new RealEstate();
             realEstates.add(realEstate);
-            realEstateRepository.save(realEstate);
         }
         return realEstates;
     }
+    @Transactional
     public void setupRealEstates(List<RealEstateRequest> realEstatesRequest) {
         Long ownerId = securityService.findOwnerIdBySession();
         List<RealEstate> databaseRealEstates = findAllByOwnerId(ownerId);
@@ -51,21 +54,20 @@ public class RealEstateService {
                 .forEach(index -> {
                     RealEstate realEstate = databaseRealEstates.get(index);
                     realEstate.setAddress(realEstatesRequest.get(index).getAddress());
-                    realEstate.setFlats(flatService.createEmptyFlats(realEstatesRequest.get(index).getFlatCount(),databaseRealEstates.get(index)));
+                    List <Flat> flats = flatService.createEmptyFlats(realEstatesRequest.get(index).getFlatCount());
+                    realEstate.addFlats(flats);
                     realEstateRepository.save(realEstate);
                 });
     }
 
-    public void updateRealEstatePartially(Long realEstateId, RealEstate modifiedRealEstate) {
-        RealEstate databaseRealEstate = findById(realEstateId).orElseThrow();
-        databaseRealEstate.setOwnerId(modifiedRealEstate.getOwnerId());
-        databaseRealEstate.setAddress(modifiedRealEstate.getAddress());
-        databaseRealEstate.setFlats(modifiedRealEstate.getFlats());
-        realEstateRepository.save(databaseRealEstate);
+    public void updateRealEstate(RealEstate modifiedRealEstate) {
+        realEstateRepository.save(modifiedRealEstate);
     }
-
-    public void addMeterToRealEstate(RealEstate realEstate, Meter meter) {
-        realEstate.addMeterToAdministrationMeters(meter);
-        updateRealEstatePartially(realEstate.getId(),realEstate);
+    public List <RealEstateDto> findAllByLogInUser() {
+        User user = securityService.findUserBySession();
+        Long ownerId = user.getUserRole().getId();
+        List<RealEstate> realEstates = findAllByOwnerId(ownerId);
+        List<RealEstateDto> realEstateDtos = RealEstateMapper.mapToRealEstateDtos(realEstates);
+        return realEstateDtos;
     }
 }

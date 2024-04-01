@@ -15,7 +15,6 @@ public class RealEstateMapper {
     private static RealEstateDto mapToRealEstateDto (RealEstate realEstate){
         return RealEstateDto.builder()
                 .id(realEstate.getId())
-                .ownerId(realEstate.getOwnerId())
                 .address(realEstate.getAddress())
                 .build();
     }

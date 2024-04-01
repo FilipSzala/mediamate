@@ -52,13 +52,13 @@ public class ImageController {
                     .ok()
                     .body("Images added");
         }
-         @GetMapping()
+        /* @GetMapping()
         public List<ImageDto> getImagesWithoutType (HttpSession httpSession){
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         List<Image> images = imageService.getImagesWithoutTypeInCurrentDay(realEstateId);
         List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
         return imageDtos;
-        }
+        }*/
 
         @PostMapping("/meter")
         public ResponseEntity<String> setupMeterWithoutConfirm(@RequestBody MeterRequest meterRequest,HttpSession httpSession) {

@@ -25,7 +25,7 @@ public class LoginService {
 
     public String redirect() {
         User user = securityService.findUserBySession();
-        if (!userService.isOwnerRole(user)){
+        if (userService.isUserRoleCreated(user)){
             //Todo: Redirect to main interface (it is user or admin)
             return "Main interface";
         }

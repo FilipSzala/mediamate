@@ -2,8 +2,8 @@ package com.mediamate.initialSetup;
 
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
+import com.mediamate.realestate.RealEstateDto;
 import com.mediamate.user.role.owner.OwnerService;
-import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.initialSetup.request.FlatRequest;
 import com.mediamate.initialSetup.request.OwnerRequest;
@@ -23,7 +23,6 @@ public class FirstSetupController {
     FlatService flatService;
 
     SecurityService securityService;
-    HttpSession httpSession;
     @Autowired
     public FirstSetupController(OwnerService ownerService,RealEstateService realEstateService,FlatService flatService, SecurityService securityService) {
         this.ownerService = ownerService;
@@ -38,16 +37,16 @@ public class FirstSetupController {
     public void createOwner (@RequestBody OwnerRequest ownerRequest){
         ownerService.createOwner(ownerRequest);
     }
-    @GetMapping ("/real-estates")
-    public List<RealEstate> getRealEstatesLoginUser(){
-        httpSession.getAttributeNames();
-        Long ownerId = securityService.findOwnerIdBySession();
-        return  realEstateService.findAllByOwnerId(ownerId);
-    }
     @PatchMapping("/real-estates")
     public void setupRealEstates (@RequestBody List<RealEstateRequest> realEstateRequests){
         realEstateService.setupRealEstates(realEstateRequests);
     }
+    @GetMapping ("/real-estates")
+    public List<RealEstateDto> getRealEstatesLoginUser(){
+        List <RealEstateDto> realEstateDtos = realEstateService.findAllByLogInUser();
+        return  realEstateDtos;
+    }
+
 
     @GetMapping("/flats/{realEstateId}")
     public List<Flat> getFlatsByRealEstateId (@PathVariable Long realEstateId){

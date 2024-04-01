@@ -16,8 +16,8 @@ public class MediaSummaryController {
         this.mediaSummaryService = mediaSummaryService;
     }
 
-    @GetMapping("/{date}")
+ /*   @GetMapping("/{date}")
     public List<MediaSummary> getSummaries (HttpSession httpSession, @PathVariable LocalDate date){
         return mediaSummaryService.generateFlatSummaries(httpSession,date);
-    }
+    }*/
 }

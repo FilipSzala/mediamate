@@ -54,27 +54,29 @@ public class MediaSummaryService{
         this.additionalCostSummaryService = additionalCostSummaryService;
     }
 
-    public List<MediaSummary> generateFlatSummaries(HttpSession httpSession, LocalDate date){
+/*    public List<MediaSummary> generateFlatSummaries(HttpSession httpSession, LocalDate date){
 
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate =realEstateService.findById(realEstateId).get();
         Cost cost = costService.getCostByRealEstateIdAndDate(realEstateId,date).get();
         List <Flat> flats = realEstate.getFlats();
+        if(Cost )
         mediaCost = cost.getMediaCost();
         lastMeterInRealEstate = setLastMeterInRealEstate(realEstate);
         oneBeforeLastMeterInRealEstate = setOneBeforeLastMeterInRealEstate(realEstate);
         flatCount = realEstate.getFlats().size();
         List <AdditionalCost> additionalCosts = cost.getAdditionalCosts();
+        List <AdditionalCost> additionalCosts =
 
         List<MediaSummary> summaries = new ArrayList<>();
 
 
         summaries = createSummaries(realEstate,cost, flats, additionalCosts);
-        /*setSum(summaries);*/
+        *//*setSum(summaries);*//*
 
         return summaries;
-    }
-    private List<MediaSummary> createSummaries(RealEstate realEstate,Cost cost,  List<Flat> flats,List<AdditionalCost> additionalCosts) {
+    }*/
+/*    private List<MediaSummary> createSummaries(RealEstate realEstate,Cost cost,  List<Flat> flats,List<AdditionalCost> additionalCosts) {
         List<MediaSummary> summaries;
         summaries = flats.stream()
                 .map(flat -> {
@@ -94,8 +96,7 @@ public class MediaSummaryService{
                 })
                 .collect(Collectors.toList());
         return summaries;
-    }
-
+    }*/
   /*  private void setSum(List<MediaSummary> summaries) {
         summaries.stream().forEach(mediaSummary -> mediaSummary.setTotalMediaSumByFlat(mediaSummary.getWaterTotalPriceForFlat().add(mediaSummary.getElectricityTotalPriceForFlat().add(mediaSummary.getGasTotalPriceForFlat().add(mediaSummary.getAdditionalPrice()))).setScale(2,RoundingMode.UP)));
     }
@@ -104,20 +105,20 @@ public class MediaSummaryService{
 
 
     private Meter setLastMeterInRealEstate(RealEstate realEstate) {
-        return  realEstate.getAdministrationMeter().get(realEstate.getAdministrationMeter().size()-1);
+        return  realEstate.getMeters().get(realEstate.getMeters().size()-1);
     }
     private Meter setOneBeforeLastMeterInRealEstate(RealEstate realEstate) {
-        return  realEstate.getAdministrationMeter().get(realEstate.getAdministrationMeter().size()-2);
+        return  realEstate.getMeters().get(realEstate.getMeters().size()-2);
     }
 
-    private BigDecimal setAdditionalPrice (Cost cost,int renterCount){
+/*    private BigDecimal setAdditionalPrice (Cost cost,int renterCount){
         List<AdditionalCost> additionalCosts = cost.getAdditionalCosts();
         Double sum = additionalCosts.stream()
                 .mapToDouble(additionalCost -> countAdditionalCost(additionalCost,renterCount))
                 .sum();
         BigDecimal totalAdditionalCost = new BigDecimal(sum).setScale(2, RoundingMode.HALF_UP);
         return totalAdditionalCost;
-    }
+    }*/
     private double countAdditionalCost(AdditionalCost additionalCost, int renterCount){
         ChargeType chargeType =additionalCost.getChargeType();
         int billingTimePeriod =additionalCost.getTimePeriod().getValue();

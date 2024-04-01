@@ -44,10 +44,8 @@ public class RegistrationService {
             User user = new User(
                     registrationRequest.getEmail(),
                     registrationRequest.getPassword(),
-                         new Owner(
-                                 registrationRequest.firstName,
-                                 registrationRequest.lastName
-                    ));
+                    "OWNER");
+
             Token token = tokenService.createToken();
             user.addToken(token);
             userService.createUser(user);

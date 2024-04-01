@@ -5,9 +5,12 @@ import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.OwnerRequest;
 import com.mediamate.user.User;
+import com.mediamate.user.UserRepository;
 import com.mediamate.user.UserService;
+import com.mediamate.user.role.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,23 +22,33 @@ public class OwnerService {
     UserService userService;
     RealEstateService realEstateService;
     SecurityService securityService;
+    private final UserRoleRepository userRoleRepository;
+    private final UserRepository userRepository;
+
     @Autowired
-    public OwnerService(UserService userService,RealEstateService realEstateService) {
+    public OwnerService(UserService userService,RealEstateService realEstateService,SecurityService securityService,
+                        UserRoleRepository userRoleRepository,
+                        UserRepository userRepository) {
 
         this.userService = userService;
         this.realEstateService = realEstateService;
+        this.securityService = securityService;
+        this.userRoleRepository = userRoleRepository;
+        this.userRepository = userRepository;
     }
 
-  /*  public void createOwner(OwnerRequest ownerRequest){
-       List<RealEstate> realEstates = realEstateService.createEmptyRealEstate(ownerRequest.getRealEstateCount());
+    @Transactional
+    public void createOwner(OwnerRequest ownerRequest){
+        List<RealEstate> realEstates = realEstateService.createEmptyRealEstate(ownerRequest.getRealEstateCount());
         Owner owner = new Owner(
                 ownerRequest.getFirstName(),
-                ownerRequest.getLastName(),
-                realEstates
+                ownerRequest.getLastName()
         );
-        ownerRepository.save(owner);
-        userService.addOwner(owner);
-    }*/
+        owner.addRealEstates(realEstates);
+        User user = securityService.findUserBySession();
+        user.setUserRole(owner);
+        userService.updateUserPartially(user);
+    }
 
     public List<Owner> displayOwner() {
         return ownerRepository.findAll();
@@ -46,6 +59,9 @@ public class OwnerService {
     }
 
     public boolean hasRealEstate(Owner owner) {
-        return owner.getRealEstates()!=null? true:false;
+        if(owner==null){
+            return false;
+        }
+            return owner.getRealEstates() != null ? true : false;
     }
 }

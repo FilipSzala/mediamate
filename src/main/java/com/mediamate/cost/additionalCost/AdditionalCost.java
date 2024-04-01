@@ -10,11 +10,9 @@ import lombok.Setter;
 import java.time.Month;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class AdditionalCost {
+public class AdditionalCost extends Cost{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,15 +20,15 @@ public class AdditionalCost {
     private String information;
     private Double price;
     private Month timePeriod;
+    @Enumerated
     private ChargeType chargeType;
-    @ManyToOne
-    @JoinColumn (
-            name = "cost_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey (
-                    name = "additional_cost_fk"
-            )
-    )
-    private Cost cost;
-
+    public AdditionalCost() {
+    }
+    public AdditionalCost(String name, String information, Double price, Month timePeriod, ChargeType chargeType) {
+        this.name = name;
+        this.information = information;
+        this.price = price;
+        this.timePeriod = timePeriod;
+        this.chargeType = chargeType;
+    }
 }

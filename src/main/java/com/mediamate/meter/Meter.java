@@ -33,7 +33,12 @@ public class Meter {
     @JoinColumn(name = "flatId", referencedColumnName = "id")
     private Flat flat;
     @ManyToOne
-    @JoinColumn(name = "realEstateId", referencedColumnName = "id")
+    @JoinColumn(
+            name = "realEstateId",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "meter_real_estate_fk"
+            ))
     private RealEstate realEstate;
     private LocalDate createdAt;
     public void setImages(Image image) {

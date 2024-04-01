@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -36,6 +37,7 @@ public class UserService implements UserDetailsService {
 
         return userRepository.findByEmail(email).orElseThrow();
     }
+    @Transactional
     public void createUser(User user) {
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -51,24 +53,23 @@ public class UserService implements UserDetailsService {
 
     public void enableUser (String tokenKey){
         Optional <Token> token = tokenService.findByKey(tokenKey);
-        Long  userId=token.get().getUser().getId();
+        User user=token.get().getUser();
         User modifyUser=token.get().getUser();
         modifyUser.setEnabled(true);
-        updateUserPartially(userId,modifyUser);
+        updateUserPartially(user);
     }
-    public void updateUserPartially(Long userId,User modifiedUser) {
-        User databaseUser = findById(userId).orElseThrow();
-        databaseUser.setEmail(modifiedUser.getEmail());
-        databaseUser.setPassword(modifiedUser.getPassword());
-        databaseUser.setEnabled(modifiedUser.getEnabled());
-        databaseUser.setLocked(modifiedUser.getLocked());
-        databaseUser.setUserRole(modifiedUser.getUserRole());
-        databaseUser.setUserRole(modifiedUser.getUserRole());
+    public void updateUserPartially(User user) {
+        User databaseUser = findById(user.getId()).orElseThrow();
+        databaseUser.setEmail(user.getEmail());
+        databaseUser.setPassword(user.getPassword());
+        databaseUser.setEnabled(user.getEnabled());
+        databaseUser.setLocked(user.getLocked());
+        databaseUser.setUserRole(user.getUserRole());
         userRepository.save(databaseUser);
     }
 
-    public Boolean isOwnerRole(User user){
-        return Owner.class.equals(user.getUserRole()) ? true:false;
+    public Boolean isUserRoleCreated(User user){
+        return user.getUserRole()!=null? true:false;
     }
 
 

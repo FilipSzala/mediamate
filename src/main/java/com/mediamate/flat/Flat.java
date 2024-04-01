@@ -17,13 +17,23 @@ public class Flat extends Renter  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "realEstateId", referencedColumnName = "id")
+    @JoinColumn(
+            name = "real_estate_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "flat_real_estate_id"
+            ))
     private RealEstate realEstate;
-    @OneToMany(mappedBy = "flat")
+    @OneToMany(
+            mappedBy = "flat",
+            cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private List<Meter> meters = new ArrayList<>();
 
-    public void addMeterToMeters(Meter meter){
-        meters.add(meter);
+    public void addMeter(Meter meter) {
+        if (!this.meters.contains(meter)) {
+            this.meters.add(meter);
+            meter.setFlat(this);
+        }
     }
     public Flat(){
     }

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 @Inheritance (strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn (name = "role")
+@DiscriminatorColumn (name = "ROLE")
 
 public abstract class UserRole  {
   @Id
@@ -21,7 +21,9 @@ public abstract class UserRole  {
   private String lastName;
   private LocalDate createAt = LocalDate.now();
 
-  @OneToOne(mappedBy = "userRole")
+  @OneToOne(
+          mappedBy = "userRole",
+          cascade = {CascadeType.PERSIST,CascadeType.MERGE})
   private User user;
 
 
@@ -52,5 +54,9 @@ public abstract class UserRole  {
 
   public User getUser() {
     return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }

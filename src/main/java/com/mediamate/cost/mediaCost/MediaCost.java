@@ -8,11 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class MediaCost {
+public class MediaCost extends Cost {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -20,6 +18,13 @@ public class MediaCost {
     private double gas;
     private double electricity;
     private double water;
-    @OneToOne(mappedBy = "mediaCost")
-    private Cost cost;
+
+    public MediaCost() {
+    }
+
+    public MediaCost(double gas, double electricity, double water) {
+        this.gas = gas;
+        this.electricity = electricity;
+        this.water = water;
+    }
 }

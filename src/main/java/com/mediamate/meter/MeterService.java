@@ -32,11 +32,10 @@ public class MeterService {
         meterRepository.save(meter);
         flatService.addMeterToFlat(flat,meter);
     }
-    public void createMeterWithRealEstate(Meter meter, RealEstate realEstate, LocalDate date) {
+    public void createMeter(Meter meter, RealEstate realEstate, LocalDate date) {
         meter.setCreatedAt(date);
-        meter.setRealEstate(realEstate);
-        meterRepository.save(meter);
-        realEstateService.addMeterToRealEstate(realEstate,meter);
+        realEstate.addMeter(meter);
+        realEstateService.updateRealEstate(realEstate);
     }
     public Meter findMeterById (Long id){
         return meterRepository.findById(id).orElseThrow();

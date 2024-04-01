@@ -2,7 +2,9 @@ package com.mediamate.image;
 
 import com.mediamate.YearMonthResult;
 import com.mediamate.image.request.ImageRequest;
+import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateRepository;
+import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,18 @@ public class ImageService {
     @Autowired
     SecurityService securityService;
 
+    @Autowired
+    RealEstateService realEstateService;
+
     public void createImage (MultipartFile file,ImageType imageType,HttpSession httpSession) throws SQLException, IOException {
+        Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
+        RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
+
+
         Image image = new Image();
         image.setBlob(file);
         image.setImageType(imageType);
-        image.setRealEstateId((Long) httpSession.getAttribute("chosenRealEstateId"));
+        image.setRealEstate(realEstate);
         imageRepository.save(image);
     }
 
@@ -52,7 +61,6 @@ public class ImageService {
         databaseImage.setImage(modifiedImage.getImage());
         databaseImage.setCreateAt(modifiedImage.getCreateAt());
         imageRepository.save(databaseImage);
-
     }
 
   public List<Image> getImagesByImageTypeInCurrentDay(HttpSession httpSession, ImageType imageType){
@@ -68,10 +76,12 @@ public class ImageService {
                 imageRequest.getCreatedMonth());
         return images;
     }
+/*
     public List<Image> getImagesWithoutTypeInCurrentDay (Long realEstateId){
         List<Image> images = imageRepository.findImagesWithoutTypeByRealEstateId(realEstateId);
         return images;
     }
+*/
 
     public List<Image>filterImagesToMeterType(List<Image> images){
         return images.stream()

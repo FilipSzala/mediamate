@@ -1,6 +1,7 @@
 package com.mediamate.image;
 
 import com.mediamate.meter.Meter;
+import com.mediamate.realestate.RealEstate;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,15 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private Long realEstateId;
+    @ManyToOne
+    @JoinColumn (
+            name = "real_estate_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "image_real_estate_fk"
+            )
+    )
+    private RealEstate realEstate;
     @ManyToOne
     @JoinColumn(name = "meterId", referencedColumnName = "id")
     private Meter meter;

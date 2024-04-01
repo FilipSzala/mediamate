@@ -69,9 +69,9 @@ public class SettlementService {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate = realEstateService.findById(realEstateId).get();
         if(!doesMeterExistByDateInRealEstate(realEstateId,date)){
-            meterService.createMeterWithRealEstate(new Meter(),realEstate,date);
+            meterService.createMeter(new Meter(),realEstate,date);
         }
-        List<Meter> meters = realEstateService.findById(realEstateId).get().getAdministrationMeter();
+        List<Meter> meters = realEstateService.findById(realEstateId).get().getMeters();
         Meter meter = getMeterByDate(meters,date).get();
         setImage(image,meter);
         setMeterValueByType(meterRequest,meterRequest.getMeterType(),meter);
@@ -132,7 +132,7 @@ public class SettlementService {
     }
     private boolean doesMeterExistByDateInRealEstate(Long realEstateId,LocalDate localDate){
         RealEstate realEstate = realEstateService.findById(realEstateId).get();
-        List<Meter> metersInRealEstate = realEstate.getAdministrationMeter();
+        List<Meter> metersInRealEstate = realEstate.getMeters();
         Optional <Meter> foundMeter=getMeterByDate(metersInRealEstate,localDate);
         return foundMeter.isPresent()? true:false;
     }

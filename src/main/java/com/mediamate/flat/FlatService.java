@@ -7,7 +7,6 @@ import com.mediamate.security.SecurityService;
 import com.mediamate.initialSetup.request.FlatRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,21 +47,14 @@ public class FlatService {
     }
 
     public void addMeterToFlat (Flat flat, Meter meter){
-        flat.addMeterToMeters(meter);
+        flat.addMeter(meter);
         partiallyUpdateFlat(flat.getId(),flat);
     }
-
-    public List<Flat> findFlats (){
-        return flatRepository.findAll();
-    }
-
-    public List<Flat> createEmptyFlats (int numberOfFlats, RealEstate realEstate) {
+    public List<Flat> createEmptyFlats (int count) {
         List <Flat> flats = new ArrayList<>();
-        for (int i=0;i<numberOfFlats;i++){
+        for (int i=0;i<count;i++){
             Flat flat = new Flat();
-            flat.setRealEstate(realEstate);
             flats.add(flat);
-            flatRepository.save(flat);
         }
         return flats;
     }

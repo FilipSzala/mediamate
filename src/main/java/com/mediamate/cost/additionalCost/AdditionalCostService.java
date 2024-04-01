@@ -7,6 +7,7 @@ import com.mediamate.realestate.RealEstateService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,19 +27,12 @@ public class AdditionalCostService {
         this.realEstateService = realEstateService;
     }
 
+    @Transactional
     public void createAdditionalCost(AdditionalCost additionalCost){
-       Long priceId = getPriceIdInCurrentMoth();
-       additionalCost.setId(priceId);
-        additionalCostRepository.save(additionalCost);
-    }
-    private Long getPriceIdInCurrentMoth(){
+        Cost cost = additionalCost;
         Long realEstateId =(Long) httpSession.getAttribute("chosenRealEstateId");
-        RealEstate realEstate = realEstateService.findById(realEstateId).get();
-        List<Cost> costs = realEstate.getCosts();
-        Cost cost = costService.getPriceInCurrentMonth(costs);
-        Long priceId = cost.getId();
-       return priceId;
+        RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
+        realEstate.addCost(cost);
+        realEstateService.updateRealEstate(realEstate);
     }
-
-
 }

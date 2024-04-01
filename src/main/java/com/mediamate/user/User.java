@@ -22,28 +22,30 @@ public class User implements UserDetails {
     private String password;
     private Boolean enabled = false;
     private Boolean locked = false;
-    @OneToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @OneToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+                fetch = FetchType.EAGER)
     @JoinColumn(
-            name = "user_role",
+            name = "user_role_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey (
                     name = "user_role_fk"
             )
     )
     private UserRole userRole;
+    private String role;
     @OneToMany(
             cascade = {CascadeType.PERSIST,CascadeType.MERGE},
             mappedBy = "user"
     )
-    private List<Token> tokens;
+    private List<Token> tokens = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String email, String password, UserRole userRole) {
+    public User(String email, String password,String role) {
         this.email = email;
         this.password = password;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     public Long getId() {
@@ -95,7 +97,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.toString());
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(this.role);
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
         return authorities;
     }
