@@ -1,12 +1,11 @@
 package com.mediamate.image;
 
-import com.mediamate.YearMonthResult;
+import com.mediamate.YearMonthDate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image,Long> {
@@ -16,11 +15,11 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             @Param("imageType") ImageType imageType,
             @Param("createAt") LocalDate createAt);
 
-    @Query("SELECT new com.mediamate.YearMonthResult(YEAR(i.createAt), MONTH(i.createAt)) " +
+    @Query("SELECT new com.mediamate.YearMonthDate(YEAR(i.createAt), MONTH(i.createAt)) " +
             "FROM Image i " +
             "WHERE i.realEstate.id = :realEstateId " +
             "GROUP BY YEAR(i.createAt), MONTH(i.createAt)")
-    List<YearMonthResult> findAllDistinctYearMonthByRealEstateId(@Param("realEstateId") Long realEstateId);
+    List<YearMonthDate> findAllDistinctYearMonthByRealEstateId(@Param("realEstateId") Long realEstateId);
 
     @Query("SELECT i FROM Image i WHERE i.realEstate.id = :realEstateId AND i.imageType = :imageType AND YEAR(i.createAt) = :year AND MONTH(i.createAt) = :month")
     List<Image> findImagesByRealEstateIdAndImageTypeAndYearMonth(

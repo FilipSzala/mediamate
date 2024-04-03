@@ -5,11 +5,10 @@ import com.mediamate.flat.FlatService;
 import com.mediamate.realestate.RealEstateDto;
 import com.mediamate.user.role.owner.OwnerService;
 import com.mediamate.realestate.RealEstateService;
-import com.mediamate.initialSetup.request.FlatRequest;
+import com.mediamate.initialSetup.request.RenterRequest;
 import com.mediamate.initialSetup.request.OwnerRequest;
 import com.mediamate.initialSetup.request.RealEstateRequest;
 import com.mediamate.security.SecurityService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +36,7 @@ public class FirstSetupController {
     public void createOwner (@RequestBody OwnerRequest ownerRequest){
         ownerService.createOwner(ownerRequest);
     }
-    @PatchMapping("/real-estates")
+    @PutMapping("/real-estates")
     public void setupRealEstates (@RequestBody List<RealEstateRequest> realEstateRequests){
         realEstateService.setupRealEstates(realEstateRequests);
     }
@@ -52,8 +51,8 @@ public class FirstSetupController {
     public List<Flat> getFlatsByRealEstateId (@PathVariable Long realEstateId){
     return flatService.findFlatsByRealEstateId(realEstateId);
     }
-    @PatchMapping("/flats/{realEstateId}")
-    public void setupFlats (@PathVariable Long realEstateId,@RequestBody List<FlatRequest> flatRequests){
-        flatService.setupFlats(realEstateId,flatRequests);
+    @PutMapping("/flats")
+    public void setupFlats (@RequestBody List<RenterRequest> renterRequests){
+        flatService.setupFlats(renterRequests);
     }}
 

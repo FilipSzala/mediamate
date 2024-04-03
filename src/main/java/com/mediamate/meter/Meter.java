@@ -2,46 +2,64 @@ package com.mediamate.meter;
 
 import com.mediamate.flat.Flat;
 import com.mediamate.image.Image;
-import com.mediamate.meter.water.Water;
 import com.mediamate.realestate.RealEstate;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class Meter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double electricity;
-    private double gas;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name ="waterId", referencedColumnName = "id")
-    private Water water;
-    @OneToMany(mappedBy = "meter")
-    private List<Image> images;
-    @ManyToOne
-    @JoinColumn(name = "flatId", referencedColumnName = "id")
-    private Flat flat;
+    private Double value;
+    @OneToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinColumn(
+            name = "image_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "meter_iamge_fk"
+                    )
+    )
+    private Image image;
     @ManyToOne
     @JoinColumn(
-            name = "realEstateId",
+            name = "flatId",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey (
+                    name = "meter_flat_fk"
+            ))
+    private Flat flat;
+    @ManyToOne
+    @JoinColumn (
+            name = "real_estate_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey (
                     name = "meter_real_estate_fk"
-            ))
+            )
+    )
     private RealEstate realEstate;
+    @Enumerated
+    private MeterType meterType;
+    @Enumerated
+    private MeterOwnership meterOwnership;
     private LocalDate createdAt;
-    public void setImages(Image image) {
-        images.add(image);
+
+    public Meter() {
     }
+    public Meter(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Meter(Double value, MeterType meterType, LocalDate createdAt) {
+        this.value = value;
+        this.meterType = meterType;
+        this.createdAt = createdAt;
+    }
+
+
 }

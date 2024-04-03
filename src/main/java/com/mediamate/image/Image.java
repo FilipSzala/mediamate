@@ -28,8 +28,7 @@ public class Image {
             )
     )
     private RealEstate realEstate;
-    @ManyToOne
-    @JoinColumn(name = "meterId", referencedColumnName = "id")
+    @OneToOne (mappedBy = "image")
     private Meter meter;
     @Lob
     private Blob image;

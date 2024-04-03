@@ -1,9 +1,8 @@
 package com.mediamate.meter;
 
-import com.mediamate.YearMonthResult;
+import com.mediamate.YearMonthDate;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
-import com.mediamate.meter.water.Water;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @NoArgsConstructor
@@ -26,47 +26,23 @@ public class MeterService {
         this.realEstateService = realEstateService;
     }
 
-    public void createMeterWithFlat(Meter meter,Flat flat, LocalDate date){
-        meter.setCreatedAt(date);
-        meter.setFlat(flat);
-        meterRepository.save(meter);
-        flatService.addMeterToFlat(flat,meter);
+    public Optional<Meter> getMeterByRealEstateAndTypeAndYearMonth(RealEstate realEstate, MeterType meterType, LocalDate localDate){
+        int localDateMonth = localDate.getMonthValue();
+        int localDateYear = localDate.getYear();
+       return meterRepository.findMeterByRealEstateAndTypeAndYearMonth(realEstate, meterType, localDateYear, localDateMonth);
     }
-    public void createMeter(Meter meter, RealEstate realEstate, LocalDate date) {
-        meter.setCreatedAt(date);
-        realEstate.addMeter(meter);
-        realEstateService.updateRealEstate(realEstate);
-    }
-    public Meter findMeterById (Long id){
-        return meterRepository.findById(id).orElseThrow();
+    public Optional<Meter> getMeterByFlatAndTypeAndYearMonth(Flat flat, MeterType meterType, LocalDate localDate){
+        int localDateMonth = localDate.getMonthValue();
+        int localDateYear = localDate.getYear();
+        return meterRepository.findMeterByFlatAndTypeAndYearMonth(flat, meterType, localDateYear, localDateMonth);
     }
 
-    public void addWaterToMeter(Water water,Long meterId) {
-        Meter meter = findMeterById(meterId);
-        meter.setWater(water);
-        partiallyUpdateMeter(meterId,meter);
-    }
-    public List<Meter> getMetersByFlatIdAndYearMonth(Long flatId, YearMonthResult yearMonthResult){
-        int year;
-        int month;
-        if(yearMonthResult!=null) {
-            year = yearMonthResult.getYear();
-            month = yearMonthResult.getMonth();
-        }
-        else {
-            year = LocalDate.now().getYear();
-            month = LocalDate.now().getMonthValue();
-        }
-        return meterRepository.findMetersByFlatIdAndYearMonth(flatId,year,month);
+    public Optional<Meter> getMeterByYearMonthAndType (MeterType meterType, YearMonthDate yearMonthDate){
+        return meterRepository.findMeterByYearMonthDateAndMeterType(meterType, yearMonthDate.year, yearMonthDate.month);
     }
 
-    public void partiallyUpdateMeter(Long meterId, Meter updatedMeter) {
-        Meter databaseMeter = findMeterById(meterId);
-        databaseMeter.setElectricity(updatedMeter.getElectricity());
-        databaseMeter.setGas(updatedMeter.getGas());
-        databaseMeter.setWater(updatedMeter.getWater());
-        databaseMeter.setFlat(updatedMeter.getFlat());
-        meterRepository.save(databaseMeter);
+    public void updateMeter(Meter updatedMeter) {
+        meterRepository.save(updatedMeter);
     }
 
 

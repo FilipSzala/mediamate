@@ -3,7 +3,6 @@ package com.mediamate.summary;
 import com.mediamate.summary.detaile_summary.AdditionalCostSummary;
 import com.mediamate.summary.detaile_summary.ElectricitySummary;
 import com.mediamate.summary.detaile_summary.GasSummary;
-import com.mediamate.summary.detaile_summary.WaterSummary;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +20,6 @@ class MediaSummary{
     private String rentersName;
     private ElectricitySummary electricitySummary;
     private GasSummary gasSummary;
-    private WaterSummary waterSummary;
     private List<AdditionalCostSummary>additionalCostSummaries;
     private BigDecimal totalAdditionalCost;
     private BigDecimal totalMediaSumByFlat;

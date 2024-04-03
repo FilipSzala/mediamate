@@ -1,8 +1,9 @@
 package com.mediamate.image;
 
 
-import com.mediamate.YearMonthResult;
+import com.mediamate.YearMonthDate;
 import com.mediamate.image.request.ImageRequest;
+import com.mediamate.meter.MeterOwnership;
 import com.mediamate.settlement.SettlementService;
 import com.mediamate.settlement.request.MeterRequest;
 import jakarta.servlet.http.HttpSession;
@@ -32,7 +33,7 @@ public class ImageController {
     @GetMapping ("/types-and-dates")
         public Map<String,Object> getImageTypeAndDistinctDates (HttpSession httpSession){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-            List<YearMonthResult> dates = imageService.getAllDistinctYearMonthDate(realEstateId);
+            List<YearMonthDate> dates = imageService.getAllDistinctYearMonthDate(realEstateId);
             Map imageTypeAndDistincDates =new HashMap<String,Object>();
             imageTypeAndDistincDates.put("imageType",ImageType.values());
             imageTypeAndDistincDates.put("distinctDates",dates);
@@ -52,6 +53,7 @@ public class ImageController {
                     .ok()
                     .body("Images added");
         }
+
         /* @GetMapping()
         public List<ImageDto> getImagesWithoutType (HttpSession httpSession){
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
@@ -62,7 +64,7 @@ public class ImageController {
 
         @PostMapping("/meter")
         public ResponseEntity<String> setupMeterWithoutConfirm(@RequestBody MeterRequest meterRequest,HttpSession httpSession) {
-        String response = settlementService.redirectForSetupMeter(meterRequest,false,httpSession);
+            String response = settlementService.redirectForSetupMeter(meterRequest, false, httpSession);
         return ResponseEntity.ok(response);
         }
          @PostMapping("/meter-with-confirm")

@@ -1,6 +1,6 @@
 package com.mediamate.image;
 
-import com.mediamate.YearMonthResult;
+import com.mediamate.YearMonthDate;
 import com.mediamate.image.request.ImageRequest;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateRepository;
@@ -103,8 +103,8 @@ public class ImageService {
         Image image = getImageById(imageId).get();
         imageRepository.delete(image);
     }
-    public List<YearMonthResult> getAllDistinctYearMonthDate(Long realEstateId){
-        List<YearMonthResult> dates = imageRepository.findAllDistinctYearMonthByRealEstateId(realEstateId);
+    public List<YearMonthDate> getAllDistinctYearMonthDate(Long realEstateId){
+        List<YearMonthDate> dates = imageRepository.findAllDistinctYearMonthByRealEstateId(realEstateId);
         return dates;
     }
 

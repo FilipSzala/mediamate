@@ -16,22 +16,22 @@ public class ElectricitySummaryService {
     public ElectricitySummary createElectricity(MediaCost mediaCost, Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat, Meter lastMeterInRealEstate, Meter oneBeforeLastMeterInRealEstate, int flatCount){
         return ElectricitySummary.builder()
                 .price(mediaCost.getElectricity())
-                .meterValueInFlat(lastMeterInFlat.getElectricity())
-                .consumptionByFlat(countMeterConsumptionByflat(lastMeterInFlat.getElectricity(),oneBeforeLastMeterInFlat.getElectricity()))
-                .meterValueForAdministration(lastMeterInRealEstate.getElectricity())
+                .meterValueInFlat(lastMeterInFlat.getValue())
+                .consumptionByFlat(countMeterConsumptionByflat(lastMeterInFlat.getValue(),oneBeforeLastMeterInFlat.getValue()))
+                .meterValueForAdministration(lastMeterInRealEstate.getValue())
                 .adminConsumptionPerFlat(countAdminElectricityConsumptionPerFlat(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount))
                 .totalPriceForFlat(countTotalElectricityPrice(mediaCost,lastMeterInFlat,oneBeforeLastMeterInFlat))
                 .build();
     }
     private BigDecimal countTotalElectricityPrice(MediaCost mediaCost,Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat){
         BigDecimal electricityPrice = new BigDecimal(mediaCost.getElectricity());
-        BigDecimal totalConsumption = countMeterConsumptionByflat(lastMeterInFlat.getElectricity(),oneBeforeLastMeterInFlat.getElectricity()).add(adminConsumptionPerFlat);
+        BigDecimal totalConsumption = countMeterConsumptionByflat(lastMeterInFlat.getValue(),oneBeforeLastMeterInFlat.getValue()).add(adminConsumptionPerFlat);
         BigDecimal totalElectricityCost = totalConsumption.multiply(electricityPrice).setScale(2, RoundingMode.UP);
         return totalElectricityCost;
     }
 
     private BigDecimal countAdminElectricityConsumptionPerFlat(Meter lastMeterInRealEstate, Meter oneBeforeLastMeterInRealEstate, int flatCount) {
-        BigDecimal adminElectricityConsumption = new BigDecimal((lastMeterInRealEstate.getElectricity()-oneBeforeLastMeterInRealEstate.getElectricity())/flatCount).setScale(2,RoundingMode.HALF_UP);
+        BigDecimal adminElectricityConsumption = new BigDecimal((lastMeterInRealEstate.getValue()-oneBeforeLastMeterInRealEstate.getValue())/flatCount).setScale(2,RoundingMode.HALF_UP);
         adminConsumptionPerFlat = adminElectricityConsumption;
         return adminConsumptionPerFlat;
     }

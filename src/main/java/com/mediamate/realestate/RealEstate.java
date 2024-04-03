@@ -40,11 +40,6 @@ public class RealEstate {
             cascade = {CascadeType.MERGE,CascadeType.PERSIST}
     )
     private List<Cost> costs= new ArrayList<>();
-    @OneToMany (
-            mappedBy = "realEstate",
-            cascade = {CascadeType.MERGE,CascadeType.PERSIST}
-    )
-    private List<Image> images= new ArrayList<>();
     @OneToMany(
             mappedBy = "realEstate",
             cascade = {CascadeType.MERGE,CascadeType.PERSIST}
@@ -74,12 +69,7 @@ public class RealEstate {
 
         }
     }
-    public void addImage (Image image){
-        if (!this.images.contains(image)){
-            this.images.add(image);
-            image.setRealEstate(this);
-        }
-    }
+
     public void addMeter(Meter meter) {
         if (!this.meters.contains(meter)) {
             this.meters.add(meter);

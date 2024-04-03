@@ -4,9 +4,10 @@ import com.mediamate.meter.Meter;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
-import com.mediamate.initialSetup.request.FlatRequest;
+import com.mediamate.initialSetup.request.RenterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +37,10 @@ public class FlatService {
     public List <Flat> findFlatsByRealEstateId (Long realEstateId){
        return flatRepository.findByRealEstateId(realEstateId);
     }
-    public void partiallyUpdateFlat(Long flatId, Flat updatedFlat){
-        Flat databaseFlat = findFlatById(flatId);
-        Flat databaseFlat2 = databaseFlat;
-
-        databaseFlat.setRealEstate(updatedFlat.getRealEstate());
-        databaseFlat.setRentersFullName(updatedFlat.getRentersFullName());
-        databaseFlat.setMeters(updatedFlat.getMeters());
-        flatRepository.save(databaseFlat);
+    public void updateFlat(Flat updatedFlat){
+        flatRepository.save(updatedFlat);
     }
 
-    public void addMeterToFlat (Flat flat, Meter meter){
-        flat.addMeter(meter);
-        partiallyUpdateFlat(flat.getId(),flat);
-    }
     public List<Flat> createEmptyFlats (int count) {
         List <Flat> flats = new ArrayList<>();
         for (int i=0;i<count;i++){
@@ -58,23 +49,18 @@ public class FlatService {
         }
         return flats;
     }
-
-    public void setupFlats(Long realEstateId, List<FlatRequest> flatRequests) {
-        Flat flat = findFlatById(12L);
-        Flat flatTest = new Flat();
-        flatTest.setPhoneNumber(flatRequests.get(0).getPhoneNumber());
-        flatTest.setRentersFullName(flatRequests.get(0).getRentersFullName());
-        partiallyUpdateFlat(12L,flatTest);
+    @Transactional
+    public void setupFlats(List<RenterRequest> renterRequests) {
+        for (RenterRequest renterRequest : renterRequests){
+            Renter renter = new Renter(
+                    renterRequest.getRentersFullName(),
+                    renterRequest.getRenterCount(),
+                    renterRequest.getPhoneNumber()
+            );
+            Flat flat = findFlatById(renterRequest.getFlatId());
+            flat.setRenter(renter);
+            renter.setFlat(flat);
+            updateFlat(flat);
+        }
     }
-       /* RealEstate realEstate = realEstateService.findById(realEstateId).get();
-        List <Flat> flats = findFlatsByRealEstateId(realEstateId);
-        flats.stream().forEach(flat -> {
-            flat.setRenterCount(flatRequests.get(flats.indexOf(flat)).getRenterCount());
-            flat.setRentersFullName(flatRequests.get(flats.indexOf(flat)).getRentersFullName());
-            flat.setPhoneNumber(flatRequests.get(flats.indexOf(flat)).getPhoneNumber());
-            partiallyUpdateFlat(flat.getId(), flat);
-        });
-        realEstate.setFlats(flats);
-        realEstateService.updateRealEstatePartially(realEstateId,realEstate);
-    }*/
 }

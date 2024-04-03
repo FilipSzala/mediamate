@@ -1,6 +1,5 @@
 package com.mediamate.summary;
 
-import com.mediamate.cost.Cost;
 import com.mediamate.cost.CostService;
 import com.mediamate.cost.additionalCost.AdditionalCost;
 import com.mediamate.cost.additionalCost.ChargeType;
@@ -12,19 +11,12 @@ import com.mediamate.realestate.RealEstateService;
 import com.mediamate.summary.detaile_summary.AdditionalCostSummaryService;
 import com.mediamate.summary.detaile_summary.ElectricitySummaryService;
 import com.mediamate.summary.detaile_summary.GasSummaryService;
-import com.mediamate.summary.detaile_summary.WaterSummaryService;
-import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -43,14 +35,12 @@ public class MediaSummaryService{
     private CostService costService;
     private ElectricitySummaryService electricitySummaryService;
     private GasSummaryService gasSummaryService;
-    private WaterSummaryService waterSummaryService;
     @Autowired
-    public MediaSummaryService(RealEstateService realEstateService, CostService costService ,ElectricitySummaryService electricitySummaryService,GasSummaryService gasSummaryService,WaterSummaryService waterSummaryService,AdditionalCostSummaryService additionalCostSummaryService) {
+    public MediaSummaryService(RealEstateService realEstateService, CostService costService ,ElectricitySummaryService electricitySummaryService,GasSummaryService gasSummaryService, AdditionalCostSummaryService additionalCostSummaryService) {
         this.realEstateService = realEstateService;
         this.costService = costService;
         this.electricitySummaryService = electricitySummaryService;
         this.gasSummaryService = gasSummaryService;
-        this.waterSummaryService = waterSummaryService;
         this.additionalCostSummaryService = additionalCostSummaryService;
     }
 
@@ -98,7 +88,7 @@ public class MediaSummaryService{
         return summaries;
     }*/
   /*  private void setSum(List<MediaSummary> summaries) {
-        summaries.stream().forEach(mediaSummary -> mediaSummary.setTotalMediaSumByFlat(mediaSummary.getWaterTotalPriceForFlat().add(mediaSummary.getElectricityTotalPriceForFlat().add(mediaSummary.getGasTotalPriceForFlat().add(mediaSummary.getAdditionalPrice()))).setScale(2,RoundingMode.UP)));
+        summaries.stream().forEach(mediaSummary -> mediaSummary.setTotalMediaSumByFlat(mediaSummary.getWaterTotalPriceForFlat().add(mediaSummary.getValueTotalPriceForFlat().add(mediaSummary.getValueTotalPriceForFlat().add(mediaSummary.getAdditionalPrice()))).setScale(2,RoundingMode.UP)));
     }
 
 */

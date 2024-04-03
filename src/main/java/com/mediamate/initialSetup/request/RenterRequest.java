@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FlatRequest {
+public class RenterRequest {
+    Long flatId;
     String rentersFullName;
     int renterCount;
     String phoneNumber;

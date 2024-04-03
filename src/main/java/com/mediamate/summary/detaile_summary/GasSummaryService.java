@@ -23,8 +23,8 @@ public class GasSummaryService {
 
         return GasSummary.builder()
                 .price(mediaCost.getGas())
-                .meterValueInFlat(lastMeterInFlat.getGas())
-                .meterValueInRealEstate(lastMeterInRealEstate.getGas())
+                .meterValueInFlat(lastMeterInFlat.getValue())
+                .meterValueInRealEstate(lastMeterInRealEstate.getValue())
                 .consumptionByFlatInGJ(countGasConsumptionByFlatInGJ(lastMeterInFlat,oneBeforeLastMeterInFlat))
                 .consumptionByFlatInPercent(countGasConsumptionInPercent(gasConsumptionByFlatInGJ))
                 .consumptionByRealEstateInM3(countGasConsumptionByRealEstateInM3(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate))
@@ -52,19 +52,19 @@ public class GasSummaryService {
     }
 
     private BigDecimal countGasConsumptionByRealEstateInM3(Meter lastMeterInRealEstate, Meter oneBeforeLastMeterInRealEstate ) {
-        gasConsumptionByRealEstateInM3 = new BigDecimal(lastMeterInRealEstate.getGas()-oneBeforeLastMeterInRealEstate.getGas()).setScale(2,RoundingMode.UP);
+        gasConsumptionByRealEstateInM3 = new BigDecimal(lastMeterInRealEstate.getValue()-oneBeforeLastMeterInRealEstate.getValue()).setScale(2,RoundingMode.UP);
         return  gasConsumptionByRealEstateInM3;
     }
     private BigDecimal countGasConsumptionByFlatInGJ(Meter lastMeterInFlat, Meter oneBeforeLastMeterInFlat ) {
-        Double lastMeterValue = lastMeterInFlat.getGas();
-        Double oneBeforeLastMeterValue = oneBeforeLastMeterInFlat.getGas();
+        Double lastMeterValue = lastMeterInFlat.getValue();
+        Double oneBeforeLastMeterValue = oneBeforeLastMeterInFlat.getValue();
         gasConsumptionByFlatInGJ = new BigDecimal((lastMeterValue - oneBeforeLastMeterValue)).setScale(2, RoundingMode.HALF_UP);
         return gasConsumptionByFlatInGJ;
     }
 
     private BigDecimal countGasConsumptionByRealEstateInGJ(List<Flat> flats) {
         BigDecimal gasConsumption = flats.stream()
-                .map(flat ->countMeterConsumptionByflat(flat.getMeters().get(flat.getMeters().size()-1).getGas(),flat.getMeters().get(flat.getMeters().size()-2).getGas()))
+                .map(flat ->countMeterConsumptionByflat(flat.getMeters().get(flat.getMeters().size()-1).getValue(),flat.getMeters().get(flat.getMeters().size()-2).getValue()))
                 .reduce(BigDecimal.ZERO,BigDecimal::add).setScale(2,RoundingMode.HALF_UP);
         return gasConsumption;
     }

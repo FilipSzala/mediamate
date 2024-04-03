@@ -67,7 +67,7 @@ public class SettlementController {
 
     @PostMapping ("/meter")
     public void setupMeter (HttpSession httpSession,@RequestBody MeterRequest meterRequest){
-        settlementService.setupMeter(meterRequest,httpSession);
+        settlementService.createOrUpdateMeter(meterRequest,httpSession);
     }
 
     @PostMapping("/media-cost")

@@ -63,6 +63,8 @@ public class RealEstateService {
     public void updateRealEstate(RealEstate modifiedRealEstate) {
         realEstateRepository.save(modifiedRealEstate);
     }
+
+
     public List <RealEstateDto> findAllByLogInUser() {
         User user = securityService.findUserBySession();
         Long ownerId = user.getUserRole().getId();
