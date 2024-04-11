@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,16 +39,10 @@ public class SettlementService {
     public void createOrUpdateMeter(MeterRequest meterRequest, HttpSession httpSession) {
         MeterOwnership meterOwnership = meterRequest.getMeterOwnership();
 
-
-        if(meterRequest.getYearMonthDate() == null){
+        if(meterRequest.getYearMonthDate().year == 0 || meterRequest.getYearMonthDate().month == 0 ){
             meterRequest.setYearMonthDateByLocaldate(LocalDate.now());
         }
-
-        /*
         Image image = imageService.getImageById(meterRequest.getImageId()).orElseThrow();
-*/
-
-        Image image = new Image();
 
         if (isRealEstateOwnership(meterOwnership)) {
             createOrUpdateMeterWithRealEstate(meterRequest, httpSession, image);
@@ -62,17 +55,15 @@ public class SettlementService {
     private void createOrUpdateMeterWithFlat(MeterRequest meterRequest, Image image) {
         Long flatId = meterRequest.getFlatId();
         Flat flat = flatService.findFlatById(flatId);
-        MeterType meterType = meterRequest.getMeterType();
-        LocalDate createdAt = meterRequest.getYearMonthDate().toLocalDate();
         Meter meter;
 
-        if (!doesMeterExistByDateAndTypeInFlat(flat,meterType, createdAt)) {
+        if (!doesMeterExistByDateAndTypeInFlat(meterRequest)) {
             meter = new Meter(
                     LocalDate.now()
             );
         }
         else {
-            meter = meterService.getMeterByFlatAndTypeAndYearMonth(flat, meterType, createdAt).orElseThrow();
+            meter =  meterService.getMeterByFlatIdAndMeterTypeAndYearMonth(meterRequest).orElseThrow();
             meter.setCreatedAt(meterRequest.getYearMonthDate().toLocalDate());
         }
         meter.setMeterOwnership(MeterOwnership.FLAT);
@@ -108,8 +99,8 @@ public class SettlementService {
     private void setMeterFields(MeterRequest meterRequest, Image image, Meter meter) {
         meter.setValue(meterRequest.getMeterValue());
         meter.setMeterType(meterRequest.getMeterType());
-      /*  meter.setImage(image);
-        image.setMeter(meter);*/
+        meter.setImage(image);
+        image.setMeter(meter);
     }
 
 
@@ -117,8 +108,7 @@ public class SettlementService {
         MeterRequest meterRequest = meterRequestFromUser.isEmpty()?   meterRequestFromMemory:meterRequestFromUser;
         YearMonthDate yearMonthDate = meterRequest.getYearMonthDate();
         MeterType meterType = meterRequest.getMeterType();
-        Optional <Meter> meter = meterService.getMeterByYearMonthAndType(meterType,yearMonthDate);
-
+        Optional <Meter> meter = getMeterForRealestateOrFlat(httpSession,meterRequest);
         if(isMeterPresent(meter) && !isValueEmptyInMeter(meter) && !userConfirmationReceived) {
             meterRequestFromMemory = meterRequestFromUser;
             return "Existing meter value found in database. Are you sure you want to make change?";
@@ -127,15 +117,18 @@ public class SettlementService {
         return "Meter set up successfully.";
     }
 
-    private void setImage (Image image,Meter meter){
-        image.setMeter(meter);
-        imageService.updateImagePartially(image.getId(),image);
+    private Optional<Meter> getMeterForRealestateOrFlat(HttpSession httpSession, MeterRequest meterRequest) {
+        Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
+        if(isRealEstateOwnership(meterRequest.getMeterOwnership())){
+           return meterService.getMeterByRealEstateIdAndMeterTypeAndYearMonth(realEstateId,meterRequest);
+        }
+        else {
+            return  meterService.getMeterByFlatIdAndMeterTypeAndYearMonth(meterRequest);
+        }
     }
 
-
-
-    private boolean doesMeterExistByDateAndTypeInFlat(Flat flat,MeterType meterType, LocalDate localDate){
-        Optional <Meter> foundMeter =  meterService.getMeterByFlatAndTypeAndYearMonth(flat,meterType, localDate);
+    private boolean doesMeterExistByDateAndTypeInFlat(MeterRequest meterRequest){
+        Optional <Meter> foundMeter =  meterService.getMeterByFlatIdAndMeterTypeAndYearMonth(meterRequest);
         return foundMeter.isPresent()? true:false;
     }
     private boolean doesMeterExistByDateAndTypeInRealEstate(RealEstate realEstate, MeterType meterType,LocalDate localDate){
@@ -149,17 +142,6 @@ public class SettlementService {
         return meter.get().getValue() == 0.0? true:false;
     }
 
-
-    private Optional<Meter> getMeterByDate (List<Meter> meters,LocalDate localDate){
-        Optional <Meter> foundMeter= meters.stream()
-                .filter(meter -> isSameYearAndMonth(meter.getCreatedAt(),localDate))
-                .findFirst();
-        return foundMeter;
-    }
-
-    private boolean isSameYearAndMonth(LocalDate dateInDB, LocalDate currentDate) {
-        return dateInDB.getYear() == currentDate.getYear() && dateInDB.getMonth() == currentDate.getMonth();
-    }
     private boolean isRealEstateOwnership(MeterOwnership meterOwnership){
         if (meterOwnership.equals(MeterOwnership.REALESTATE)){
             return true;

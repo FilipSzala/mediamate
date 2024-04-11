@@ -2,9 +2,7 @@ package com.mediamate.cost.additionalCost;
 
 import com.mediamate.cost.Cost;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Month;

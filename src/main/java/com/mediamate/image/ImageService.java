@@ -76,25 +76,6 @@ public class ImageService {
                 imageRequest.getCreatedMonth());
         return images;
     }
-/*
-    public List<Image> getImagesWithoutTypeInCurrentDay (Long realEstateId){
-        List<Image> images = imageRepository.findImagesWithoutTypeByRealEstateId(realEstateId);
-        return images;
-    }
-*/
-
-    public List<Image>filterImagesToMeterType(List<Image> images){
-        return images.stream()
-                .filter(image -> image.getImageType()==ImageType.METER)
-                .collect(Collectors.toList());
-    }
-    public List<Image>filterImagesToCurrentDay(List<Image> images){
-        return images.stream()
-                .filter(image -> image.getCreateAt()==LocalDate.now())
-                .collect(Collectors.toList());
-    }
-
-
     public Optional <Image> getImageById(Long imageId){
         return imageRepository.findById(imageId);
     }

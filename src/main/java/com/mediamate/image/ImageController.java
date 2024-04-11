@@ -3,7 +3,6 @@ package com.mediamate.image;
 
 import com.mediamate.YearMonthDate;
 import com.mediamate.image.request.ImageRequest;
-import com.mediamate.meter.MeterOwnership;
 import com.mediamate.settlement.SettlementService;
 import com.mediamate.settlement.request.MeterRequest;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +18,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/image")
 
 public class ImageController {
     private ImageService imageService;
@@ -30,8 +29,8 @@ public class ImageController {
         this.settlementService = settlementService;
     }
 
-    @GetMapping ("/types-and-dates")
-        public Map<String,Object> getImageTypeAndDistinctDates (HttpSession httpSession){
+    @GetMapping ("/type-and-date")
+        public Map<String,Object> getTypeAndDistinctDateFromImage(HttpSession httpSession){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
             List<YearMonthDate> dates = imageService.getAllDistinctYearMonthDate(realEstateId);
             Map imageTypeAndDistincDates =new HashMap<String,Object>();
@@ -40,7 +39,7 @@ public class ImageController {
             return imageTypeAndDistincDates;
         }
 
-        @GetMapping("/by-date-and-type")
+        @GetMapping("/by-type-and-date")
         public List<Image> getImagesByTypeAndDate(HttpSession httpSession, @RequestBody ImageRequest imageRequest){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
             List<Image> images = imageService.getImagesByTypeAndDate(realEstateId,imageRequest);

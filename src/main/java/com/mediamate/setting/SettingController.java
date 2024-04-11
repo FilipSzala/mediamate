@@ -6,4 +6,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/settings")
 public class SettingController {
+    //Todo : Remember to start implement settings
 }

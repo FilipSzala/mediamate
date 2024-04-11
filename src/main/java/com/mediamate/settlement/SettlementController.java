@@ -8,6 +8,7 @@ import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.*;
 import com.mediamate.settlement.request.MeterRequest;
+import com.mediamate.summary.MediaSummaryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,22 +25,24 @@ public class SettlementController {
     FlatService flatService;
     MediaCostService mediaCostService;
     AdditionalCostService additionalCostService;
+    MediaSummaryService mediaSummaryService;
 
 
 
     @Autowired
-    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService) {
+    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService, MediaSummaryService mediaSummaryService) {
         this.imageService = imageService;
         this.settlementService = settlementService;
         this.flatService = flatService;
         this.mediaCostService = mediaCostService;
         this.additionalCostService = additionalCostService;
+        this.mediaSummaryService = mediaSummaryService;
+
     }
 
     //Methods in this class depend on Real Estate's session.Therefore, if I coded method named "getFlats" it means that this method returns
     //all Flats by realEstateId from session.
     @PostMapping("/images")
-
     public ResponseEntity<?> createImagesWithMeterType(@RequestParam("images") List<MultipartFile> files,HttpSession httpSession){
         imageService.createImages(files, ImageType.METER,httpSession);
         return ResponseEntity
@@ -72,7 +75,7 @@ public class SettlementController {
 
     @PostMapping("/media-cost")
     public void createMediaCost (@RequestBody MediaCost mediaCost){
-        mediaCostService.createMedia(mediaCost);
+        mediaCostService. createMedia(mediaCost);
     }
     @PostMapping("/additional-cost")
         public void createAdditionalCost(@RequestBody AdditionalCost additionalCost){
@@ -84,5 +87,10 @@ public class SettlementController {
         return ResponseEntity
                 .ok()
                 .body("Images added");
+    }
+
+    @GetMapping("summaries")
+    public void generateSummaries (HttpSession httpSession){
+        mediaSummaryService.createMediaSummaries(httpSession);
     }
 }

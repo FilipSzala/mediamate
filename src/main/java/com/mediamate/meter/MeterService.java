@@ -1,16 +1,14 @@
 package com.mediamate.meter;
 
-import com.mediamate.YearMonthDate;
-import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
+import com.mediamate.settlement.request.MeterRequest;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,19 +29,37 @@ public class MeterService {
         int localDateYear = localDate.getYear();
        return meterRepository.findMeterByRealEstateAndTypeAndYearMonth(realEstate, meterType, localDateYear, localDateMonth);
     }
-    public Optional<Meter> getMeterByFlatAndTypeAndYearMonth(Flat flat, MeterType meterType, LocalDate localDate){
-        int localDateMonth = localDate.getMonthValue();
-        int localDateYear = localDate.getYear();
-        return meterRepository.findMeterByFlatAndTypeAndYearMonth(flat, meterType, localDateYear, localDateMonth);
+    public Optional<Meter> getMeterByFlatIdAndMeterTypeAndYearMonth(MeterRequest meterRequest) {
+        return meterRepository.findMeterByFlatIdAndMeterTypeAndYearMonth(meterRequest.getFlatId(), meterRequest.getMeterType(), meterRequest.getYearMonthDate().getYear(), meterRequest.getYearMonthDate().getMonth());
     }
 
-    public Optional<Meter> getMeterByYearMonthAndType (MeterType meterType, YearMonthDate yearMonthDate){
-        return meterRepository.findMeterByYearMonthDateAndMeterType(meterType, yearMonthDate.year, yearMonthDate.month);
+    public Optional<Meter> getMeterByRealEstateIdAndMeterTypeAndYearMonth(Long id, MeterRequest meterRequest) {
+        return meterRepository.findMeterByRealEstateIdAndMeterTypeAndYearMonth(id,meterRequest.getMeterType(),meterRequest.getYearMonthDate().getYear(),meterRequest.getYearMonthDate().getMonth());
     }
 
-    public void updateMeter(Meter updatedMeter) {
-        meterRepository.save(updatedMeter);
+    public Meter getMeterByFlatIdAndMeterTypeInCurrentMonth(Long flatId, MeterType meterType) {
+        LocalDate localDate = LocalDate.now();
+        int year = localDate.getYear();
+        int month = localDate.getMonth().getValue();
+        return meterRepository.findMeterByFlatIdAndMeterTypeAndYearMonth(flatId, meterType, year, month).orElseThrow();
+    }
+    public Meter getMeterByFlatIdAndMeterTypeInOneBeforeLastMonth(Long flatId, MeterType meterType) {
+        LocalDate localDate = LocalDate.now().minusMonths(1);
+        int year = localDate.getYear();
+        int month = localDate.getMonth().getValue();
+        return meterRepository.findMeterByFlatIdAndMeterTypeAndYearMonth(flatId, meterType, year, month).orElseThrow();
     }
 
-
+    public Meter getMeterByRealEstateIdAndMeterTypeInCurrentMonth(Long realEstateId, MeterType meterType) {
+        LocalDate localDate = LocalDate.now();
+        int year = localDate.getYear();
+        int month = localDate.getMonth().getValue();
+        return meterRepository.findMeterByRealEstateIdAndMeterTypeAndYearMonth(realEstateId, meterType, year, month).orElseThrow();
+    }
+    public Meter getMeterByRealEstateIdAndMeterTypeInOneBeforeLastMonth(Long realEstateId, MeterType meterType) {
+        LocalDate localDate = LocalDate.now().minusMonths(1);
+        int year = localDate.getYear();
+        int month = localDate.getMonth().getValue();
+        return meterRepository.findMeterByRealEstateIdAndMeterTypeAndYearMonth(realEstateId, meterType, year, month).orElseThrow();
+    }
 }

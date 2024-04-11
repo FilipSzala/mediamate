@@ -46,7 +46,6 @@ public class FirstSetupController {
         return  realEstateDtos;
     }
 
-
     @GetMapping("/flats/{realEstateId}")
     public List<Flat> getFlatsByRealEstateId (@PathVariable Long realEstateId){
     return flatService.findFlatsByRealEstateId(realEstateId);

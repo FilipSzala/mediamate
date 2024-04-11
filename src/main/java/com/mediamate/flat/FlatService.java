@@ -26,11 +26,6 @@ public class FlatService {
         this.securityService = securityService;
     }
 
-    public void createFlat (Long realEstateId, Flat flat){
-        RealEstate realEstate = realEstateService.findById(realEstateId).get();
-        flat.setRealEstate(realEstate);
-        flatRepository.save(flat);
-    }
     public Flat findFlatById(Long flatId){
         return flatRepository.findById(flatId).orElseThrow();
     }

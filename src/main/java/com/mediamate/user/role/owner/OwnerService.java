@@ -1,13 +1,12 @@
 package com.mediamate.user.role.owner;
 
+import com.mediamate.initialSetup.request.OwnerRequest;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
-import com.mediamate.initialSetup.request.OwnerRequest;
 import com.mediamate.user.User;
 import com.mediamate.user.UserRepository;
 import com.mediamate.user.UserService;
-import com.mediamate.user.role.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +21,15 @@ public class OwnerService {
     UserService userService;
     RealEstateService realEstateService;
     SecurityService securityService;
-    private final UserRoleRepository userRoleRepository;
     private final UserRepository userRepository;
 
     @Autowired
     public OwnerService(UserService userService,RealEstateService realEstateService,SecurityService securityService,
-                        UserRoleRepository userRoleRepository,
                         UserRepository userRepository) {
 
         this.userService = userService;
         this.realEstateService = realEstateService;
         this.securityService = securityService;
-        this.userRoleRepository = userRoleRepository;
         this.userRepository = userRepository;
     }
 

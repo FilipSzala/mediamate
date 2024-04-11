@@ -1,7 +1,6 @@
 package com.mediamate.cost.mediaCost;
 
 import com.mediamate.cost.Cost;
-import com.mediamate.cost.CostService;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import jakarta.servlet.http.HttpSession;
@@ -11,18 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MediaCostService {
-    @Autowired
-    MediaCostRepository mediaCostRepository;
-
-    CostService costService;
     RealEstateService realEstateService;
     @Autowired
     HttpSession httpSession;
 
 
     @Autowired
-    public MediaCostService(CostService costService,RealEstateService realEstateService) {
-        this.costService = costService;
+    public MediaCostService(RealEstateService realEstateService) {
         this.realEstateService =realEstateService;
     }
 

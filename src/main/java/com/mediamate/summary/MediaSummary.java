@@ -1,26 +1,33 @@
 package com.mediamate.summary;
 
-import com.mediamate.summary.detaile_summary.AdditionalCostSummary;
-import com.mediamate.summary.detaile_summary.ElectricitySummary;
-import com.mediamate.summary.detaile_summary.GasSummary;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Getter
 @Setter
-@Builder
-class MediaSummary{
+public class MediaSummary{
     private LocalDate createdAt;
-    private String rentersName;
-    private ElectricitySummary electricitySummary;
-    private GasSummary gasSummary;
-    private List<AdditionalCostSummary>additionalCostSummaries;
-    private BigDecimal totalAdditionalCost;
-    private BigDecimal totalMediaSumByFlat;
+    private double electricityConsumptionInKW;
+    private double gasConsumptionPerFlatInGJ;
+    private double gasConsumptionPerFlatInM3;
+    private double gasConsumptionPerRealEstateInM3;
+    private double waterConsumptionInM3;
+    private double totalElectricityCost;
+    private double totalGasCost;
+    private double totalWaterCost;
+    private double sewarageCost;
+    private double totalAdditionalCost;
+    private double totalAllMediaCost;
+
+    public MediaSummary(LocalDate createdAt, double electricityConsumptionInKW, double gasConsumptionPerFlatInGJ,double gasConsumptionPerRealEstateInM3, double waterConsumptionInM3, double totalAdditionalCost) {
+        this.createdAt = createdAt;
+        this.electricityConsumptionInKW = electricityConsumptionInKW;
+        this.gasConsumptionPerFlatInGJ = gasConsumptionPerFlatInGJ;
+        this.gasConsumptionPerRealEstateInM3 = gasConsumptionPerRealEstateInM3;
+        this.waterConsumptionInM3 = waterConsumptionInM3;
+        this.totalAdditionalCost = totalAdditionalCost;
+    }
 }
