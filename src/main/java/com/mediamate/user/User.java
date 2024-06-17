@@ -1,7 +1,10 @@
 package com.mediamate.user;
 
+import com.mediamate.initialSetup.request.InitialRequest;
+import com.mediamate.realestate.RealEstate;
 import com.mediamate.register.token.Token;
 import com.mediamate.user.role.UserRole;
+import com.mediamate.user.role.owner.Owner;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 
@@ -18,6 +22,14 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private String firstName;
+    private String lastName;
+
+    @OneToMany(
+            cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+            mappedBy = "user"
+    )
+    private List <RealEstate> realEstates = new ArrayList<>();
     private String email;
     private String password;
     private Boolean enabled = false;
@@ -46,6 +58,39 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public List<RealEstate> getRealEstates() {
+        return realEstates;
+    }
+
+    public void setRealEstates(List<InitialRequest.RealEstateRequest> realEstateRequests) {
+        this.realEstates =  realEstateRequests.stream()
+                .map(realEstateRequest -> {
+                        RealEstate realEstate = new RealEstate();
+                        realEstate.setAddress(realEstateRequest.getAddress());
+                        realEstate.addFlats(realEstateRequest.getFlats());
+                        realEstate.setUser(this);
+                    return realEstate;
+                }).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -95,10 +140,11 @@ public class User implements UserDetails {
         }
     }
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(this.role);
-        ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.role));
         return authorities;
     }
 

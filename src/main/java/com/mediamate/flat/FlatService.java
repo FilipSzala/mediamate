@@ -1,13 +1,9 @@
 package com.mediamate.flat;
 
-import com.mediamate.meter.Meter;
-import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateService;
 import com.mediamate.security.SecurityService;
-import com.mediamate.initialSetup.request.RenterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +12,7 @@ import java.util.List;
 public class FlatService {
     @Autowired
     private FlatRepository flatRepository;
-
     private SecurityService securityService;
-
     private RealEstateService realEstateService;
     @Autowired
     public FlatService(RealEstateService realEstateService, SecurityService securityService) {
@@ -44,7 +38,7 @@ public class FlatService {
         }
         return flats;
     }
-    @Transactional
+  /*  @Transactional
     public void setupFlats(List<RenterRequest> renterRequests) {
         for (RenterRequest renterRequest : renterRequests){
             Renter renter = new Renter(
@@ -56,6 +50,6 @@ public class FlatService {
             flat.setRenter(renter);
             renter.setFlat(flat);
             updateFlat(flat);
-        }
-    }
+        }*/
+
 }

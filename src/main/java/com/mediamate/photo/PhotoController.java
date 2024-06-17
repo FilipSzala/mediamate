@@ -1,7 +1,9 @@
-package com.mediamate.image;
+package com.mediamate.photo;
 
 
-import com.mediamate.YearMonthDate;
+import com.mediamate.date.YearMonthDate;
+import com.mediamate.image.Image;
+import com.mediamate.image.ImageType;
 import com.mediamate.image.request.ImageRequest;
 import com.mediamate.settlement.SettlementService;
 import com.mediamate.settlement.request.MeterRequest;
@@ -18,23 +20,23 @@ import java.sql.SQLException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/images")
 
-public class ImageController {
-    private ImageService imageService;
+public class PhotoController {
+    private PhotoService photoService;
     SettlementService settlementService;
     @Autowired
-    public ImageController(ImageService imageService, SettlementService settlementService) {
-        this.imageService = imageService;
+    public PhotoController(PhotoService photoService, SettlementService settlementService) {
+        this.photoService = photoService;
         this.settlementService = settlementService;
     }
 
     @GetMapping ("/type-and-date")
         public Map<String,Object> getTypeAndDistinctDateFromImage(HttpSession httpSession){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-            List<YearMonthDate> dates = imageService.getAllDistinctYearMonthDate(realEstateId);
+            List<YearMonthDate> dates = photoService.getAllDistinctYearMonthDate(realEstateId);
             Map imageTypeAndDistincDates =new HashMap<String,Object>();
-            imageTypeAndDistincDates.put("imageType",ImageType.values());
+            imageTypeAndDistincDates.put("imageType", ImageType.values());
             imageTypeAndDistincDates.put("distinctDates",dates);
             return imageTypeAndDistincDates;
         }
@@ -42,12 +44,12 @@ public class ImageController {
         @GetMapping("/by-type-and-date")
         public List<Image> getImagesByTypeAndDate(HttpSession httpSession, @RequestBody ImageRequest imageRequest){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-            List<Image> images = imageService.getImagesByTypeAndDate(realEstateId,imageRequest);
+            List<Image> images = photoService.getImagesByTypeAndDate(realEstateId,imageRequest);
             return images;
         }
         @PostMapping()
         public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files,HttpSession httpSession){
-            imageService.createImages(files,null,httpSession);
+            photoService.createImages(files,null,httpSession);
             return ResponseEntity
                     .ok()
                     .body("Images added");
@@ -56,7 +58,7 @@ public class ImageController {
         /* @GetMapping()
         public List<ImageDto> getImagesWithoutType (HttpSession httpSession){
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-        List<Image> images = imageService.getImagesWithoutTypeInCurrentDay(realEstateId);
+        List<Image> images = photoService.getImagesWithoutTypeInCurrentDay(realEstateId);
         List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
         return imageDtos;
         }*/
@@ -74,7 +76,7 @@ public class ImageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
-        Image image = imageService.getImageById(id).get();
+        Image image = photoService.getImageById(id).get();
         Blob blob = image.getImage();
         blob.length();
         long test = image.getImage().length();

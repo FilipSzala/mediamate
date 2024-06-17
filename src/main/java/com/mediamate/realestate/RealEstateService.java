@@ -1,19 +1,16 @@
 package com.mediamate.realestate;
 
-import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
-import com.mediamate.meter.Meter;
 import com.mediamate.security.SecurityService;
-import com.mediamate.initialSetup.request.RealEstateRequest;
 import com.mediamate.user.User;
 import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RealEstateService {
@@ -45,7 +42,7 @@ public class RealEstateService {
         }
         return realEstates;
     }
-    @Transactional
+    /*@Transactional
     public void setupRealEstates(List<RealEstateRequest> realEstatesRequest) {
         Long ownerId = securityService.findOwnerIdBySession();
         List<RealEstate> databaseRealEstates = findAllByOwnerId(ownerId);
@@ -58,7 +55,7 @@ public class RealEstateService {
                     realEstate.addFlats(flats);
                     realEstateRepository.save(realEstate);
                 });
-    }
+    }*/
 
     public void updateRealEstate(RealEstate modifiedRealEstate) {
         realEstateRepository.save(modifiedRealEstate);

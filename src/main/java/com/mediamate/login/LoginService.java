@@ -1,7 +1,7 @@
 package com.mediamate.login;
 
 import com.mediamate.user.role.owner.Owner;
-import com.mediamate.user.role.owner.OwnerService;
+import com.mediamate.user.role.owner.OwnerRoleService;
 import com.mediamate.security.SecurityService;
 import com.mediamate.user.User;
 import com.mediamate.user.UserService;
@@ -14,28 +14,12 @@ import org.springframework.stereotype.Service;
 public class LoginService {
     SecurityService securityService;
     UserService userService;
-    OwnerService ownerService;
+    OwnerRoleService ownerRoleService;
 
     @Autowired
-    public LoginService(SecurityService securityService,UserService userService, OwnerService ownerService) {
+    public LoginService(SecurityService securityService,UserService userService, OwnerRoleService ownerRoleService) {
         this.securityService = securityService;
         this.userService = userService;
-        this.ownerService = ownerService;
+        this.ownerRoleService = ownerRoleService;
     }
-
-    public String redirect() {
-        User user = securityService.findUserBySession();
-        if (userService.isUserRoleCreated(user)){
-            //Todo: Redirect to main interface (it is user or admin)
-            return "Main interface";
-        }
-        Owner owner = (Owner)user.getUserRole();
-        if (ownerService.hasRealEstate(owner)){
-            //Todo: Redirect to choose RealEstate after to main interface
-            return "/choose/realestate/";
-        }
-        //Todo: Redirect to First Setup Controller - method create Owner
-        return "First Setup Controller";
-    }
-
 }

@@ -4,41 +4,43 @@ import com.mediamate.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfigure {
+@EnableWebSecurity
+public class SecurityConfigure{
     @Autowired
     private UserService userService;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Bean
-    public SecurityFilterChain filterChain (HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.authorizeHttpRequests((autz ->autz
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/register/**").permitAll()
-                .anyRequest().authenticated()))
-                .formLogin((formLogin) -> formLogin
-                        .permitAll()
-                        .defaultSuccessUrl("/login/rediraction",true)
-                        )
-                .logout((logout) -> logout.logoutSuccessUrl("/logout"))
-                .sessionManagement((session) -> session
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .authorizeHttpRequests(autz -> autz
+                        .requestMatchers("/login","/register/**").permitAll()
+                        .requestMatchers("https://kinomad.alwaysdata.net/register").permitAll()
+                        .anyRequest().authenticated())
+                .authenticationProvider(daoAuthenticationProvider())
+                .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                        .maximumSessions(1)
-                        .expiredUrl("/login"))
+                        .maximumSessions(1))
+                .formLogin(form -> form
+                        .permitAll()
+                        .defaultSuccessUrl("/login/redirect",true))
                 .csrf(csrf -> csrf.disable());
         return httpSecurity.build();
     }
 
-    protected void configure (AuthenticationManagerBuilder auth) throws Exception{
-        auth.authenticationProvider(daoAuthenticationProvider());
-    }
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
@@ -47,4 +49,9 @@ public class SecurityConfigure {
         provider.setUserDetailsService(userService);
         return provider;
     }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
 }

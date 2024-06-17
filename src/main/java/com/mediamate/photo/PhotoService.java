@@ -1,6 +1,9 @@
-package com.mediamate.image;
+package com.mediamate.photo;
 
-import com.mediamate.YearMonthDate;
+import com.mediamate.date.YearMonthDate;
+import com.mediamate.image.Image;
+import com.mediamate.image.ImageRepository;
+import com.mediamate.image.ImageType;
 import com.mediamate.image.request.ImageRequest;
 import com.mediamate.realestate.RealEstate;
 import com.mediamate.realestate.RealEstateRepository;
@@ -19,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ImageService {
+public class PhotoService {
     @Autowired
     ImageRepository imageRepository;
     @Autowired
@@ -30,7 +33,7 @@ public class ImageService {
     @Autowired
     RealEstateService realEstateService;
 
-    public void createImage (MultipartFile file,ImageType imageType,HttpSession httpSession) throws SQLException, IOException {
+    public Image createImage (MultipartFile file, ImageType imageType, HttpSession httpSession) throws SQLException, IOException {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
 
@@ -39,21 +42,20 @@ public class ImageService {
         image.setBlob(file);
         image.setImageType(imageType);
         image.setRealEstate(realEstate);
-        imageRepository.save(image);
+        return image;
     }
 
-    public void createImages (List<MultipartFile> files, ImageType imageType,HttpSession httpSession){
-        files.stream()
-                .forEach(file -> {
+    public List<Image> createImages (List<MultipartFile> files, ImageType imageType,HttpSession httpSession){
+        return files.stream()
+                .map(file -> {
                     try {
-                        createImage(file, imageType,httpSession);
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
+                        return createImage(file, imageType, httpSession);
+                    } catch (SQLException | IOException e) {
                         throw new RuntimeException(e);
                     }
-                });
+                }).collect(Collectors.toList());
     }
+
 
     public void updateImagePartially(Long imageId, Image modifiedImage) {
         Image databaseImage = getImageById(imageId).orElseThrow();

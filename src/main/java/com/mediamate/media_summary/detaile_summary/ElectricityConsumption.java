@@ -1,4 +1,4 @@
-package com.mediamate.summary.detaile_summary;
+package com.mediamate.media_summary.detaile_summary;
 import com.mediamate.cost.mediaCost.CostService;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;

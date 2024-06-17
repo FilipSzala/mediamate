@@ -1,4 +1,4 @@
-package com.mediamate;
+package com.mediamate.date;
 
 import lombok.Getter;
 

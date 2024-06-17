@@ -1,10 +1,12 @@
 package com.mediamate.settlement;
 
-import com.mediamate.YearMonthDate;
+import com.mediamate.date.YearMonthDate;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.Image;
-import com.mediamate.image.ImageService;
+import com.mediamate.image.ImageType;
+import com.mediamate.photo.PhotoInformationRequest;
+import com.mediamate.photo.PhotoService;
 import com.mediamate.meter.Meter;
 import com.mediamate.meter.MeterOwnership;
 import com.mediamate.meter.MeterService;
@@ -16,23 +18,27 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class SettlementService {
     private final FlatService flatService;
     private final MeterService meterService;
-    private final ImageService imageService;
+    private final PhotoService photoService;
     private final RealEstateService realEstateService;
     private MeterRequest meterRequestFromMemory;
 
     @Autowired
-    public SettlementService(MeterService meterService, FlatService flatService, ImageService imageService,RealEstateService realEstateService) {
+    public SettlementService(MeterService meterService, FlatService flatService, PhotoService photoService, RealEstateService realEstateService) {
         this.meterService = meterService;
         this.flatService = flatService;
-        this.imageService = imageService;
+        this.photoService = photoService;
         this.realEstateService = realEstateService;
     }
     @Transactional
@@ -42,7 +48,7 @@ public class SettlementService {
         if(meterRequest.getYearMonthDate().year == 0 || meterRequest.getYearMonthDate().month == 0 ){
             meterRequest.setYearMonthDateByLocaldate(LocalDate.now());
         }
-        Image image = imageService.getImageById(meterRequest.getImageId()).orElseThrow();
+        Image image = photoService.getImageById(meterRequest.getImageId()).orElseThrow();
 
         if (isRealEstateOwnership(meterOwnership)) {
             createOrUpdateMeterWithRealEstate(meterRequest, httpSession, image);
@@ -147,6 +153,23 @@ public class SettlementService {
             return true;
         }
         return false;
+    }
+
+    public void createMeterWithPhotoAndInformation(List<MultipartFile> files, List <PhotoInformationRequest> infoRequests, HttpSession httpSession) {
+        List<Image> images = photoService.createImages(files, ImageType.METER,httpSession);
+        IntStream.range(0, infoRequests.size())
+                .mapToObj(index -> {
+                    Meter meter = new Meter();
+                    meter.setImage(images.get(index));
+                    meter.setFlat(flatService.findFlatById(infoRequests.get(index).getFlatId()));
+                    meter.setRealEstate((RealEstate) httpSession.getAttribute("chosenRealEstateId"));
+                    meter.setMeterOwnership(MeterOwnership.FLAT);
+                    meter.setValue(infoRequests.get(index).getMeterValue());
+                    meter.setMeterType(infoRequests.get(index).getMeterType());
+                    meter.setCreatedAt(infoRequests.get(index).getYearMonthDate());
+                    return meter;
+                })
+                .collect(Collectors.toList());
     }
 
 }

@@ -17,7 +17,7 @@ import java.util.List;
 public class SecurityService {
 
     public User findUserBySession (){
-        User user =(User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return user;
     }
     public Long findOwnerIdBySession(){

@@ -1,11 +1,11 @@
-package com.mediamate.summary.detaile_summary;
+package com.mediamate.media_summary.detaile_summary;
 
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.meter.MeterService;
 import com.mediamate.meter.MeterType;
 import com.mediamate.realestate.RealEstate;
-import com.mediamate.summary.MediaSummary;
+import com.mediamate.media_summary.MediaSummary;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +46,8 @@ public class GasConsumption {
     }
 
     public double countConsumptionPerFlatInM3 (double gasPerRealEstateInGJ, MediaSummary mediaSummary){
-        double gasPerFlatInGJ = mediaSummary.getGasConsumptionPerFlatInGJ();
-        double gasPerRealEstateInM3 = mediaSummary.getGasConsumptionPerRealEstateInM3();
+        double gasPerFlatInGJ = mediaSummary.getGasConsumptionPerFlatInGJ().doubleValue();
+        double gasPerRealEstateInM3 = mediaSummary.getGasConsumptionPerRealEstateInM3().doubleValue();
         double consumptionPerFlatInPercent = gasPerFlatInGJ * 100 / gasPerRealEstateInGJ;
         double gasConsumptionPerFlatInM3 = (consumptionPerFlatInPercent/100) * gasPerRealEstateInM3;
         return gasConsumptionPerFlatInM3;

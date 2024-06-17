@@ -1,8 +1,7 @@
-package com.mediamate.summary.detaile_summary;
+package com.mediamate.media_summary.detaile_summary;
 
 import com.mediamate.cost.additionalCost.AdditionalCost;
 import com.mediamate.cost.additionalCost.ChargeType;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;

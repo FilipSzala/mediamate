@@ -1,6 +1,6 @@
 package com.mediamate.image;
 
-import com.mediamate.YearMonthDate;
+import com.mediamate.date.YearMonthDate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +15,7 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             @Param("imageType") ImageType imageType,
             @Param("createAt") LocalDate createAt);
 
-    @Query("SELECT new com.mediamate.YearMonthDate(YEAR(i.createAt), MONTH(i.createAt)) " +
+    @Query("SELECT new com.mediamate.date.YearMonthDate(YEAR(i.createAt), MONTH(i.createAt)) " +
             "FROM Image i " +
             "WHERE i.realEstate.id = :realEstateId " +
             "GROUP BY YEAR(i.createAt), MONTH(i.createAt)")

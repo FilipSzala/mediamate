@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -22,7 +23,6 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     private TokenService tokenService;
     private SecurityService securityService;
@@ -34,7 +34,6 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
         return userRepository.findByEmail(email).orElseThrow();
     }
     @Transactional
@@ -43,6 +42,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
         userRepository.save(user);
     }
+
     public Optional<User> findById (Long userId){
         return userRepository.findById(userId);
     }
@@ -53,19 +53,14 @@ public class UserService implements UserDetailsService {
 
     public void enableUser (String tokenKey){
         Optional <Token> token = tokenService.findByKey(tokenKey);
-        User user=token.get().getUser();
+        User user =token.get().getUser();
         User modifyUser=token.get().getUser();
         modifyUser.setEnabled(true);
-        updateUserPartially(user);
+        updateUser(user);
     }
-    public void updateUserPartially(User user) {
-        User databaseUser = findById(user.getId()).orElseThrow();
-        databaseUser.setEmail(user.getEmail());
-        databaseUser.setPassword(user.getPassword());
-        databaseUser.setEnabled(user.getEnabled());
-        databaseUser.setLocked(user.getLocked());
-        databaseUser.setUserRole(user.getUserRole());
-        userRepository.save(databaseUser);
+    @Transactional
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     public Boolean isUserRoleCreated(User user){

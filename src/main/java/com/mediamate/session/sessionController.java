@@ -18,7 +18,7 @@ public class sessionController {
         this.securityService = securityService;
     }
 
-    @GetMapping("/real-estate")
+    @GetMapping("/real-estates")
         public List<RealEstateDto> allRealEstatesDtoLogInUser(){
         return securityService.getRealEstatesDtoBySession();
     }

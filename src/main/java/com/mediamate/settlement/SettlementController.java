@@ -7,8 +7,10 @@ import com.mediamate.cost.mediaCost.MediaCost;
 import com.mediamate.flat.Flat;
 import com.mediamate.flat.FlatService;
 import com.mediamate.image.*;
+import com.mediamate.photo.PhotoInformationRequest;
+import com.mediamate.photo.PhotoService;
 import com.mediamate.settlement.request.MeterRequest;
-import com.mediamate.summary.MediaSummaryService;
+import com.mediamate.summary.SummaryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,23 +22,23 @@ import java.util.List;
 @RestController
 @RequestMapping("settlement")
 public class SettlementController {
-    ImageService imageService;
+    PhotoService photoService;
     SettlementService settlementService;
     FlatService flatService;
     MediaCostService mediaCostService;
     AdditionalCostService additionalCostService;
-    MediaSummaryService mediaSummaryService;
+    SummaryService summaryService;
 
 
 
     @Autowired
-    public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService, MediaSummaryService mediaSummaryService) {
-        this.imageService = imageService;
+    public SettlementController(PhotoService photoService, SettlementService settlementService, FlatService flatService, MediaCostService mediaCostService, AdditionalCostService additionalCostService, SummaryService summaryService) {
+        this.photoService = photoService;
         this.settlementService = settlementService;
         this.flatService = flatService;
         this.mediaCostService = mediaCostService;
         this.additionalCostService = additionalCostService;
-        this.mediaSummaryService = mediaSummaryService;
+        this.summaryService = summaryService;
 
     }
 
@@ -44,7 +46,15 @@ public class SettlementController {
     //all Flats by realEstateId from session.
     @PostMapping("/images")
     public ResponseEntity<?> createImagesWithMeterType(@RequestParam("images") List<MultipartFile> files,HttpSession httpSession){
-        imageService.createImages(files, ImageType.METER,httpSession);
+        photoService.createImages(files, ImageType.METER,httpSession);
+        return ResponseEntity
+                .ok()
+                .body("Images added");
+    }
+    //It should be fill out by form-data.
+    @PostMapping ("/images2")
+    public ResponseEntity<?> createMeterWithPhotoAndInformation(@RequestParam ("files") List<MultipartFile> files, @RequestPart("infoRequest") List <PhotoInformationRequest> infoRequest, HttpSession httpSession){
+        settlementService.createMeterWithPhotoAndInformation(files,infoRequest,httpSession);
         return ResponseEntity
                 .ok()
                 .body("Images added");
@@ -52,14 +62,14 @@ public class SettlementController {
 
    @GetMapping("/images")
     public List<ImageDto> getImagesWithMeterType (HttpSession httpSession){
-        List<Image> images = imageService.getImagesByImageTypeInCurrentDay(httpSession,ImageType.METER);
+        List<Image> images = photoService.getImagesByImageTypeInCurrentDay(httpSession,ImageType.METER);
         List <ImageDto> imageDtos = ImageMapper.mapToImageDtos(images);
         return imageDtos;
     }
 
     @DeleteMapping("/image/{imageId}")
     public void deleteImage(@PathVariable Long imageId){
-        imageService.delete(imageId);
+        photoService.delete(imageId);
     }
 
     @GetMapping("/flats")
@@ -83,14 +93,9 @@ public class SettlementController {
     }
     @PostMapping(value = "/images", params = "imageType")
     public ResponseEntity<?> createImages(@RequestParam("images") List<MultipartFile> files,@RequestParam ImageType imageType,HttpSession httpSession){
-        imageService.createImages(files,imageType,httpSession);
+        photoService.createImages(files,imageType,httpSession);
         return ResponseEntity
                 .ok()
                 .body("Images added");
-    }
-
-    @GetMapping("summaries")
-    public void generateSummaries (HttpSession httpSession){
-        mediaSummaryService.createMediaSummaries(httpSession);
     }
 }

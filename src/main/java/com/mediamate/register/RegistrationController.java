@@ -1,5 +1,7 @@
 package com.mediamate.register;
 
+import com.mediamate.flat.Flat;
+import com.mediamate.realestate.RealEstate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,5 +25,4 @@ public class RegistrationController {
     public String confirmUser (@RequestParam String tokenKey){
         return registrationService.confirmUser(tokenKey);
     }
-
-}
+    }

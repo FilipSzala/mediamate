@@ -1,6 +1,6 @@
 package com.mediamate.settlement.request;
 
-import com.mediamate.YearMonthDate;
+import com.mediamate.date.YearMonthDate;
 import com.mediamate.meter.MeterOwnership;
 import com.mediamate.meter.MeterType;
 import lombok.AllArgsConstructor;
@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class MeterRequest {
@@ -22,6 +19,17 @@ public class MeterRequest {
     private Double meterValue;
     private YearMonthDate yearMonthDate = new YearMonthDate();
 
+    public MeterRequest() {
+    }
+
+    public MeterRequest(Long imageId, MeterType meterType, MeterOwnership meterOwnership, Long flatId, Double meterValue, YearMonthDate yearMonthDate) {
+        this.imageId = imageId;
+        this.meterType = meterType;
+        this.meterOwnership = meterOwnership;
+        this.flatId = flatId;
+        this.meterValue = meterValue;
+        this.yearMonthDate = yearMonthDate;
+    }
 
     public boolean isEmpty() {
         return (imageId == null || imageId == 0) &&

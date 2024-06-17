@@ -1,23 +1,25 @@
 package com.mediamate.realestate;
 
-import com.mediamate.flat.Flat;
 import com.mediamate.cost.Cost;
-import com.mediamate.image.Image;
+import com.mediamate.flat.Flat;
+import com.mediamate.initialSetup.request.InitialRequest;
 import com.mediamate.meter.Meter;
+
+import com.mediamate.user.User;
 import com.mediamate.user.role.owner.Owner;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
-public class RealEstate {
+public class RealEstate implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +47,14 @@ public class RealEstate {
             cascade = {CascadeType.MERGE,CascadeType.PERSIST}
     )
     private List<Meter> meters= new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(
+            name = "userId",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "realestate_user_fk"
+            ))
+    private User user;
 
     public RealEstate() {
     }
@@ -54,14 +64,15 @@ public class RealEstate {
     }
 
 
-    public void addFlats (List<Flat> listFlat){
-        for (Flat flat : listFlat) {
-            if (!this.flats.contains(flat)) {
-                this.flats.add(flat);
-                flat.setRealEstate(this);
-            }
+    public void addFlats (List<InitialRequest.Flat> requestFlats){
+        this.flats = requestFlats.stream()
+                .map(requestFlat -> {
+                    Flat flat = new Flat();
+                    flat.setRenter(requestFlat.getRenterRequest());
+                    flat.setRealEstate(this);
+                    return flat;
+                }).collect(Collectors.toList());
         }
-    }
     public void addCost(Cost cost) {
         if (!this.costs.contains(cost)) {
             this.costs.add(cost);
