@@ -1,8 +1,9 @@
-package com.mediamate.user;
+package com.mediamate.model.user;
 
-import com.mediamate.controller.register.token.Token;
-import com.mediamate.controller.register.token.TokenService;
-import com.mediamate.security.SecurityService;
+import com.mediamate.controller.profile_info.request.InitialRequest;
+import com.mediamate.model.token.Token;
+import com.mediamate.model.token.TokenService;
+import com.mediamate.config.security.SecurityService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,9 +62,22 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public Boolean isUserRoleCreated(User user){
-        return user.getUserRole()!=null? true:false;
+    public boolean hasRealEstate(User user) {
+        if(user==null){
+            return false;
+        }
+        return user.getRealEstates().isEmpty()? false:true;
     }
-
+    public boolean isOwnerSetup(User user){
+        return hasRealEstate(user);
+    }
+    @Transactional
+    public void setupUser(InitialRequest initialRequest) {
+        User user = securityService.findUserBySession();
+        user.setRealEstates(initialRequest.getRealEstates());
+        user.setFirstName(initialRequest.getProfileInfo().getFirstName());
+        user.setLastName(initialRequest.getProfileInfo().getSecondName());
+        updateUser(user);
+    }
 
 }

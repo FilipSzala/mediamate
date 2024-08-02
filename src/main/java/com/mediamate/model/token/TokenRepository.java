@@ -1,4 +1,4 @@
-package com.mediamate.controller.register.token;
+package com.mediamate.model.token;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,9 +1,10 @@
-package com.mediamate.model.cost.flat;
+package com.mediamate.model.flat;
 
 import com.mediamate.controller.profile_info.request.InitialRequest;
-import com.mediamate.model.cost.media_summary.MediaSummary;
-import com.mediamate.model.cost.meter.Meter;
-import com.mediamate.model.cost.realestate.RealEstate;
+import com.mediamate.model.media_summary.MediaSummary;
+import com.mediamate.model.meter.Meter;
+import com.mediamate.model.real_estate.RealEstate;
+import com.mediamate.model.renter.Renter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +38,7 @@ public class Flat {
     )
     private Renter renter;
 
-    @OneToMany (
+    @OneToMany (fetch = FetchType.LAZY,
             mappedBy = "flat",
             cascade = {CascadeType.MERGE,CascadeType.PERSIST}
     )

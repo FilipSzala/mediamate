@@ -1,12 +1,14 @@
-package com.mediamate.model.cost.flat;
+package com.mediamate.model.flat;
 
-import com.mediamate.model.cost.realestate.RealEstateService;
-import com.mediamate.security.SecurityService;
+import com.mediamate.model.real_estate.RealEstate;
+import com.mediamate.model.real_estate.RealEstateService;
+import com.mediamate.config.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FlatService {
@@ -21,35 +23,25 @@ public class FlatService {
     }
 
     public Flat findFlatById(Long flatId){
-        return flatRepository.findById(flatId).orElseThrow();
+        Flat flat = flatRepository.findById(flatId).orElseThrow();
+
+        return flat;
     }
     public List <Flat> findFlatsByRealEstateId (Long realEstateId){
        return flatRepository.findByRealEstateId(realEstateId);
+    }
+    public List<Long> findFlatsIdByRealEstateId(Long realEstateId){
+        List<Flat> flats = findFlatsByRealEstateId(realEstateId);
+        return flats.stream()
+                .map(flat -> flat.getId())
+                .collect(Collectors.toList());
     }
     public void updateFlat(Flat updatedFlat){
         flatRepository.save(updatedFlat);
     }
 
-    public List<Flat> createEmptyFlats (int count) {
-        List <Flat> flats = new ArrayList<>();
-        for (int i=0;i<count;i++){
-            Flat flat = new Flat();
-            flats.add(flat);
-        }
-        return flats;
+    public List<Flat> getFlatsInRealEstate (RealEstate realEstate){
+        return realEstate.getFlats();
     }
-  /*  @Transactional
-    public void setupFlats(List<RenterRequest> renterRequests) {
-        for (RenterRequest renterRequest : renterRequests){
-            Renter renter = new Renter(
-                    renterRequest.getRentersFullName(),
-                    renterRequest.getRenterCount(),
-                    renterRequest.getPhoneNumber()
-            );
-            Flat flat = findFlatById(renterRequest.getFlatId());
-            flat.setRenter(renter);
-            renter.setFlat(flat);
-            updateFlat(flat);
-        }*/
 
 }

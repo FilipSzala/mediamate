@@ -1,8 +1,8 @@
-package com.mediamate.model.cost.meter;
+package com.mediamate.model.meter;
 
-import com.mediamate.model.cost.flat.Flat;
-import com.mediamate.model.cost.image.Image;
-import com.mediamate.model.cost.realestate.RealEstate;
+import com.mediamate.model.flat.Flat;
+import com.mediamate.model.image.Image;
+import com.mediamate.model.real_estate.RealEstate;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,8 +51,13 @@ public class Meter {
 
     public Meter() {
     }
+
     public Meter(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Meter(Double value) {
+        this.value = value;
     }
 
     public Meter(Double value, MeterType meterType, LocalDate createdAt) {

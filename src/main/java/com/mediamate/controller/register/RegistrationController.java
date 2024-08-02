@@ -1,13 +1,14 @@
-package com.mediamate.register;
+package com.mediamate.controller.register;
 
-import com.mediamate.flat.Flat;
-import com.mediamate.realestate.RealEstate;
+import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/register")
-
+@Hidden
 public class RegistrationController {
 
     RegistrationService registrationService;
@@ -17,12 +18,16 @@ public class RegistrationController {
     }
 
     @PostMapping()
-    public String registerForOwner(@RequestBody RegistrationRequest registrationRequest){
-        return registrationService.register(registrationRequest);
+    public ResponseEntity<String> registerForOwner(@RequestBody OwnerRegistrationRequest ownerRegistrationRequest) throws Exception {
+        return registrationService.registerOwner(ownerRegistrationRequest);
+    }
+    @PostMapping("/user")
+    public ResponseEntity<String> registerForUser (@RequestBody UserRegistrationRequest userRegistrationRequest, HttpSession httpSession) throws Exception{
+        return  registrationService.registerUser(httpSession,userRegistrationRequest);
     }
 
     @GetMapping (path = "confirm")
-    public String confirmUser (@RequestParam String tokenKey){
-        return registrationService.confirmUser(tokenKey);
+    public ResponseEntity<String> confirmOwner(@RequestParam String tokenKey){
+        return registrationService.confirmOwner(tokenKey);
     }
     }

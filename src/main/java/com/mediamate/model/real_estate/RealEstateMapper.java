@@ -1,4 +1,4 @@
-package com.mediamate.model.realestate;
+package com.mediamate.model.real_estate;
 
 import lombok.NoArgsConstructor;
 

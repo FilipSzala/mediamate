@@ -1,5 +1,7 @@
-package com.mediamate.config.security.security;
+package com.mediamate.config.security;
 
+import com.mediamate.config.web_config.LoginFailureHandler;
+import com.mediamate.config.web_config.LoginSuccessHandler;
 import com.mediamate.model.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,37 +17,47 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfigure{
+public class SecurityConfigure {
+
+    @Autowired
+    private LoginSuccessHandler loginSuccessHandler;
+    @Autowired
+    private LoginFailureHandler loginFailureHandler;
     @Autowired
     private UserService userService;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(autz -> autz
-                        .requestMatchers("/login","/register/**").permitAll()
-                        .requestMatchers("https://kinomad.alwaysdata.net/register").permitAll()
+                        .requestMatchers("/login", "/register/**").permitAll()
+                        .requestMatchers("http://localhost:8080/register").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(daoAuthenticationProvider())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .maximumSessions(1))
                 .formLogin(form -> form
-                        .permitAll()
-                        .defaultSuccessUrl("/login/redirect",true))
+                        .loginProcessingUrl("/login")
+                        .successHandler(loginSuccessHandler)
+                        .failureHandler(loginFailureHandler)
+                )
                 .csrf(csrf -> csrf.disable());
         return httpSecurity.build();
+
     }
 
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(){
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(bCryptPasswordEncoder);
         provider.setUserDetailsService(userService);
         return provider;
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

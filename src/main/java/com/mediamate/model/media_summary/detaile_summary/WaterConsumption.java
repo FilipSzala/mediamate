@@ -1,8 +1,8 @@
-package com.mediamate.model.cost.media_summary.detaile_summary;
+package com.mediamate.model.media_summary.detaile_summary;
 
-import com.mediamate.model.cost.flat.FlatService;
-import com.mediamate.model.cost.meter.MeterService;
-import com.mediamate.model.cost.meter.MeterType;
+import com.mediamate.model.flat.FlatService;
+import com.mediamate.model.meter.MeterService;
+import com.mediamate.model.meter.MeterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

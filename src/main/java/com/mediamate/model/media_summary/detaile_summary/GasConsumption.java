@@ -1,20 +1,20 @@
-package com.mediamate.model.cost.media_summary.detaile_summary;
+package com.mediamate.model.media_summary.detaile_summary;
 
-import com.mediamate.model.cost.flat.Flat;
-import com.mediamate.model.cost.flat.FlatService;
-import com.mediamate.model.cost.meter.MeterService;
-import com.mediamate.model.cost.meter.MeterType;
-import com.mediamate.model.cost.media_summary.MediaSummary;
-import com.mediamate.model.cost.realestate.RealEstate;
+import com.mediamate.model.flat.Flat;
+import com.mediamate.model.flat.FlatService;
+import com.mediamate.model.meter.MeterService;
+import com.mediamate.model.meter.MeterType;
+import com.mediamate.model.media_summary.MediaSummary;
+import com.mediamate.model.real_estate.RealEstate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 
 @Getter
 @Setter
-@Component
+@Service
 public class GasConsumption {
     private double lastMeterInFlat;
     private double oneBeforeLastMeterInFlat ;
@@ -45,11 +45,16 @@ public class GasConsumption {
         return consumptionPerRealEstateInM3;
     }
 
-    public double countConsumptionPerFlatInM3 (double gasPerRealEstateInGJ, MediaSummary mediaSummary){
-        double gasPerFlatInGJ = mediaSummary.getGasConsumptionPerFlatInGJ().doubleValue();
-        double gasPerRealEstateInM3 = mediaSummary.getGasConsumptionPerRealEstateInM3().doubleValue();
-        double consumptionPerFlatInPercent = gasPerFlatInGJ * 100 / gasPerRealEstateInGJ;
-        double gasConsumptionPerFlatInM3 = (consumptionPerFlatInPercent/100) * gasPerRealEstateInM3;
-        return gasConsumptionPerFlatInM3;
+    public double countConsumptionPerFlatInM3 (double gasPerRealEstateInGJ,int numberRentersInRealEstate, MediaSummary mediaSummary,double flatCount) {
+        if (gasPerRealEstateInGJ == 0.0) {
+            double renterCount = mediaSummary.getFlat().getRenter().getRenterCount();
+            return mediaSummary.getGasConsumptionPerRealEstateInM3().doubleValue()/numberRentersInRealEstate*renterCount;
+        } else {
+            double gasPerFlatInGJ = mediaSummary.getGasConsumptionPerFlatInGJ().doubleValue();
+            double gasPerRealEstateInM3 = mediaSummary.getGasConsumptionPerRealEstateInM3().doubleValue();
+            double consumptionPerFlatInPercent = gasPerFlatInGJ * 100 / gasPerRealEstateInGJ;
+            double gasConsumptionPerFlatInM3 = (consumptionPerFlatInPercent / 100) * gasPerRealEstateInM3;
+            return gasConsumptionPerFlatInM3;
+        }
     }
 }

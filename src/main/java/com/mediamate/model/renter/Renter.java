@@ -1,5 +1,6 @@
-package com.mediamate.model.flat;
+package com.mediamate.model.renter;
 
+import com.mediamate.model.flat.Flat;
 import jakarta.persistence.*;
 
 @Entity

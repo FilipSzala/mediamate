@@ -1,4 +1,4 @@
-package com.mediamate.config.security.web_config;
+package com.mediamate.config.web_config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

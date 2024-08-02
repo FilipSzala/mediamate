@@ -1,4 +1,4 @@
-package com.mediamate.login;
+package com.mediamate.controller.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

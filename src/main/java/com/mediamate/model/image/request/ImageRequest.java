@@ -1,11 +1,13 @@
-package com.mediamate.model.cost.image.request;
+package com.mediamate.model.image.request;
 
-import com.mediamate.model.cost.image.ImageType;
+import com.mediamate.model.image.ImageType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class ImageRequest {

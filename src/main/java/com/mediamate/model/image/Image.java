@@ -1,7 +1,7 @@
-package com.mediamate.model.cost.image;
+package com.mediamate.model.image;
 
-import com.mediamate.model.cost.meter.Meter;
-import com.mediamate.model.cost.realestate.RealEstate;
+import com.mediamate.model.meter.Meter;
+import com.mediamate.model.real_estate.RealEstate;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

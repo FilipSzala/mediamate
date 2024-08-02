@@ -1,6 +1,5 @@
-package com.mediamate.model.realestate;
+package com.mediamate.model.real_estate;
 
-import com.mediamate.model.user.role.owner.Owner;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,6 +7,5 @@ import lombok.Getter;
 @Builder
 public class RealEstateDto {
     private Long id;
-    private Owner owner;
     private String address;
 }

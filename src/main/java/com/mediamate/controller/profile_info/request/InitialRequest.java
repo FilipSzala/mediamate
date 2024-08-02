@@ -1,4 +1,4 @@
-package com.mediamate.initialSetup.request;
+package com.mediamate.controller.profile_info.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

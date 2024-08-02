@@ -1,14 +1,12 @@
-package com.mediamate.model.photo;
+package com.mediamate.model.image;
 
 
-import com.mediamate.model.image.Image;
-import com.mediamate.model.image.ImageRepository;
-import com.mediamate.model.image.ImageType;
+import com.mediamate.config.security.SecurityService;
 import com.mediamate.model.image.request.ImageRequest;
+import com.mediamate.model.image.response.ImageUrlResponse;
 import com.mediamate.model.real_estate.RealEstate;
 import com.mediamate.model.real_estate.RealEstateRepository;
 import com.mediamate.model.real_estate.RealEstateService;
-import com.mediamate.config.security.SecurityService;
 import com.mediamate.util.YearMonthDate;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class PhotoService {
+public class ImageService {
     @Autowired
     ImageRepository imageRepository;
     @Autowired
@@ -37,12 +35,11 @@ public class PhotoService {
     public Image createImage (MultipartFile file, ImageType imageType, HttpSession httpSession) throws SQLException, IOException {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
-
-
         Image image = new Image();
         image.setBlob(file);
         image.setImageType(imageType);
         image.setRealEstate(realEstate);
+        imageRepository.save(image);
         return image;
     }
 
@@ -93,4 +90,19 @@ public class PhotoService {
     }
 
 
+    public List<ImageUrlResponse> findImagesByImageRequest(ImageRequest imageRequest, Long realEstateId) {
+        List<Image> images = getImagesByTypeAndDate(realEstateId,imageRequest);
+        List<ImageUrlResponse> imagesUrl =
+                images.stream()
+                .map(this::convertToImageUrlResponse)
+                .collect(Collectors.toList());
+        return imagesUrl;
+    }
+    private ImageUrlResponse convertToImageUrlResponse(Image image) {
+        String imageUrl = generateImageUrl(image.getId());
+        return new ImageUrlResponse(image.getId(),image.getImageType().toString(), imageUrl);
+    }
+    private String generateImageUrl(Long imageId) {
+        return "http://localhost:8080/photos/" + imageId;
+    }
 }

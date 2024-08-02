@@ -1,10 +1,10 @@
-package com.mediamate.model.cost.media_summary.detaile_summary;
-import com.mediamate.model.cost.mediaCost.CostService;
-import com.mediamate.model.cost.flat.Flat;
-import com.mediamate.model.cost.flat.FlatService;
-import com.mediamate.model.cost.meter.MeterService;
-import com.mediamate.model.cost.meter.MeterType;
-import com.mediamate.model.cost.realestate.RealEstate;
+package com.mediamate.model.media_summary.detaile_summary;
+import com.mediamate.model.cost.CostService;
+import com.mediamate.model.flat.Flat;
+import com.mediamate.model.flat.FlatService;
+import com.mediamate.model.meter.MeterService;
+import com.mediamate.model.meter.MeterType;
+import com.mediamate.model.real_estate.RealEstate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;

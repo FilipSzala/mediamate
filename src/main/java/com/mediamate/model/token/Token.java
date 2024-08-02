@@ -1,4 +1,4 @@
-package com.mediamate.controller.register.token;
+package com.mediamate.model.token;
 
 import com.mediamate.model.user.User;
 import jakarta.persistence.*;

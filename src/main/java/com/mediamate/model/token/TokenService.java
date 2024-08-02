@@ -1,4 +1,4 @@
-package com.mediamate.controller.register.token;
+package com.mediamate.model.token;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

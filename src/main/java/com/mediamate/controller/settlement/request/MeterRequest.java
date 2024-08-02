@@ -1,11 +1,9 @@
-package com.mediamate.settlement.request;
+package com.mediamate.controller.settlement.request;
 
-import com.mediamate.date.YearMonthDate;
-import com.mediamate.meter.MeterOwnership;
-import com.mediamate.meter.MeterType;
-import lombok.AllArgsConstructor;
+import com.mediamate.util.YearMonthDate;
+import com.mediamate.model.meter.MeterOwnership;
+import com.mediamate.model.meter.MeterType;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;

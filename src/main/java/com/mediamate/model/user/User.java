@@ -1,9 +1,9 @@
-package com.mediamate.user;
+package com.mediamate.model.user;
 
 import com.mediamate.controller.profile_info.request.InitialRequest;
-import com.mediamate.model.cost.realestate.RealEstate;
-import com.mediamate.controller.register.token.Token;
-import com.mediamate.user.role.UserRole;
+import com.mediamate.model.real_estate.RealEstate;
+import com.mediamate.model.renter.Renter;
+import com.mediamate.model.token.Token;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,26 +23,31 @@ public class User implements UserDetails {
     Long id;
     private String firstName;
     private String lastName;
-
-    @OneToMany(
-            cascade = {CascadeType.PERSIST,CascadeType.MERGE},
-            mappedBy = "user"
+    @OneToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(
+            name = "renterId",
+            referencedColumnName = "id"
     )
+    private Renter renter;
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+            fetch = FetchType.EAGER
+    )
+    @JoinTable(
+            name ="users_realestates",
+            joinColumns = @JoinColumn (
+                    name = "user_id",
+                    foreignKey = @ForeignKey(name = "user_id_fk")
+    ),
+            inverseJoinColumns = @JoinColumn (
+                    name = "realestate_id",
+                    foreignKey = @ForeignKey (name = "realestate_id_fl")
+    ))
     private List <RealEstate> realEstates = new ArrayList<>();
     private String email;
     private String password;
     private Boolean enabled = false;
     private Boolean locked = false;
-    @OneToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE},
-                fetch = FetchType.EAGER)
-    @JoinColumn(
-            name = "user_role_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey (
-                    name = "user_role_fk"
-            )
-    )
-    private UserRole userRole;
     private String role;
     @OneToMany(
             cascade = {CascadeType.PERSIST,CascadeType.MERGE},
@@ -57,6 +62,12 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+    public User(String email, String password,String role,Renter renter) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.renter = renter;
     }
 
 
@@ -87,11 +98,16 @@ public class User implements UserDetails {
                         RealEstate realEstate = new RealEstate();
                         realEstate.setAddress(realEstateRequest.getAddress());
                         realEstate.addFlats(realEstateRequest.getFlats());
-                        realEstate.setUser(this);
+                        realEstate.addUser(this);
                     return realEstate;
                 }).collect(Collectors.toList());
     }
-
+    public void addRealEstate(RealEstate realEstate) {
+        if (!this.realEstates.contains(realEstate)) {
+            this.realEstates.add(realEstate);
+            realEstate.getUsers().add(this);
+        }
+    }
     public Long getId() {
         return id;
     }
@@ -124,14 +140,6 @@ public class User implements UserDetails {
         this.locked = locked;
     }
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
-
     public void addToken(Token token) {
         if(!this.tokens.contains(token)){
           this.tokens.add(token);
@@ -139,6 +147,13 @@ public class User implements UserDetails {
         }
     }
 
+    public Renter getRenter() {
+        return renter;
+    }
+
+    public void setRenter(Renter renter) {
+        this.renter = renter;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

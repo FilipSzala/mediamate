@@ -1,4 +1,4 @@
-package com.mediamate.model.media_cost;
+package com.mediamate.model.cost.media_cost;
 
 import com.mediamate.model.cost.Cost;
 import jakarta.persistence.*;

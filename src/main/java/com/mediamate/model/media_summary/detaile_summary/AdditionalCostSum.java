@@ -1,4 +1,4 @@
-package com.mediamate.model.cost.media_summary.detaile_summary;
+package com.mediamate.model.media_summary.detaile_summary;
 
 import com.mediamate.model.cost.additionalCost.AdditionalCost;
 import com.mediamate.model.cost.additionalCost.ChargeType;
@@ -20,14 +20,14 @@ public class AdditionalCostSum {
         this.renterCount = renterCount;
         double totalCost = 0;
         for (AdditionalCost cost : additionalCosts) {
-            totalCost = totalCost +  countSingleCost(cost);
+            totalCost = totalCost + countSingleCost(cost);
         }
         return totalCost;
     }
 
     private double countSingleCost (AdditionalCost cost){
         if (cost.getChargeType().equals(ChargeType.FLAT)){
-            return cost.getPrice()/(cost.getTimePeriod().getValue())/flatCount;
+            return cost.getPrice()/(cost.getTimePeriod().doubleValue()+1)/flatCount;
         }
         else {
             return cost.getPrice()*renterCount;

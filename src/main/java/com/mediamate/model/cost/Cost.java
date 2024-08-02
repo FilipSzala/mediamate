@@ -1,6 +1,6 @@
-package com.mediamate.model;
+package com.mediamate.model.cost;
 
-import com.mediamate.model.realestate.RealEstate;
+import com.mediamate.model.real_estate.RealEstate;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

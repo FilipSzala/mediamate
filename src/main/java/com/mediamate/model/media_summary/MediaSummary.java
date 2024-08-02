@@ -1,6 +1,7 @@
-package com.mediamate.model.cost.media_summary;
+package com.mediamate.model.media_summary;
 
-import com.mediamate.model.cost.flat.Flat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mediamate.model.flat.Flat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,69 +26,38 @@ public class MediaSummary{
     )
     private Long id;
     private LocalDate createdAt;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (
             name = "flat_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey (
-                    name = "media_summary_flat_fk"
-            )
+            foreignKey = @ForeignKey (name = "media_summary_flat_fk")
     )
     private Flat flat;
-    @Column (
-            name ="electricity_consumption_in_kw",
-            scale = 2
-    )
+    @Column(name ="electricity_consumption_in_kw")
     private BigDecimal electricityConsumptionInKW;
-    @Column (
-            name = "gas_consumption_per_flat_in_gj",
-            scale = 2
-    )
+    @Column(name = "gas_consumption_per_flat_in_gj")
     private BigDecimal gasConsumptionPerFlatInGJ;
-    @Column (
-            name = "gas_consumption_per_flat_in_m3",
-            scale = 2
-    )
+    @Column(name = "gas_consumption_per_flat_in_m3")
     private BigDecimal gasConsumptionPerFlatInM3;
-    @Column (
-            name = "gas_consumption_per_realestate_in_m3",
-            scale = 2
-    )
+    @Column (name = "gas_consumption_per_realestate_in_m3")
     private BigDecimal gasConsumptionPerRealEstateInM3;
-    @Column (
-            name = "water_consumption_in_m3",
-            scale = 2
-    )
+    @Column (name = "water_consumption_in_m3")
     private BigDecimal waterConsumptionInM3;
-    @Column (
-            scale = 2
-    )
     private BigDecimal totalElectricityCost;
-    @Column (
-            scale = 2
-    )
     private BigDecimal totalGasCost;
-    @Column (
-            scale = 2
-    )
     private BigDecimal totalWaterCost;
-    @Column (
-            scale = 2
-    )
     private BigDecimal sewarageCost;
-    @Column (
-            scale = 2
-    )
     private BigDecimal totalAdditionalCost;
-    @Column (
-            scale = 2
-    )
     private BigDecimal totalAllMediaCost;
-
+    private double electricityUsagePercentage;
+    private double gasUsagePercentage;
+    private double waterUsagePercentage;
+    private double additionalPercentage;
     public MediaSummary() {
     }
 
-    public MediaSummary(LocalDate createdAt, double electricityConsumptionInKW, double gasConsumptionPerFlatInGJ, double gasConsumptionPerRealEstateInM3, double waterConsumptionInM3, double totalAdditionalCost) {
+    public MediaSummary(LocalDate createdAt,Flat flat, double electricityConsumptionInKW, double gasConsumptionPerFlatInGJ, double gasConsumptionPerRealEstateInM3, double waterConsumptionInM3, double totalAdditionalCost) {
+        this.flat = flat;
         this.createdAt = createdAt;
         this.electricityConsumptionInKW = new BigDecimal(electricityConsumptionInKW).setScale(2, RoundingMode.HALF_UP);
         this.gasConsumptionPerFlatInGJ = new BigDecimal(gasConsumptionPerFlatInGJ).setScale(2, RoundingMode.HALF_UP);
@@ -143,4 +113,6 @@ public class MediaSummary{
     public void setTotalAllMediaCost(double totalAllMediaCost) {
         this.totalAllMediaCost = new BigDecimal(totalAllMediaCost).setScale(2,RoundingMode.HALF_UP);
     }
+
+
 }

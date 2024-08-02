@@ -1,18 +1,19 @@
-package com.mediamate.model.additionalCost;
+package com.mediamate.model.cost.additionalCost;
 
-import com.mediamate.model.Cost;
-import com.mediamate.model.realestate.RealEstate;
-import com.mediamate.model.realestate.RealEstateService;
+import com.mediamate.model.cost.Cost;
+import com.mediamate.model.real_estate.RealEstate;
+import com.mediamate.model.real_estate.RealEstateService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 
 public class AdditionalCostService {
-    @Autowired
-    AdditionalCostRepository additionalCostRepository;
     @Autowired
     HttpSession httpSession;
 
@@ -22,12 +23,5 @@ public class AdditionalCostService {
         this.realEstateService = realEstateService;
     }
 
-    @Transactional
-    public void createAdditionalCost(AdditionalCost additionalCost){
-        Cost cost = additionalCost;
-        Long realEstateId =(Long) httpSession.getAttribute("chosenRealEstateId");
-        RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
-        realEstate.addCost(cost);
-        realEstateService.updateRealEstate(realEstate);
-    }
+
 }

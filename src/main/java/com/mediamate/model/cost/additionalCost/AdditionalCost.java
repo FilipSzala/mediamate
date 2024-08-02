@@ -1,6 +1,6 @@
-package com.mediamate.model.additionalCost;
+package com.mediamate.model.cost.additionalCost;
 
-import com.mediamate.model.Cost;
+import com.mediamate.model.cost.Cost;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,12 +17,12 @@ public class AdditionalCost extends Cost {
     private String name;
     private String information;
     private Double price;
-    private Month timePeriod;
+    private Integer timePeriod;
     @Enumerated
     private ChargeType chargeType;
     public AdditionalCost() {
     }
-    public AdditionalCost(String name, String information, Double price, Month timePeriod, ChargeType chargeType) {
+    public AdditionalCost(String name, String information, Double price, Integer timePeriod, ChargeType chargeType) {
         this.name = name;
         this.information = information;
         this.price = price;

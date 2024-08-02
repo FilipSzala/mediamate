@@ -1,4 +1,4 @@
-package com.mediamate.register.email;
+package com.mediamate.controller.register.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

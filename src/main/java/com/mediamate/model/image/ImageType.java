@@ -1,5 +1,5 @@
-package com.mediamate.model.cost.image;
+package com.mediamate.model.image;
 
 public enum ImageType {
-    BILL,SURVEY,METER
+    INVOICE,INSPECTION,METER
 }
