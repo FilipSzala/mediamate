@@ -7,15 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ImageUrlResponse {
-    private Long id;
     private String name;
     private String imageUrl;
 
     public ImageUrlResponse() {
     }
 
-    public ImageUrlResponse(Long id, String name, String imageUrl) {
-        this.id = id;
+    public ImageUrlResponse(String name, String imageUrl) {
         this.name = name;
         this.imageUrl = imageUrl;
     }

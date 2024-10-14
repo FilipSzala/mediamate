@@ -3,9 +3,9 @@ package com.mediamate.model.user;
 import com.mediamate.controller.profile_info.request.InitialRequest;
 import com.mediamate.model.token.Token;
 import com.mediamate.model.token.TokenService;
-import com.mediamate.config.security.SecurityService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,11 +24,9 @@ public class UserService implements UserDetailsService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private TokenService tokenService;
-    private SecurityService securityService;
     @Autowired
-    public UserService(TokenService tokenService, SecurityService securityService) {
+    public UserService(TokenService tokenService) {
         this.tokenService = tokenService;
-        this.securityService = securityService;
     }
 
     @Override
@@ -41,11 +39,6 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
         userRepository.save(user);
     }
-
-    public Optional<User> findById (Long userId){
-        return userRepository.findById(userId);
-    }
-
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
@@ -71,13 +64,29 @@ public class UserService implements UserDetailsService {
     public boolean isOwnerSetup(User user){
         return hasRealEstate(user);
     }
+
+    public Boolean isUserRole (){
+        User user = findUserBySession();
+        return user.getRole().equals("USER")?true:false;
+    }
+
+    public User findUserBySession () {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user;
+    }
     @Transactional
     public void setupUser(InitialRequest initialRequest) {
-        User user = securityService.findUserBySession();
+        User user = findUserBySession();
         user.setRealEstates(initialRequest.getRealEstates());
         user.setFirstName(initialRequest.getProfileInfo().getFirstName());
         user.setLastName(initialRequest.getProfileInfo().getSecondName());
         updateUser(user);
+    }
+
+    public Long getFlatIdForLoginUser(){
+        User user = findUserBySession();
+        Long flatId = user.getRenter().getFlat().getId();
+        return flatId;
     }
 
 }

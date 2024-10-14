@@ -32,6 +32,7 @@ public class RealEstate implements Serializable {
     )
     private List<Cost> costs= new ArrayList<>();
     @OneToMany(
+            fetch = FetchType.LAZY,
             mappedBy = "realEstate",
             cascade = {CascadeType.MERGE,CascadeType.PERSIST}
     )

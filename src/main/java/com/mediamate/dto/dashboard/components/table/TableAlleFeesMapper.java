@@ -1,4 +1,4 @@
-package com.mediamate.dto;
+package com.mediamate.dto.dashboard.components.table;
 import com.mediamate.model.media_summary.MediaSummary;
 
 import java.util.List;
@@ -19,11 +19,9 @@ public class TableAlleFeesMapper {
                 .flatId(mediaSummary.getFlat().getId())
                 .totalElectricityCost(mediaSummary.getTotalElectricityCost())
                 .totalGasCost(mediaSummary.getTotalGasCost())
-                .totalWaterCost(mediaSummary.getTotalWaterCost())
-                .sewarageCost(mediaSummary.getSewarageCost())
+                .totalWaterCostWithSewarage(mediaSummary.getTotalWaterCost())
                 .totalAdditionalCost(mediaSummary.getTotalAdditionalCost())
                 .totalAllMediaCost(mediaSummary.getTotalAllMediaCost())
                 .build();
     }
-
 }

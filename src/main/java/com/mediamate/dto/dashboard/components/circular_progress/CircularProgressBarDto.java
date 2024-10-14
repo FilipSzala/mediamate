@@ -1,4 +1,4 @@
-package com.mediamate.dto;
+package com.mediamate.dto.dashboard.components.circular_progress;
 
 import lombok.Builder;
 import lombok.Getter;

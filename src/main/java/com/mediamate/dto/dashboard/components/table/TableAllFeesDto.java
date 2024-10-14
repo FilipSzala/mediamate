@@ -1,4 +1,4 @@
-package com.mediamate.dto;
+package com.mediamate.dto.dashboard.components.table;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -14,8 +14,7 @@ public class TableAllFeesDto {
     private Long flatId;
     private BigDecimal totalElectricityCost;
     private BigDecimal totalGasCost;
-    private BigDecimal totalWaterCost;
-    private BigDecimal sewarageCost;
+    private BigDecimal totalWaterCostWithSewarage;
     private BigDecimal totalAdditionalCost;
     private BigDecimal totalAllMediaCost;
 }

@@ -1,5 +1,6 @@
 package com.mediamate.model.meter;
 
+import com.mediamate.model.flat.Flat;
 import com.mediamate.model.flat.FlatService;
 import com.mediamate.model.real_estate.RealEstate;
 import com.mediamate.model.real_estate.RealEstateService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
@@ -66,5 +68,10 @@ public class MeterService {
         int year = localDate.getYear();
         int month = localDate.getMonth().getValue();
         return meterRepository.findMeterByRealEstateIdAndMeterTypeAndYearMonth(realEstateId, meterType, MeterOwnership.REALESTATE, year, month).orElseThrow();
+    }
+
+    public List<Meter> fingLastMetersByFlatIdsInLastMonth (List<Flat> flats){
+        List<Long> flatIds = flats.stream().map(flat->flat.getId()).collect(Collectors.toList());
+       return meterRepository.findLastMetersByFlatIdsForColdAndWarmWater(flatIds);
     }
 }

@@ -20,6 +20,7 @@ public class ElectricityConsumption {
     private double oneBeforeLastMeterInFlat ;
     private double lastMeterInRealEstate;
     private double oneBeforeLastMeterInRealEstate;
+    private int flatCount;
 
     private FlatService flatService;
     private CostService costService;
@@ -35,7 +36,7 @@ public class ElectricityConsumption {
     public double countElectricityConsumption(Long flatId) {
         Flat flat = flatService.findFlatById(flatId);
         RealEstate realEstate = flat.getRealEstate();
-        int flatCount = realEstate.getFlats().size();
+        flatCount = realEstate.getFlats().size();
 
         this.lastMeterInFlat = meterService.getMeterByFlatIdAndMeterTypeInCurrentMonth(flatId, MeterType.ELECTRICITY).getValue();
         this.oneBeforeLastMeterInFlat = meterService.getMeterByFlatIdAndMeterTypeInOneBeforeLastMonth(flatId, MeterType.ELECTRICITY).getValue();
@@ -43,17 +44,21 @@ public class ElectricityConsumption {
         this.oneBeforeLastMeterInRealEstate = meterService.getMeterByRealEstateIdAndMeterTypeInOneBeforeLastMonth(realEstate.getId(),MeterType.ELECTRICITY).getValue();
 
         double consumptionByFlatWithoutAdministration = lastMeterInFlat - oneBeforeLastMeterInFlat;
-        double administrationConsumptionPerFlat = countAdminConsumptionPerFlat(lastMeterInRealEstate,oneBeforeLastMeterInRealEstate,flatCount);
+        double administrationConsumptionPerFlat = countAdminConsumptionPerFlat();
         double totalConsumption = consumptionByFlatWithoutAdministration + administrationConsumptionPerFlat;
 
         return totalConsumption;
     }
 
-        private double countAdminConsumptionPerFlat(double lastMeterInRealEstate, double oneBeforeLastMeterInRealEstate, int flatCount) {
-        double adminConsumptionPerFlat = (lastMeterInRealEstate-oneBeforeLastMeterInRealEstate)/flatCount;
+        public double countAdminConsumptionPerFlat() {
+        double adminConsumptionPerFlat = (this.lastMeterInRealEstate-this.oneBeforeLastMeterInRealEstate)/flatCount;
         return adminConsumptionPerFlat;
     }
-
-
+        public double getLastMeterReadingInFlat(){
+        return lastMeterInFlat;
+    }
+        public double getLastMeterReadingInAdministration(){
+        return lastMeterInRealEstate;
+        }
 
 }

@@ -24,10 +24,21 @@ public class RegistrationService {
     private TokenService tokenService;
     private EmailSenderService emailSenderService;
     private RealEstateService realEstateService;
-    private String emailSubject = "Verification link";
+    private String emailSubject = "Verification";
 
-    //Todo: Remember to change link after develop app on external server!!!
-    private String linkVerification = "Link for verification account : http://localhost:8080/register/confirm?tokenKey=";
+    private String emailInformationHeader = """
+        Dear User,
+
+        Thank you for registering. To complete the verification process, please enter the following token in the appropriate field on our web application:
+
+        Your verification token:\n\n""";
+
+    private String emailInformationFooter = """
+        \n\nIf you did not initiate this request, you can safely ignore this email.
+
+        Thank you for your cooperation!
+        """;
+
     private RenterService renterService;
 
 
@@ -95,7 +106,7 @@ public class RegistrationService {
             emailSenderService.sendEmail(
                     user.getEmail(),
                     emailSubject,
-                    linkVerification + tokenKey);
+                    emailInformationHeader + tokenKey + emailInformationFooter);
         }
         catch (Exception e){
             throw new Exception("Wrong email");

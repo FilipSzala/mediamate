@@ -31,7 +31,6 @@ public class SettlementController {
     private RealEstateService realEstateService;
     private CostService costService;
 
-
     @Autowired
     public SettlementController(ImageService imageService, SettlementService settlementService, FlatService flatService, AdditionalCostService additionalCostService, MediaSummaryService mediaSummaryService, RealEstateService realEstateService, CostService costService) {
         this.imageService = imageService;
@@ -76,7 +75,6 @@ public class SettlementController {
         public void createAdditionalCost(@RequestBody List <AdditionalCost> additionalCost, HttpSession httpSession){
         costService.createAdditionalCosts(additionalCost,httpSession);
     }
-
 
     @PostMapping ("/invoice")
     public ResponseEntity createInvoiceImages (@RequestParam ("files") List<MultipartFile> files,HttpSession httpSession){

@@ -1,12 +1,11 @@
 package com.mediamate.model.media_summary;
 
-import com.mediamate.dto.TableAlleFeesMapper;
-import com.mediamate.dto.TableAllFeesDto;
 import com.mediamate.model.cost.CostService;
 import com.mediamate.model.cost.additionalCost.AdditionalCost;
 import com.mediamate.model.cost.media_cost.MediaCost;
 import com.mediamate.model.flat.Flat;
 import com.mediamate.model.flat.FlatService;
+import com.mediamate.model.media_summary.additional_cost.MediaSummaryAdditionalCost;
 import com.mediamate.model.media_summary.detaile_summary.AdditionalCostSum;
 import com.mediamate.model.media_summary.detaile_summary.ElectricityConsumption;
 import com.mediamate.model.media_summary.detaile_summary.GasConsumption;
@@ -41,6 +40,8 @@ public class MediaSummaryService {
     private List<Flat> flats = new ArrayList<>();
     private List<AdditionalCost> additionalCosts = new ArrayList<>();
     private MediaCost mediaCost = new MediaCost();
+    private MediaSummary mediaSummary = new MediaSummary();
+    private BigDecimal waterAdministrationCost = new BigDecimal(0);
     @Autowired
     private MediaSummaryRepository mediaSummaryRepository;
 
@@ -68,7 +69,11 @@ public class MediaSummaryService {
     }
 
     private void saveMediaSummaries(List<MediaSummary> mediaSummaries) {
-     mediaSummaryRepository.saveAll(mediaSummaries);
+        mediaSummaryRepository.saveAll(mediaSummaries);
+    }
+
+    public List<MediaSummary> findLastMediaSummariesByFlats(List<Flat> flats) {
+        return mediaSummaryRepository.findLastMediaSummariesByFlats(flats);
     }
 
     private double countSumGasPerRealEstateInGJ(List<com.mediamate.model.media_summary.MediaSummary> mediaSummaries) {
@@ -81,34 +86,66 @@ public class MediaSummaryService {
 
     private List<MediaSummary> createMediaSummaries() {
         List<MediaSummary> mediaSummaries = this.flats.stream()
-                .map(flat -> new MediaSummary(
-                        LocalDate.now(),
-                        flat,
-                        electricityConsumption.countElectricityConsumption(flat.getId()),
-                        gasConsumption.countGasConsumptionPerFlatInGJ(flat.getId()),
-                        gasConsumption.countGasConsumptionPerRealEstateInM3(flat.getId()),
-                        waterConsumption.countWaterConsumption(flat.getId()),
-                        additionalCostSum.countTotalAdditionalCost(this.additionalCosts, flat.getRenter().getRenterCount(), flats.size())
-                        ))
+                .map(flat -> {
+                    List<MediaSummaryAdditionalCost> mediaSummaryAdditionalCosts = additionalCostSum.countTotalAdditionalCost(this.additionalCosts, flat.getRenter().getRenterCount(), flats.size(),this.mediaSummary);
+                    this.mediaSummary = new MediaSummary(
+                            LocalDate.now(),
+                            flat,
+                            electricityConsumption.countElectricityConsumption(flat.getId()),
+                            electricityConsumption.countAdminConsumptionPerFlat(),
+                            electricityConsumption.getLastMeterReadingInFlat(),
+                            electricityConsumption.getLastMeterReadingInAdministration(),
+                            gasConsumption.countGasConsumptionPerFlatInGJ(flat.getId()),
+                            gasConsumption.countGasConsumptionPerRealEstateInM3(flat.getId()),
+                            gasConsumption.getLastMeterInFlat(),
+                            waterConsumption.countWaterConsumption(flat.getId()),
+                            electricityConsumption.countAdminConsumptionPerFlat() * mediaCost.getElectricity(),
+                            sumMediaSummaryAdditionalCost(mediaSummaryAdditionalCosts),
+                            waterAdministrationCost
+                    );
+                    mediaSummary.addMediaSumarryAdditionalCosts(mediaSummaryAdditionalCosts);
+                    return mediaSummary;
+                })
                 .collect(Collectors.toList());
 
         double sumGasPerRealEstateInGJ = countSumGasPerRealEstateInGJ(mediaSummaries);
         int numberRentersInRealEstate = countRentersInRealEstate(mediaSummaries);
 
-        mediaSummaries.stream().forEach(mediaSummary -> {
-            mediaSummary.setGasConsumptionPerFlatInM3(gasConsumption.countConsumptionPerFlatInM3(sumGasPerRealEstateInGJ, numberRentersInRealEstate, mediaSummary, flats.size()));
-            mediaSummary.setTotalElectricityCost(mediaSummary.getElectricityConsumptionInKW().doubleValue() * mediaCost.getElectricity());
-            mediaSummary.setTotalGasCost(mediaSummary.getGasConsumptionPerFlatInM3().doubleValue() * mediaCost.getGas());
-            mediaSummary.setTotalWaterCost(mediaSummary.getWaterConsumptionInM3().doubleValue() * mediaCost.getWater());
-            mediaSummary.setSewarageCost(mediaSummary.getTotalWaterCost().doubleValue());
-            mediaSummary.setTotalAllMediaCost(countTotalMediaCost(mediaSummary));
-            mediaSummary.setElectricityUsagePercentage(countUsagePercentage(mediaSummary, mediaSummary.getTotalElectricityCost()));
-            mediaSummary.setGasUsagePercentage(countUsagePercentage(mediaSummary, mediaSummary.getTotalGasCost()));
-            mediaSummary.setWaterUsagePercentage(countUsagePercentage(mediaSummary, mediaSummary.getSewarageCost().add(mediaSummary.getTotalWaterCost())));
-            mediaSummary.setAdditionalPercentage(countUsagePercentage(mediaSummary, mediaSummary.getTotalAdditionalCost()));
+        mediaSummaries.forEach(mediaSummary -> {
+            mediaSummary.setGasConsumptionPerFlatInM3(
+                    gasConsumption.countConsumptionPerFlatInM3(sumGasPerRealEstateInGJ, numberRentersInRealEstate, mediaSummary, flats.size()));
+            mediaSummary.setTotalElectricityCost(
+                    mediaSummary.getElectricityConsumptionInKW().doubleValue() * mediaCost.getElectricity());
+            mediaSummary.setTotalGasCost(
+                    mediaSummary.getGasConsumptionPerFlatInM3().doubleValue() * mediaCost.getGas());
+            mediaSummary.setSewarageCost(
+                    mediaSummary.getWaterConsumptionInM3().doubleValue()*mediaCost.getWater());
+            mediaSummary.setTotalWaterCost(
+                    (mediaSummary.getWaterConsumptionInM3().doubleValue()*mediaCost.getWater())+(mediaSummary.getWaterAdministrationCost().doubleValue())+(mediaSummary.getSewarageCost().doubleValue()));
+            mediaSummary.setTotalAllMediaCost(
+                    countTotalMediaCost(mediaSummary));
+            mediaSummary.setElectricityUsagePercentage(
+                    countUsagePercentage(mediaSummary, mediaSummary.getTotalElectricityCost()));
+            mediaSummary.setGasUsagePercentage(
+                    countUsagePercentage(mediaSummary, mediaSummary.getTotalGasCost()));
+            mediaSummary.setWaterUsagePercentage(
+                    countUsagePercentage(mediaSummary, mediaSummary.getSewarageCost().add(mediaSummary.getTotalWaterCost())));
+            mediaSummary.setAdditionalPercentage(
+                    countUsagePercentage(mediaSummary, mediaSummary.getTotalAdditionalCost()));
         });
+
         return mediaSummaries;
     }
+
+
+    private double sumMediaSummaryAdditionalCost(List<MediaSummaryAdditionalCost> mediaSummaryAdditionalCosts) {
+        MediaSummaryAdditionalCost waterCostInMediaSummaryAdditionalCost = mediaSummaryAdditionalCosts.stream().filter(cost -> cost.getName().equals("Woda administracja")).findFirst().orElse(new MediaSummaryAdditionalCost(new BigDecimal(0)));
+        this.waterAdministrationCost = waterCostInMediaSummaryAdditionalCost.getValue();
+        return mediaSummaryAdditionalCosts.stream()
+                .filter(cost -> !cost.getName().equals("Woda administracja"))
+                .map(cost -> cost.getValue())
+                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue();
+         }
 
     private int countRentersInRealEstate(List<MediaSummary> mediaSummaries) {
         return mediaSummaries.stream().mapToInt(mediaSummary -> mediaSummary.getFlat().getRenter().getRenterCount()).sum();
@@ -119,23 +156,22 @@ public class MediaSummaryService {
         double gasCost = mediaSummary.getTotalGasCost().doubleValue();
         double waterCost = mediaSummary.getTotalWaterCost().doubleValue();
         double additionalCost = mediaSummary.getTotalAdditionalCost().doubleValue();
-        double sewarageCost = mediaSummary.getSewarageCost().doubleValue();
-        return electricityCost + gasCost + waterCost + additionalCost + sewarageCost;
+        return electricityCost + gasCost + waterCost + additionalCost;
     }
 
-    public List<TableAllFeesDto> findLastMediaSummariesLoginUser(HttpSession httpSession) {
-        RealEstate realEstate = realEstateService.findRealEstateByHttpSession(httpSession);
-        List <Flat> flats =  flatService.getFlatsInRealEstate(realEstate);
-        List <MediaSummary> mediaSummaries = mediaSummaryRepository.findLastMediaSummariesByFlats(flats);
-        List<TableAllFeesDto> TableAllFeesDtos = TableAlleFeesMapper.mapToTableAllFeesDtos(mediaSummaries);
-        return TableAllFeesDtos;
-    }
-    public double countUsagePercentage(MediaSummary mediaSummary, BigDecimal mediaCost){
+    public double countUsagePercentage(MediaSummary mediaSummary, BigDecimal mediaCost) {
         BigDecimal totalCost = mediaSummary.getTotalAllMediaCost();
         BigDecimal percentage = mediaCost
                 .multiply(new BigDecimal(100))
                 .divide(totalCost, 3, RoundingMode.HALF_UP)
                 .setScale(3, RoundingMode.HALF_UP);
         return percentage.doubleValue();
+    }
+
+    public List<MediaSummary> findMediaSummariesByFlatThisYear(Long flatId) {
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(),1,1);
+        LocalDate endDate = LocalDate.now();
+        List<MediaSummary> mediaSummaries = mediaSummaryRepository.findByFlatThisYear(flatId, startDate, endDate);
+        return mediaSummaries;
     }
 }

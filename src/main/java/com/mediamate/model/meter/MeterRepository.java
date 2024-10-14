@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -33,4 +34,13 @@ public interface MeterRepository extends JpaRepository<Meter, Long> {
             @Param("meterOwnership") MeterOwnership meterOwnership,
             @Param("year") int year,
             @Param("month") int month);
+    @Query("SELECT m FROM Meter m " +
+            "WHERE m.meterType IN (0, 1) " +
+            "AND m.flat.id IN :flatIds " +
+            "AND m.createdAt = (SELECT MAX(m2.createdAt) " +
+            "FROM Meter m2 " +
+            "WHERE m2.meterType IN (0, 1) " +
+            "AND m2.flat.id IN :flatIds)")
+    List<Meter> findLastMetersByFlatIdsForColdAndWarmWater(
+            @Param("flatIds") List<Long> flatIds);
 }

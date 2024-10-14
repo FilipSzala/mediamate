@@ -1,7 +1,7 @@
 package com.mediamate.config.security;
-
 import com.mediamate.config.web_config.LoginFailureHandler;
 import com.mediamate.config.web_config.LoginSuccessHandler;
+import com.mediamate.config.web_config.LogoutHandler;
 import com.mediamate.model.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigure {
-
     @Autowired
     private LoginSuccessHandler loginSuccessHandler;
     @Autowired
@@ -27,13 +26,14 @@ public class SecurityConfigure {
     private UserService userService;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private LogoutHandler logoutHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(autz -> autz
                         .requestMatchers("/login", "/register/**").permitAll()
-                        .requestMatchers("http://localhost:8080/register").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(daoAuthenticationProvider())
                 .sessionManagement(session -> session
@@ -43,6 +43,13 @@ public class SecurityConfigure {
                         .loginProcessingUrl("/login")
                         .successHandler(loginSuccessHandler)
                         .failureHandler(loginFailureHandler)
+
+                )
+                .logout(logout -> logout
+                        .logoutSuccessHandler(logoutHandler)
+                        .logoutUrl("/logout")
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
                 )
                 .csrf(csrf -> csrf.disable());
         return httpSecurity.build();

@@ -2,10 +2,17 @@ package com.mediamate.model.media_summary.detaile_summary;
 
 import com.mediamate.model.cost.additionalCost.AdditionalCost;
 import com.mediamate.model.cost.additionalCost.ChargeType;
+import com.mediamate.model.media_summary.MediaSummary;
+import com.mediamate.model.media_summary.additional_cost.MediaSummaryAdditionalCost;
+import com.mediamate.model.media_summary.additional_cost.MediaSummaryAdditionalCostRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,14 +22,22 @@ import java.util.List;
 public class AdditionalCostSum {
     private int renterCount;
     private int flatCount;
-    public double countTotalAdditionalCost(List<AdditionalCost> additionalCosts, int renterCount, int flatCount) {
+    private List<MediaSummaryAdditionalCost> mediaSummaryAdditionalCosts;
+    @Autowired
+    private MediaSummaryAdditionalCostRepository mediaSummaryAdditionalCostRepository;
+    private BigDecimal singleCost = new BigDecimal(BigInteger.ZERO);
+    public List<MediaSummaryAdditionalCost> countTotalAdditionalCost(List<AdditionalCost> additionalCosts, int renterCount, int flatCount, MediaSummary mediaSummary) {
         this.flatCount = flatCount;
         this.renterCount = renterCount;
-        double totalCost = 0;
+        this.mediaSummaryAdditionalCosts = new ArrayList<>();
         for (AdditionalCost cost : additionalCosts) {
-            totalCost = totalCost + countSingleCost(cost);
+            MediaSummaryAdditionalCost mediaSummaryAdditionalCost = new MediaSummaryAdditionalCost();
+            singleCost = BigDecimal.valueOf(countSingleCost(cost));
+            mediaSummaryAdditionalCost.setName(cost.getName());
+            mediaSummaryAdditionalCost.setValue(singleCost);
+            mediaSummaryAdditionalCosts.add(mediaSummaryAdditionalCost);
         }
-        return totalCost;
+        return mediaSummaryAdditionalCosts;
     }
 
     private double countSingleCost (AdditionalCost cost){
@@ -32,5 +47,9 @@ public class AdditionalCostSum {
         else {
             return cost.getPrice()*renterCount;
         }
+    }
+
+    public List<MediaSummaryAdditionalCost> getMediaSummaryAdditionalCosts() {
+        return mediaSummaryAdditionalCosts;
     }
 }

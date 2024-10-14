@@ -1,7 +1,6 @@
 package com.mediamate.model.image;
 
 
-import com.mediamate.config.security.SecurityService;
 import com.mediamate.model.image.request.ImageRequest;
 import com.mediamate.model.image.response.ImageUrlResponse;
 import com.mediamate.model.real_estate.RealEstate;
@@ -27,15 +26,15 @@ public class ImageService {
     @Autowired
     RealEstateRepository realEstateRepository;
     @Autowired
-    SecurityService securityService;
-
-    @Autowired
     RealEstateService realEstateService;
 
     public Image createImage (MultipartFile file, ImageType imageType, HttpSession httpSession) throws SQLException, IOException {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
         Image image = new Image();
+        if(imageType.equals(ImageType.INVOICE)) {
+            image.setName(file.getOriginalFilename());
+        }
         image.setBlob(file);
         image.setImageType(imageType);
         image.setRealEstate(realEstate);
@@ -89,18 +88,18 @@ public class ImageService {
         return dates;
     }
 
-
-    public List<ImageUrlResponse> findImagesByImageRequest(ImageRequest imageRequest, Long realEstateId) {
-        List<Image> images = getImagesByTypeAndDate(realEstateId,imageRequest);
+    public List<ImageUrlResponse> convertImageToImageUrlResponse(ImageRequest imageRequest, Long realEstateId) {
+        List<Image> images = getImagesByTypeAndDate(realEstateId, imageRequest);
         List<ImageUrlResponse> imagesUrl =
                 images.stream()
-                .map(this::convertToImageUrlResponse)
-                .collect(Collectors.toList());
+                        .map(image -> {
+                            ImageUrlResponse imageResponse = new ImageUrlResponse();
+                            imageResponse.setName(image.getName());
+                            imageResponse.setImageUrl(generateImageUrl(image.getId()));
+                            return imageResponse;
+                        })
+                        .collect(Collectors.toList());
         return imagesUrl;
-    }
-    private ImageUrlResponse convertToImageUrlResponse(Image image) {
-        String imageUrl = generateImageUrl(image.getId());
-        return new ImageUrlResponse(image.getId(),image.getImageType().toString(), imageUrl);
     }
     private String generateImageUrl(Long imageId) {
         return "http://localhost:8080/photos/" + imageId;

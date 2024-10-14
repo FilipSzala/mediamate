@@ -6,7 +6,6 @@ import com.mediamate.model.image.Image;
 import com.mediamate.model.image.request.ImageRequest;
 import com.mediamate.model.image.ImageService;
 import com.mediamate.controller.settlement.SettlementService;
-import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,20 +40,26 @@ public class PhotoController {
         @PostMapping("/by-type-and-date")
         public ResponseEntity<List<ImageUrlResponse>> getImagesByTypeAndDate(HttpSession httpSession, @RequestBody ImageRequest imageRequest){
             Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-            List <ImageUrlResponse> imagesUrl = imageService.findImagesByImageRequest(imageRequest,realEstateId);
+            List <ImageUrlResponse> imagesUrl = imageService.convertImageToImageUrlResponse(imageRequest,realEstateId);
             return ResponseEntity.ok(imagesUrl);
         }
 
 
-        @GetMapping("/{id}")
-        public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
+    @GetMapping("/{id}")
+    public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
         Image image = imageService.getImageById(id).get();
-
         byte[] imageBytes = image.getImage().getBytes(1, (int) image.getImage().length());
+
+        MediaType mediaType;
+        if (image.getImageType().equals(ImageType.METER)) {
+            mediaType = MediaType.IMAGE_JPEG;
+        } else {
+            mediaType = MediaType.APPLICATION_PDF;
+        }
+
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.IMAGE_JPEG)
+                .contentType(mediaType)
                 .body(imageBytes);
     }
-
 }

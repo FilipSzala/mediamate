@@ -31,7 +31,7 @@ public class CostService {
     public List <AdditionalCost> findAdditionalCostByRealEstateIdInCurrentMonth(Long realEstateId, LocalDate localDate){
         LocalDate firstDay = localDate.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate lastDay =  localDate.with(TemporalAdjusters.lastDayOfMonth());
-        List <AdditionalCost> additionalCosts =  costRepository.findAdditionalCostByRealEstateIdAndCostTypeInCurrentMonth(realEstateId,firstDay,lastDay);
+        List <AdditionalCost> additionalCosts =  costRepository.findAdditionalCostByRealEstateIdAndCostTypeAndDate(realEstateId,firstDay,lastDay);
         return additionalCosts;
     }
     public List <Cost> findAdditionalCostByRealEstateIdInLastMonth(HttpSession httpSession, LocalDate localDate){
@@ -47,6 +47,7 @@ public class CostService {
             List <Cost> costs = costRepository.findMediaCostByDateDesc(realEstateId);
             return costs.isEmpty()? new MediaCost():costs.get(0);
     }
+
     @Transactional
     public void createMediaCost(MediaCost mediaCost, HttpSession httpSession){
         Cost cost = mediaCost;
@@ -57,10 +58,27 @@ public class CostService {
     }
     @Transactional
     public void createAdditionalCosts(List<AdditionalCost> additionalCosts,HttpSession httpSession){
-        List <Cost> costs = additionalCosts.stream().map(additionalCost -> (Cost) additionalCost).collect(Collectors.toList());
+        List<Cost> costs = additionalCosts.stream()
+                .map(additionalCost -> {
+                    additionalCost.setCreatedAt(LocalDate.now());
+                    return (Cost) additionalCost;
+                })
+                .collect(Collectors.toList());
         Long realEstateId =(Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
         realEstate.addCosts(costs);
         realEstateService.updateRealEstate(realEstate);
+    }
+    public List <AdditionalCost> findLatestAdditionalCostByRealEstateId(Long realEstateId){
+        List <Cost> costs = costRepository.findLatestAdditionalCostByRealEstateId(realEstateId);
+        List <AdditionalCost> additionalCosts = costs.stream().map(cost -> (AdditionalCost) cost).collect(Collectors.toList());
+        return additionalCosts;
+    }
+
+    public List<MediaCost> findMediaCostByRealEstateIdInCurrentYear(Long realEstateId){
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+        LocalDate endDate = LocalDate.now();
+       List<MediaCost> mediaCosts = costRepository.findMediaCostByRealEstateIdAndDate(realEstateId, startDate,endDate);
+       return mediaCosts;
     }
 }
