@@ -20,6 +20,13 @@ public interface MeterRepository extends JpaRepository<Meter, Long> {
             @Param("year") int year,
             @Param("month") int month);
 
+    @Query("SELECT m FROM Meter m WHERE m.flat.id = :flatId AND m.meterType = :meterType AND m.meterOwnership = :meterOwnership ORDER BY m.createdAt DESC")
+    Optional<Meter> findLatestMeterByFlatIdAndMeterType(
+            @Param("flatId") Long flatId,
+            @Param("meterType") MeterType meterType,
+            @Param("meterOwnership") MeterOwnership meterOwnership);
+
+
     @Query("SELECT m FROM Meter m WHERE m.realEstate = :realEstate AND m.meterType = :meterType AND FUNCTION('YEAR', m.createdAt) = :year AND FUNCTION('MONTH', m.createdAt) = :month")
     Optional<Meter> findMeterByRealEstateAndTypeAndYearMonth(
             @Param("realEstate") RealEstate realEstate,

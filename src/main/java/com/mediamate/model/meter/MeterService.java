@@ -49,11 +49,15 @@ public class MeterService {
         int month = localDate.getMonth().getValue();
         return meterRepository.findMeterByFlatIdAndMeterTypeAndYearMonth(flatId, meterType,MeterOwnership.FLAT, year, month).orElse(new Meter(0.0));
     }
+
     public Meter getMeterByFlatIdAndMeterTypeInOneBeforeLastMonth(Long flatId, MeterType meterType) {
         LocalDate localDate = LocalDate.now().minusMonths(1);
         int year = localDate.getYear();
         int month = localDate.getMonth().getValue();
         return meterRepository.findMeterByFlatIdAndMeterTypeAndYearMonth(flatId, meterType,MeterOwnership.FLAT, year, month).orElse(new Meter(0.0));
+    }
+    public Meter getLastMeterByFlatIdAndMeterType(Long flatId, MeterType meterType) {
+        return meterRepository.findLatestMeterByFlatIdAndMeterType(flatId, meterType,MeterOwnership.FLAT).orElse(new Meter(0.0));
     }
     //this one
 

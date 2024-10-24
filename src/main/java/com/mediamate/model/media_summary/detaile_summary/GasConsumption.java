@@ -32,7 +32,7 @@ public class GasConsumption {
 
     public double countGasConsumptionPerFlatInGJ(Long flatId) {
         this.lastMeterInFlat = meterService.getMeterByFlatIdAndMeterTypeInCurrentMonth(flatId, MeterType.GAS).getValue();
-        this.oneBeforeLastMeterInFlat = meterService.getMeterByFlatIdAndMeterTypeInOneBeforeLastMonth(flatId, MeterType.GAS).getValue();
+        this.oneBeforeLastMeterInFlat = meterService.getLastMeterByFlatIdAndMeterType(flatId, MeterType.GAS).getValue();
         double consumptionPerFlatInGJ = lastMeterInFlat - oneBeforeLastMeterInFlat;
         return consumptionPerFlatInGJ;
     }
