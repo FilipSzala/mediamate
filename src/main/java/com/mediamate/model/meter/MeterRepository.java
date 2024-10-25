@@ -20,8 +20,14 @@ public interface MeterRepository extends JpaRepository<Meter, Long> {
             @Param("year") int year,
             @Param("month") int month);
 
-    @Query("SELECT m FROM Meter m WHERE m.flat.id = :flatId AND m.meterType = :meterType AND m.meterOwnership = :meterOwnership ORDER BY m.createdAt DESC")
-    Optional<Meter> findLatestMeterByFlatIdAndMeterType(
+    @Query("SELECT m FROM Meter m " +
+            "WHERE m.flat.id = :flatId " +
+            "AND m.meterType = :meterType " +
+            "AND m.meterOwnership = :meterOwnership " +
+            "AND (YEAR(m.createdAt) < YEAR(CURRENT_DATE) " +
+            "OR MONTH(m.createdAt) < MONTH(CURRENT_DATE)) " +
+            "ORDER BY m.createdAt DESC")
+    List<Meter> findLatestMeterByFlatIdAndMeterTypeExcludingCurrentMonth(
             @Param("flatId") Long flatId,
             @Param("meterType") MeterType meterType,
             @Param("meterOwnership") MeterOwnership meterOwnership);

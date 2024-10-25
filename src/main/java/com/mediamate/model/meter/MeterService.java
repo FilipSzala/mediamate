@@ -57,7 +57,8 @@ public class MeterService {
         return meterRepository.findMeterByFlatIdAndMeterTypeAndYearMonth(flatId, meterType,MeterOwnership.FLAT, year, month).orElse(new Meter(0.0));
     }
     public Meter getLastMeterByFlatIdAndMeterType(Long flatId, MeterType meterType) {
-        return meterRepository.findLatestMeterByFlatIdAndMeterType(flatId, meterType,MeterOwnership.FLAT).orElse(new Meter(0.0));
+        List <Meter> meters = meterRepository.findLatestMeterByFlatIdAndMeterTypeExcludingCurrentMonth(flatId, meterType,MeterOwnership.FLAT);
+        return meters.stream().findFirst().orElse(new Meter((double) 0));
     }
     //this one
 
