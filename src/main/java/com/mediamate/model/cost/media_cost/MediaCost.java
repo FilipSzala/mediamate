@@ -14,15 +14,17 @@ public class MediaCost extends Cost {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
     private double gas;
+    private double gasDistribution;
     private double electricity;
     private double water;
 
     public MediaCost() {
     }
 
-    public MediaCost(double gas, double electricity, double water) {
+    public MediaCost(double gas, double electricity, double water, double gasDistribution) {
         this.gas = gas;
         this.electricity = electricity;
         this.water = water;
+        this.gasDistribution = gasDistribution;
     }
 }

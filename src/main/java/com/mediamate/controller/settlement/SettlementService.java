@@ -1,5 +1,7 @@
 package com.mediamate.controller.settlement;
 
+import com.mediamate.controller.settlement.request.GasInvoiceDetails;
+import com.mediamate.controller.settlement.response.GasPriceWithDistribution;
 import com.mediamate.util.YearMonthDate;
 import com.mediamate.model.flat.Flat;
 import com.mediamate.model.flat.FlatService;
@@ -33,13 +35,14 @@ public class SettlementService {
     private final ImageService imageService;
     private final RealEstateService realEstateService;
     private MeterRequest meterRequestFromMemory;
-
+    private GasPriceWithDistribution gasPriceWithDistribution;
     @Autowired
-    public SettlementService(MeterService meterService, FlatService flatService, ImageService imageService, RealEstateService realEstateService) {
+    public SettlementService(MeterService meterService, FlatService flatService, ImageService imageService, RealEstateService realEstateService, GasPriceWithDistribution gasPriceWithDistribution) {
         this.meterService = meterService;
         this.flatService = flatService;
         this.imageService = imageService;
         this.realEstateService = realEstateService;
+        this.gasPriceWithDistribution = gasPriceWithDistribution;
     }
     @Transactional
     public void createOrUpdateMeter(MeterRequest meterRequest, HttpSession httpSession) {
@@ -187,4 +190,12 @@ public class SettlementService {
                 .collect(Collectors.toList());
     }
 
+    public GasPriceWithDistribution calculateGasPrice(GasInvoiceDetails gasInvoiceDetails) {
+        double administrationPriceNet = gasInvoiceDetails.getFixedDistributionNet() + gasInvoiceDetails.getSubscriptionFeeNet();
+        double administrationPriceGross = (administrationPriceNet * gasInvoiceDetails.getVatRate()/100) + administrationPriceNet;
+        double priceZlPerM3WithoutDistribution = ((gasInvoiceDetails.getTotalSumGross() - administrationPriceGross) / gasInvoiceDetails.getGasConsumptionInM3());
+        this.gasPriceWithDistribution.setPriceZlPerM3WithoutDistribution(priceZlPerM3WithoutDistribution);
+        this.gasPriceWithDistribution.setAdministrationPriceGross(administrationPriceGross);
+        return gasPriceWithDistribution;
+    }
 }

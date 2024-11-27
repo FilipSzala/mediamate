@@ -1,5 +1,7 @@
 package com.mediamate.controller.settlement;
 
+import com.mediamate.controller.settlement.request.GasInvoiceDetails;
+import com.mediamate.controller.settlement.response.GasPriceWithDistribution;
 import com.mediamate.model.media_summary.MediaSummaryService;
 import com.mediamate.model.cost.Cost;
 import com.mediamate.model.cost.CostService;
@@ -91,5 +93,8 @@ public class SettlementController {
                 .ok()
                 .body("Inspection images added");
     }
-
+    @PostMapping ("/gas-price")
+    public GasPriceWithDistribution calculateGasPriceWithDistribiuton (@RequestBody GasInvoiceDetails gasInvoiceDetails){
+        return settlementService.calculateGasPrice(gasInvoiceDetails);
+    }
 }

@@ -117,7 +117,7 @@ public class MediaSummaryService {
             mediaSummary.setTotalElectricityCost(
                     mediaSummary.getElectricityConsumptionInKW().doubleValue() * mediaCost.getElectricity());
             mediaSummary.setTotalGasCost(
-                    mediaSummary.getGasConsumptionPerFlatInM3().doubleValue() * mediaCost.getGas());
+                    mediaSummary.getGasConsumptionPerFlatInM3().doubleValue() * mediaCost.getGas()+(mediaCost.getGasDistribution()/flats.size()));
             mediaSummary.setSewarageCost(
                     mediaSummary.getWaterConsumptionInM3().doubleValue()*mediaCost.getWater());
             mediaSummary.setTotalWaterCost(

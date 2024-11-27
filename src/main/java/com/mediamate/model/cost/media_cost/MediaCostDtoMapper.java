@@ -5,6 +5,7 @@ public class MediaCostDtoMapper {
         return MediaCostDto.builder()
                 .electricityPrice(cost.getElectricity())
                 .gasPrice(cost.getGas())
+                .gasDistributionPrice(cost.getGasDistribution())
                 .waterPrice(cost.getWater())
                 .build();
     }

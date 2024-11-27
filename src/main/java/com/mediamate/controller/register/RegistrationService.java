@@ -109,7 +109,7 @@ public class RegistrationService {
                     emailInformationHeader + tokenKey + emailInformationFooter);
         }
         catch (Exception e){
-            throw new Exception("Wrong email");
+            throw new Exception(e.getMessage() + " "  + "Wrong email");
         }
     }
 

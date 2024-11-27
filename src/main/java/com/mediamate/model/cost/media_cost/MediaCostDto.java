@@ -8,5 +8,6 @@ import lombok.Getter;
 public class MediaCostDto {
     private double electricityPrice;
     private double gasPrice;
+    private double gasDistributionPrice;
     private double waterPrice;
 }
