@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -158,11 +159,32 @@ public class SettlementService {
         return false;
     }
 
-    public void createMeterWithPhotoAndInformation(List<MultipartFile> files, List <ImageInformationRequest> infoRequests, HttpSession httpSession) {
-        List<Image> images = imageService.createImages(files, ImageType.METER,httpSession);
+    public List<String> createMetersAndImages(List<MultipartFile> files, List<ImageInformationRequest> infoRequests, HttpSession httpSession, boolean userAcceptUnusunalMeterValue) {
+        //TODO : pamietac to usunac, to jest tylko czasowo na testy
+        List<String> meterReadingValidationMessage = new ArrayList<>();
+        for (ImageInformationRequest infoRequest : infoRequests) {
+            infoRequest.setFlatNumber(1);
+        }
+        if (userAcceptUnusunalMeterValue) {
+            createMetersWithImages(files, infoRequests, httpSession);
+        } else {
+            meterReadingValidationMessage = meterService.meterValidation(infoRequests, httpSession);
+            boolean isMeterValidationCorrect = meterReadingValidationMessage.isEmpty();
+            if (isMeterValidationCorrect) {
+                createMetersWithImages(files, infoRequests, httpSession);
+            } else {
+               return meterReadingValidationMessage;
+            }
+        }
+        return meterReadingValidationMessage;
+    }
+
+    private void createMetersWithImages(List<MultipartFile> files, List<ImageInformationRequest> infoRequests, HttpSession httpSession) {
+        List<Image> images = imageService.createImages(files, ImageType.METER, httpSession);
         List<Meter> meters = createMeters(infoRequests, httpSession, images);
         meterService.createMeters(meters);
     }
+
     public List<Long> getFlatsIdBySession(HttpSession httpSession){
         RealEstate realEstate = realEstateService.findRealEstateByHttpSession(httpSession);
         List<Long> flatId = flatService.findFlatsIdByRealEstateId(realEstate.getId());

@@ -15,13 +15,15 @@ public class ImageInformationRequest {
     private MeterType meterType;
     private Long flatId;
     private double meterValue;
+    private int flatNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate yearMonthDate;
 
-    public ImageInformationRequest(MeterType meterType, Long flatId, double meterValue, LocalDate yearMonthDate) {
+    public ImageInformationRequest(MeterType meterType, Long flatId, double meterValue, LocalDate yearMonthDate,int flatNumber) {
         this.meterType = meterType;
         this.flatId = flatId;
         this.meterValue = meterValue;
         this.yearMonthDate = yearMonthDate;
+        this.flatNumber = flatNumber;
     }
 }

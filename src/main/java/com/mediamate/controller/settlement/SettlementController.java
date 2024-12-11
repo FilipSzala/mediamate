@@ -52,11 +52,19 @@ public class SettlementController {
         return flatsId;
     }
     @PostMapping ("/meters")
-    public ResponseEntity<?> createMeterWithPhotoAndInformation(@RequestParam ("files") List<MultipartFile> files, @RequestPart("infoRequest") List <ImageInformationRequest> infoRequest, HttpSession httpSession){
-        settlementService.createMeterWithPhotoAndInformation(files,infoRequest,httpSession);
-        return ResponseEntity
-                .ok()
-                .body("Meters added");
+    public ResponseEntity<?> createMeterWithPhotoAndInformation(@RequestParam ("files") List<MultipartFile> files, @RequestPart("infoRequest") List <ImageInformationRequest> infoRequest, HttpSession httpSession, boolean userAcceptUnusunalMeterValue){
+        List<String> validationMessages = settlementService.createMetersAndImages(files,infoRequest,httpSession, userAcceptUnusunalMeterValue);
+        boolean validationCorrect = validationMessages.isEmpty();
+        if(validationCorrect) {
+            return ResponseEntity
+                    .ok()
+                    .body("Meters added");
+        }
+        else {
+            return ResponseEntity
+                    .badRequest()
+                    .body(validationMessages);
+        }
     }
     @GetMapping ("media-cost")
     public Cost getLastMediaCost(HttpSession httpSession){

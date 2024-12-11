@@ -1,6 +1,7 @@
 package com.mediamate.model.meter;
 
 import com.mediamate.model.real_estate.RealEstate;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -56,4 +57,60 @@ public interface MeterRepository extends JpaRepository<Meter, Long> {
             "AND m2.flat.id IN :flatIds)")
     List<Meter> findLastMetersByFlatIdsForColdAndWarmWater(
             @Param("flatIds") List<Long> flatIds);
+
+    @Query("SELECT m FROM Meter m " +
+            "WHERE m.flat.id IN :flatIds " +
+            "AND m.createdAt = (SELECT MAX(m2.createdAt) " +
+            "FROM Meter m2 " +
+            "WHERE m2.flat.id IN :flatIds)")
+    List<Meter> findLastMetersByFlatIds(
+            @Param("flatIds") List<Long> flatIds);
+
+
+    @Query("SELECT m FROM Meter m " +
+            "WHERE ((:isFlat = true AND m.flat.id = :id) " +
+            "   OR (:isFlat = false AND m.realEstate.id = :id)) " +
+            "AND m.meterType = :meterType " +
+            "AND m.meterOwnership = :meterOwnership " +
+            "ORDER BY m.createdAt DESC")
+    List<Meter> findLast12MetersByFlatOrRealEstateIdMeterTypeAndOwnership(
+            @Param("id") Long id,
+            @Param("meterType") MeterType meterType,
+            @Param("meterOwnership") MeterOwnership meterOwnership,
+            @Param("isFlat") boolean isFlat,
+            Pageable pageable);
+
+    @Query("SELECT m FROM Meter m " +
+            "WHERE ((:isFlat = true AND m.flat.id = :id) " +
+            "   OR (:isFlat = false AND m.realEstate.id = :id)) " +
+            "AND m.meterType = :meterType " +
+            "AND m.meterOwnership = :meterOwnership " +
+            "AND FUNCTION('MONTH', m.createdAt) BETWEEN 5 AND 9 " +
+            "ORDER BY m.createdAt DESC")
+    List<Meter> findLast12MetersByFlatOrRealEstateIdMeterTypeAndMeterOwnershipInSummertime(
+            @Param("id") Long id,
+            @Param("meterType") MeterType meterType,
+            @Param("meterOwnership") MeterOwnership meterOwnership,
+            @Param("isFlat") boolean isFlat,
+            Pageable pageable);
+
+    @Query("SELECT m FROM Meter m " +
+            "WHERE ((:isFlat = true AND m.flat.id = :id) " +
+            "   OR (:isFlat = false AND m.realEstate.id = :id)) " +
+            "AND m.meterType = :meterType " +
+            "AND m.meterOwnership = :meterOwnership " +
+            "AND FUNCTION('MONTH', m.createdAt) NOT BETWEEN 5 AND 9 " +
+            "ORDER BY m.createdAt DESC")
+    List<Meter> findLast12MetersByFlatOrRealEstateIdMeterTypeAndMeterOwnershipInWinterTime(
+            @Param("id") Long id,
+            @Param("meterType") MeterType meterType,
+            @Param("meterOwnership") MeterOwnership meterOwnership,
+            @Param("isFlat") boolean isFlat,
+            Pageable pageable);
+
+    @Query("SELECT m FROM Meter m " +
+            "WHERE m.realEstate.id = :realEstateId " +
+            "AND m.createdAt = (SELECT MAX(m2.createdAt) " +
+            "FROM Meter m2 WHERE m2.realEstate.id = :realEstateId)")
+    List<Meter> findLastMetersByRealestateIdWithMeterOwnershipRealEstate(@Param("realEstateId") Long realEstateId);
 }

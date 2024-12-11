@@ -102,6 +102,6 @@ public class ImageService {
         return imagesUrl;
     }
     private String generateImageUrl(Long imageId) {
-        return "http://mediamate.homes:8080/photos/" + imageId;
+        return "http://localhost:8080/photos/" + imageId;
     }
 }

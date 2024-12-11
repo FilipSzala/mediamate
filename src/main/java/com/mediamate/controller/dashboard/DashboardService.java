@@ -119,7 +119,8 @@ public class DashboardService {
     }
 
     private void setWaterData(List<MediaSummary> mediaSummaries, List<Flat> flats,Dashboard dashboard) {
-        List<Meter> meters = meterService.fingLastMetersByFlatIdsInLastMonth(flats);
+        List<Long> flatIds = flats.stream().map(flat->flat.getId()).collect(Collectors.toList());
+        List<Meter> meters = meterService.findLastMetersByFlatIdsInLastMonthForColdAndWarmWater(flatIds);
         List<TableWaterDto> tableWaterDtos = TableWaterDtoMapper.mapToTableWaterDtos(mediaSummaries, meters);
         dashboard.setTableWaterDtos(tableWaterDtos);
     }
