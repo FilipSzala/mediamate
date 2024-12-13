@@ -105,26 +105,102 @@ public class MeterService {
 
     public List<String> meterValidation(List<ImageInformationRequest> infoRequests, HttpSession httpSession) {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-        List<String> meterReadingValidationMessage = new ArrayList<>();
-            List<Meter> meters = findLastMetersByRealestateId(realEstateId);
+        RealEstate realEstate = realEstateService.findById(realEstateId).orElseThrow();
+        List<String> meterValidationMessage = new ArrayList<>();
+        checkFlatCountMatchingMeterCount (meterValidationMessage,realEstate, infoRequests);
+        avarageRangeValidation(infoRequests, realEstateId, meterValidationMessage);
 
-            for (Meter meter : meters) {
-                infoRequests.stream()
-                        .filter(infoRequest ->
-                                infoRequest.getMeterType().equals(meter.getMeterType()) &&
-                                        ((meter.getFlat() == null && infoRequest.getFlatId()==null) || (meter.getFlat()!= null && meter.getFlat().getId().equals(infoRequest.getFlatId())))
-                        ).findAny()
-                        .ifPresent(infoRequest -> {
-                            double meterValue = infoRequest.getMeterValue() - meter.getValue();
-                            String getMeterReadingValidationMessage = isMeterValueAcceptable(meter, infoRequest, meterValue);
-                            boolean isMeterValueNotAccptable = getMeterReadingValidationMessage.equals("Correct value") ? false : true;
-                            if (isMeterValueNotAccptable) {
-                                meterReadingValidationMessage.add(new String(getMeterReadingValidationMessage));
-                            }
-                        });
+        return meterValidationMessage;
+    }
+
+    private void checkFlatCountMatchingMeterCount(List<String> meterValidationMessage, RealEstate realEstate, List<ImageInformationRequest> infoRequests) {
+        int flatsCount= realEstate.getFlats().size();
+        int correctMeterCount = (flatsCount * MeterType.values().length) + 2;
+        boolean isIncorrectMeterCountNumberOfMeters = correctMeterCount == infoRequests.size()? false:true;
+        if (isIncorrectMeterCountNumberOfMeters){
+            meterValidationMessage.add("The number of meters does not match your request. Expected: " + correctMeterCount + ", but found: " + infoRequests.size());
+        }
+        meterValidationMessage.addAll(checkIfAllMeterTypesExistForFlatAndRealEstate(infoRequests, realEstate));
+
+    }
+
+    private List<String>   checkIfAllMeterTypesExistForFlatAndRealEstate(List<ImageInformationRequest> infoRequests, RealEstate realEstate) {
+        List<ImageInformationRequest> requestsWithoutRealEstate = infoRequests.stream().filter(infoRequest -> Objects.nonNull(infoRequest.getFlatId())).collect(Collectors.toList());
+        Set<Long> uniqueFlatIds = realEstate.getFlats().stream().map(flat -> flat.getId()).collect(Collectors.toSet());
+        List<String> validationMessages = new ArrayList<>();
+        List<ImageInformationRequest> requestWithoutFlats = infoRequests.stream().filter(infoRequest -> Objects.isNull(infoRequest.getFlatId())).collect(Collectors.toList());
+        if (requestWithoutFlats.size() != 2 && requestWithoutFlats.size() != 0) {
+            int meterElectricityCount = (int) requestWithoutFlats.stream().filter(request -> request.getMeterType().equals(MeterType.ELECTRICITY)).count();
+            int meterGasCount = (int) requestWithoutFlats.stream().filter(request -> request.getMeterType().equals(MeterType.GAS)).count();
+            if (meterGasCount < 1 || meterGasCount >= 2) {
+                validationMessages.add("The number of gas meters for real estate is " + meterGasCount + " , but should be 1");
+            }
+            if (meterElectricityCount < 1 || meterElectricityCount >= 2) {
+                validationMessages.add("The number of electricity meters for real estate is " + meterElectricityCount + " , but should be 1");
+            }
+        }
+        for (MeterType meterType : MeterType.values()) {
+            List<Long> flatIds = requestsWithoutRealEstate.stream()
+                    .filter(request -> request.getMeterType() == meterType)
+                    .map(ImageInformationRequest::getFlatId)
+                    .collect(Collectors.toList());
+
+
+
+            Set<Long> duplicates = flatIds.stream()
+                    .filter(id -> Collections.frequency(flatIds, id) > 1)
+                    .collect(Collectors.toSet());
+
+            Set<Long> missingFlatIds = new HashSet<>(uniqueFlatIds);
+            missingFlatIds.removeAll(flatIds);
+
+
+            if (!duplicates.isEmpty()) {
+                for (Long duplicate : duplicates) {
+                    String flatNameForDuplicate = getFlatNameById(infoRequests, duplicate);
+                    validationMessages.add("Duplicate meter found in : " + meterType + " for " + flatNameForDuplicate);
+                }
             }
 
-        return meterReadingValidationMessage;
+                if (!missingFlatIds.isEmpty()) {
+                    for (Long missingFlatId : missingFlatIds) {
+                        String flatNameForMissingFlat = getFlatNameById(infoRequests, missingFlatId);
+                        validationMessages.add("Missing meter type: " + meterType + " for  " + flatNameForMissingFlat);
+                    }
+                }
+
+        }
+        return validationMessages;
+    }
+
+    private static String getFlatNameById(List<ImageInformationRequest> infoRequests, Long id) {
+        String flatName = infoRequests.stream()
+                .filter(infoRequest -> id.equals(infoRequest.getFlatId()))
+                .findAny()
+                .map(ImageInformationRequest::getFlatName)
+                .orElse("Coudn't find");
+        return flatName;
+    }
+
+
+    private void avarageRangeValidation(List<ImageInformationRequest> infoRequests, Long realEstateId, List<String> meterReadingValidationMessage) {
+        List<Meter> meters = findLastMetersByRealestateId(realEstateId);
+
+        for (Meter meter : meters) {
+            infoRequests.stream()
+                    .filter(infoRequest ->
+                            infoRequest.getMeterType().equals(meter.getMeterType()) &&
+                                    ((meter.getFlat() == null && infoRequest.getFlatId()==null) || (meter.getFlat()!= null && meter.getFlat().getId().equals(infoRequest.getFlatId())))
+                    ).findAny()
+                    .ifPresent(infoRequest -> {
+                        double meterValue = infoRequest.getMeterValue() - meter.getValue();
+                        String getMeterReadingValidationMessage = isMeterValueAcceptable(meter, infoRequest, meterValue);
+                        boolean isMeterValueNotAccptable = getMeterReadingValidationMessage.equals("Correct value") ? false : true;
+                        if (isMeterValueNotAccptable) {
+                            meterReadingValidationMessage.add(new String(getMeterReadingValidationMessage));
+                        }
+                    });
+        }
     }
 
     private List<Meter> findLastMetersByRealestateId(Long realestateId) {
@@ -134,13 +210,13 @@ public class MeterService {
     private String isMeterValueAcceptable(Meter meter, ImageInformationRequest infoRequest, double value) {
         boolean isValueLowerOrEqualsZero = value <= 0 ? true : false;
         if (isValueLowerOrEqualsZero) {
-            return infoRequest.getMeterType() + " meter for flat " + infoRequest.getFlatNumber() + " has a value of 0 or lower";
+            return infoRequest.getMeterType() + " meter for " + infoRequest.getFlatName() + " has a value of 0 or lower";
         }
         boolean isValueWithinAverageRange = isMeterRangeWithinLastTwelveReading(meter, value);
         if (isValueWithinAverageRange) {
             return "Correct value";
         } else {
-            return "Incorrect value. " + infoRequest.getMeterType() + " meter for flat " + infoRequest.getFlatNumber() + " has a wrong avarege value";
+            return "Incorrect value. " + infoRequest.getMeterType() + " meter for " + infoRequest.getFlatName() + " has a wrong avarege value";
         }
     }
 

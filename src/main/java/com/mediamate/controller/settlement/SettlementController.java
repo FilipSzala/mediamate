@@ -51,8 +51,8 @@ public class SettlementController {
         List<Long> flatsId = settlementService.getFlatsIdBySession(httpSession);
         return flatsId;
     }
-    @PostMapping ("/meters")
-    public ResponseEntity<?> createMeterWithPhotoAndInformation(@RequestParam ("files") List<MultipartFile> files, @RequestPart("infoRequest") List <ImageInformationRequest> infoRequest, HttpSession httpSession, boolean userAcceptUnusunalMeterValue){
+    @PostMapping ("/meters/{userAcceptUnusunalMeterValue}")
+    public ResponseEntity<?> createMeterWithPhotoAndInformation(@RequestParam ("files") List<MultipartFile> files, @RequestPart("infoRequest") List <ImageInformationRequest> infoRequest, HttpSession httpSession, @PathVariable boolean userAcceptUnusunalMeterValue){
         List<String> validationMessages = settlementService.createMetersAndImages(files,infoRequest,httpSession, userAcceptUnusunalMeterValue);
         boolean validationCorrect = validationMessages.isEmpty();
         if(validationCorrect) {

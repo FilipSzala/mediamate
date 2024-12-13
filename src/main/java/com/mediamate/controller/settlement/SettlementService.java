@@ -160,11 +160,7 @@ public class SettlementService {
     }
 
     public List<String> createMetersAndImages(List<MultipartFile> files, List<ImageInformationRequest> infoRequests, HttpSession httpSession, boolean userAcceptUnusunalMeterValue) {
-        //TODO : pamietac to usunac, to jest tylko czasowo na testy
         List<String> meterReadingValidationMessage = new ArrayList<>();
-        for (ImageInformationRequest infoRequest : infoRequests) {
-            infoRequest.setFlatNumber(1);
-        }
         if (userAcceptUnusunalMeterValue) {
             createMetersWithImages(files, infoRequests, httpSession);
         } else {
