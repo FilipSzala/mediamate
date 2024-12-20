@@ -14,4 +14,8 @@ public class ImageRequest {
     ImageType imageType;
     int createdYear;
     int createdMonth;
+
+    public boolean isEmpty() {
+        return (imageType == null && createdYear == 0 && createdMonth==0);
+    }
 }

@@ -35,10 +35,10 @@ public class Image {
     private Blob image;
     private ImageType imageType;
     private LocalDate createAt = LocalDate.now();
+    private LocalDate expiryDate;
 
-    public void setBlob(MultipartFile file) throws IOException, SQLException {
-        byte[] bytes = file.getBytes();
-        Blob blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+    public void setBlob(byte [] imageBytes) throws IOException, SQLException {
+        Blob blob = new javax.sql.rowset.serial.SerialBlob(imageBytes);
         image = blob;
     }
 }

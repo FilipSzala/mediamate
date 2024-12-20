@@ -3,6 +3,8 @@ package com.mediamate.model.renter;
 import com.mediamate.model.flat.Flat;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 
 public class Renter {
@@ -12,6 +14,7 @@ public class Renter {
     private String rentersFullName;
     private int renterCount;
     private String phoneNumber;
+    private LocalDate smsSentDate;
     @OneToOne
     @JoinColumn (
             name = "flat_id",
@@ -23,11 +26,13 @@ public class Renter {
     private Flat flat;
     public Renter() {
     }
-    public Renter(String rentersFullName, int renterCount, String phoneNumber) {
+    public Renter(String rentersFullName, int renterCount, String phoneNumber,LocalDate smsSentDate) {
         this.rentersFullName = rentersFullName;
         this.renterCount = renterCount;
         this.phoneNumber = phoneNumber;
+        this.smsSentDate = smsSentDate;
     }
+
 
     public Long getId() {
         return id;
@@ -62,5 +67,13 @@ public class Renter {
 
     public void setFlat(Flat flat) {
         this.flat = flat;
+    }
+
+    public LocalDate getSmsSentDate() {
+        return smsSentDate;
+    }
+
+    public void setSmsSentDate(LocalDate smsSentDate) {
+        this.smsSentDate = smsSentDate;
     }
 }

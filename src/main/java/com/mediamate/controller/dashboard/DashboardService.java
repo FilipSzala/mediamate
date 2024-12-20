@@ -1,5 +1,6 @@
 package com.mediamate.controller.dashboard;
 
+import com.mediamate.controller.dashboard.sms_api.SmsSenderService;
 import com.mediamate.dto.dashboard.Dashboard;
 import com.mediamate.dto.dashboard.components.bar_chart.BarChart;
 import com.mediamate.dto.dashboard.components.bar_chart.BarChartType;
@@ -21,12 +22,14 @@ import com.mediamate.model.meter.Meter;
 import com.mediamate.model.meter.MeterService;
 import com.mediamate.model.real_estate.RealEstate;
 import com.mediamate.model.real_estate.RealEstateService;
+import com.mediamate.model.renter.Renter;
 import com.mediamate.model.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,15 +43,17 @@ public class DashboardService {
     private UserService userService;
     private MeterService meterService;
     private CostService costService;
+    private SmsSenderService smsSenderService;
 
     @Autowired
-    public DashboardService(RealEstateService realEstateService, FlatService flatService, MediaSummaryService mediaSummaryService,UserService userService, MeterService meterService,CostService costService) {
+    public DashboardService(RealEstateService realEstateService, FlatService flatService, MediaSummaryService mediaSummaryService,UserService userService, MeterService meterService,CostService costService, SmsSenderService smsSenderService) {
         this.realEstateService = realEstateService;
         this.flatService = flatService;
         this.mediaSummaryService = mediaSummaryService;
         this.userService = userService;
         this.meterService = meterService;
         this.costService = costService;
+        this.smsSenderService = smsSenderService;
     }
 
     public Dashboard findDashboardDataForLoginAccount(HttpSession httpSession) {
@@ -148,4 +153,38 @@ public class DashboardService {
         }
         return header;
     }
+
+    public void sendSmsWithMediaSummary(HttpSession httpSession) {
+        RealEstate realEstate = realEstateService.findRealEstateByHttpSession(httpSession);
+        List<Flat> flats = flatService.getFlatsInRealEstate(realEstate);
+        List<MediaSummary> mediaSummaries = mediaSummaryService.findLastMediaSummariesByFlats(flats);
+        Boolean ifMediaSummariesIsSameSizeFlat = flats.size() == mediaSummaries.size() ? true : false;
+        if (ifMediaSummariesIsSameSizeFlat) {
+            flats.forEach(flat -> {
+                boolean hasRenterPhoneNumber = flat.getRenter() != null && flat.getRenter().getPhoneNumber() != null;
+                if (hasRenterPhoneNumber) {
+                    String phoneNumber = flat.getRenter().getPhoneNumber();
+                    Renter renter = flat.getRenter();
+                    MediaSummary mediaSummary = findMediaSummaryByFlat(mediaSummaries, flat);
+                    BigDecimal mediaTotalCost = mediaSummary.getTotalAllMediaCost() != null ? mediaSummary.getTotalAllMediaCost() : BigDecimal.ZERO;
+                    smsSenderService.sendSmsIfValid(renter,phoneNumber, mediaTotalCost);
+                }
+            });
+        }
+        else {
+            throw new IllegalStateException("The number of flats does not match the number of media summaries. Cannot send SMS.");
+        }
+    }
+
+    private MediaSummary findMediaSummaryByFlat(List<MediaSummary> mediaSummaries, Flat flat) {
+        MediaSummary mediaSummary = mediaSummaries.stream()
+                .filter(media -> media.getFlat() != null &&
+                        media.getFlat().getId() != null &&
+                        media.getFlat().getId().equals(flat.getId()))
+                .findFirst()
+                .orElse(new MediaSummary());
+        return mediaSummary;
+    }
+
+
 }

@@ -20,7 +20,7 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             "FROM Image i " +
             "WHERE i.realEstate.id = :realEstateId AND i.imageType = :imageType " +
             "GROUP BY YEAR(i.createAt), MONTH(i.createAt)")
-    List<YearMonthDate> findAllDistinctYearMonthByRealEstateId(@Param("realEstateId") Long realEstateId,@Param("imageType") ImageType imageType);
+    List<YearMonthDate> findAllDistinctYearMonthByRealEstateId(@Param("realEstateId") Long realEstateId, @Param("imageType") ImageType imageType);
 
     @Query("SELECT i FROM Image i WHERE i.realEstate.id = :realEstateId AND i.imageType = :imageType AND YEAR(i.createAt) = :year AND MONTH(i.createAt) = :month")
     List<Image> findImagesByRealEstateIdAndImageTypeAndYearMonth(
@@ -29,6 +29,9 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
             @Param("year") int year,
             @Param("month") int month);
 
-    @Query("SELECT i FROM Image i WHERE i.realEstate.id = :realEstateId AND i.imageType IS NULL")
-    List<Image> findImagesWithoutTypeByRealEstateId(@Param("realEstateId") Long realEstateId);
+    @Query("SELECT i FROM Image i WHERE i.realEstate.id = :realEstateId AND i.imageType = 1 AND i.expiryDate > :currentDay")
+    List<Image> findByRealEstateIdInspectionImagesWithExpiry(
+            @Param("realEstateId") Long realEstateId,
+            @Param("currentDay") LocalDate currentDay
+    );
 }

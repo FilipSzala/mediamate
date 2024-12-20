@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -176,7 +177,7 @@ public class SettlementService {
     }
 
     private void createMetersWithImages(List<MultipartFile> files, List<ImageInformationRequest> infoRequests, HttpSession httpSession) {
-        List<Image> images = imageService.createImages(files, ImageType.METER, httpSession);
+        List<Image> images = imageService.createImages(files, Collections.emptyList(), ImageType.METER, httpSession);
         List<Meter> meters = createMeters(infoRequests, httpSession, images);
         meterService.createMeters(meters);
     }

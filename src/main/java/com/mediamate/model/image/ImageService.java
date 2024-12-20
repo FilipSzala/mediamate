@@ -6,18 +6,22 @@ import com.mediamate.model.image.response.ImageUrlResponse;
 import com.mediamate.model.real_estate.RealEstate;
 import com.mediamate.model.real_estate.RealEstateRepository;
 import com.mediamate.model.real_estate.RealEstateService;
+import com.mediamate.util.PdfConverter;
 import com.mediamate.util.YearMonthDate;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class ImageService {
@@ -27,46 +31,50 @@ public class ImageService {
     RealEstateRepository realEstateRepository;
     @Autowired
     RealEstateService realEstateService;
+    @Value("${APP_BACKEND_BASE_URL}")
+    private String appBaseUrl;
 
-    public Image createImage (MultipartFile file, ImageType imageType, HttpSession httpSession) throws SQLException, IOException {
+    public Image createImage (MultipartFile file,String expiryDate, ImageType imageType, HttpSession httpSession) throws SQLException, IOException {
         Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
         RealEstate realEstate =realEstateService.findById(realEstateId).orElseThrow();
         Image image = new Image();
-        if(imageType.equals(ImageType.INVOICE)) {
+        String contentType = file.getContentType();
+        boolean isInspectionOrInvoiceType=imageType.equals(ImageType.INVOICE)||imageType.equals(ImageType.INSPECTION);
+        if(isInspectionOrInvoiceType) {
             image.setName(file.getOriginalFilename());
         }
-        image.setBlob(file);
+        boolean isExpiryDateNotNullAndNotEmpty = (expiryDate!=null&&!expiryDate.isEmpty());
+        if(isExpiryDateNotNullAndNotEmpty){
+            image.setExpiryDate(LocalDate.parse(expiryDate));
+        }
+        boolean shouldConvertToPdf = imageType.equals(ImageType.INSPECTION)&&!contentType.equals("application/pdf");
+        byte[] fileBytes = shouldConvertToPdf
+                ? PdfConverter.convertImageToPdf(file.getBytes())
+                : file.getBytes();
+
+        image.setBlob(fileBytes);
         image.setImageType(imageType);
         image.setRealEstate(realEstate);
         imageRepository.save(image);
         return image;
     }
 
-    public List<Image> createImages (List<MultipartFile> files, ImageType imageType,HttpSession httpSession){
-        return files.stream()
-                .map(file -> {
+    public List<Image> createImages (List<MultipartFile> files, List<String> expiryDates, ImageType imageType,HttpSession httpSession){
+        if (!expiryDates.isEmpty()&&files.size() != expiryDates.size()) {
+            throw new IllegalArgumentException("Mismatch between files and expiry dates");
+        }
+        return IntStream.range(0, files.size())
+                .mapToObj(i -> {
                     try {
-                        return createImage(file, imageType, httpSession);
+                        String expiryDate = expiryDates.isEmpty() ? "" : expiryDates.get(i);
+                        return createImage(files.get(i), expiryDate, imageType, httpSession);
                     } catch (SQLException | IOException e) {
                         throw new RuntimeException(e);
                     }
-                }).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
     }
 
-
-    public void updateImagePartially(Long imageId, Image modifiedImage) {
-        Image databaseImage = getImageById(imageId).orElseThrow();
-        databaseImage.setMeter(modifiedImage.getMeter());
-        databaseImage.setImage(modifiedImage.getImage());
-        databaseImage.setCreateAt(modifiedImage.getCreateAt());
-        imageRepository.save(databaseImage);
-    }
-
-  public List<Image> getImagesByImageTypeInCurrentDay(HttpSession httpSession, ImageType imageType){
-        Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
-        List<Image> images = imageRepository.findImagesByRealEstateIdAndImageTypeForCurrentDay(realEstateId,imageType,LocalDate.now());
-        return images;
-    }
     public  List<Image> getImagesByTypeAndDate(Long realEstateId, ImageRequest imageRequest){
         List<Image> images = imageRepository.findImagesByRealEstateIdAndImageTypeAndYearMonth(
                 realEstateId,
@@ -89,7 +97,8 @@ public class ImageService {
     }
 
     public List<ImageUrlResponse> convertImageToImageUrlResponse(ImageRequest imageRequest, Long realEstateId) {
-        List<Image> images = getImagesByTypeAndDate(realEstateId, imageRequest);
+        List<Image> images;
+        images = imageRequest.isEmpty()? getRealEstateInspectionImagesWithExpiry(realEstateId):getImagesByTypeAndDate(realEstateId, imageRequest);
         List<ImageUrlResponse> imagesUrl =
                 images.stream()
                         .map(image -> {
@@ -101,7 +110,13 @@ public class ImageService {
                         .collect(Collectors.toList());
         return imagesUrl;
     }
+
+    private List<Image> getRealEstateInspectionImagesWithExpiry(Long realEstateId) {
+        LocalDate currentDay = LocalDate.now();
+       return imageRepository.findByRealEstateIdInspectionImagesWithExpiry(realEstateId,currentDay);
+    }
+
     private String generateImageUrl(Long imageId) {
-        return "http://localhost:8080/photos/" + imageId;
+        return this.appBaseUrl  + "/photos/" + imageId;
     }
 }

@@ -44,6 +44,13 @@ public class PhotoController {
             return ResponseEntity.ok(imagesUrl);
         }
 
+    @GetMapping("/inspection-valid")
+    public ResponseEntity<List<ImageUrlResponse>> getInspectionImagesWithValidExpiry(HttpSession httpSession){
+        Long realEstateId = (Long) httpSession.getAttribute("chosenRealEstateId");
+        List <ImageUrlResponse> imagesUrl = imageService.convertImageToImageUrlResponse(new ImageRequest(),realEstateId);
+        return ResponseEntity.ok(imagesUrl);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImageById(@PathVariable Long id) throws SQLException, IOException {
