@@ -51,6 +51,12 @@ public class SettlementController {
 
     //Methods in this class depend on Real Estate's session.Therefore, if I coded method named "getFlats" it means that this method returns
     //all Flats by realEstateId from session.
+
+    @GetMapping ()
+    public List <Long> getFlatsIdBySession(HttpSession httpSession){
+        List<Long> flatsId = settlementService.getFlatsIdBySession(httpSession);
+        return flatsId;
+    }
     @PostMapping ("/meters/{userAcceptUnusunalMeterValue}")
     public ResponseEntity<?> createMeterWithPhotoAndInformation(@RequestParam ("files") List<MultipartFile> files, @RequestPart("infoRequest") List <ImageInformationRequest> infoRequest, HttpSession httpSession, @PathVariable boolean userAcceptUnusunalMeterValue){
         List<String> validationMessages = settlementService.createMetersAndImages(files,infoRequest,httpSession, userAcceptUnusunalMeterValue);
