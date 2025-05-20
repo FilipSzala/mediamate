@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    volumes:
+      - moj_volumen:/var/lib/mysql
+    restart: unless-stopped
+
   backend:
     build:
       context: .

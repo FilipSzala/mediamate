@@ -38,10 +38,10 @@ public class DashboardController {
     public ResponseEntity<String> sendSmsWithMediaSummary(HttpSession httpSession) {
         try {
             dashboardService.sendSmsWithMediaSummary(httpSession);
+            return ResponseEntity.ok().body("Sms sended succesfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while sending sms : " + e.getMessage());
         }
-        return ResponseEntity.ok().body("Sms sended succesfully");
     }
 
 }
