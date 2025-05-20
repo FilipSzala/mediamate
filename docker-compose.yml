@@ -30,3 +30,7 @@ services:
 networks:
   mediamate-network:
     external: true
+
+volumes:
+  moj_volumen:
+    external: true
