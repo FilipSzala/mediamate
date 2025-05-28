@@ -1,18 +1,9 @@
-version: '3.8'
-
 services:
-  db:
-    image: mysql:8
-    container_name: mysql-db
-    volumes:
-      - moj_volumen:/var/lib/mysql
-    restart: unless-stopped
-
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: backend-mediamate
     ports:
       - "8080:8080"
     environment:
@@ -23,14 +14,5 @@ services:
       SMS_API_TOKEN: ${SMS_API_TOKEN}
       EMAIL_USERNAME: ${EMAIL_USERNAME}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-    restart: always
     networks:
-      - mediamate-network
-
-networks:
-  mediamate-network:
-    external: true
-
-volumes:
-  moj_volumen:
-    external: true
+      - network-mediamate

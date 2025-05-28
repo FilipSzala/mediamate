@@ -46,7 +46,7 @@ public class GasConsumption {
     }
 
     public double countConsumptionPerFlatInM3 (double gasPerRealEstateInGJ,int numberRentersInRealEstate, MediaSummary mediaSummary,double flatCount) {
-        if (gasPerRealEstateInGJ == 0.0) {
+        if (gasPerRealEstateInGJ <= 0.0) {
             double renterCount = mediaSummary.getFlat().getRenter().getRenterCount();
             return mediaSummary.getGasConsumptionPerRealEstateInM3().doubleValue()/numberRentersInRealEstate*renterCount;
         } else {
