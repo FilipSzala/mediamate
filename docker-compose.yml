@@ -16,3 +16,7 @@ services:
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
     networks:
       - network-mediamate
+
+networks:
+  network-mediamate:
+    external: true
