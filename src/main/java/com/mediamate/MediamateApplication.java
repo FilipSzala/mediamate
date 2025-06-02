@@ -15,7 +15,10 @@ public class MediamateApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MediamateApplication.class, args);
+
 	}
+
+
 
 
 }
